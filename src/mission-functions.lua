@@ -64,7 +64,8 @@ function findNearestTanker(PlayerUnit, PlayerGroup, Radius)
             local istanker, tankerrefuelsystem=unit:IsTanker()
             if istanker and
                     playerrefuelsystem == tankerrefuelsystem and
-                    coalition == unit:GetCoalition() then
+                    coalition == unit:GetCoalition() and
+                    unit:IsAlive() then
 
                 -- Distance.
                 local d = unit:GetCoordinate():Get2DDistance(coord)
@@ -135,7 +136,8 @@ function findAllTanker(PlayerUnit, PlayerGroup, Radius)
             local istanker, tankerrefuelsystem=unit:IsTanker()
             if istanker and
                     playerrefuelsystem == tankerrefuelsystem and
-                    coalition == unit:GetCoalition() then
+                    coalition == unit:GetCoalition() and
+                    unit:IsAlive() then
                 tanker=unit
                 local tankerrefuelsystemName = "BOOM"
                 if playerrefuelsystem == 0 then
@@ -180,7 +182,7 @@ function findAllTanker(PlayerUnit, PlayerGroup, Radius)
     return nil
 end
 
-function NeariestTankerInfo(param)
+function NearestTankerInfo(param)
     findNearestTanker(
             param[1],
             param[2],

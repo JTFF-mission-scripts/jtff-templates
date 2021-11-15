@@ -14,9 +14,16 @@ Set_CLIENT:HandleEvent(EVENTS.PlayerEnterAircraft)
 function Set_CLIENT:OnEventPlayerEnterAircraft(EventData)
     if (EventData.IniGroup) then
         debug_msg(string.format("Add Tanker Menu for group [%s], player name [%s]",EventData.IniGroupName , EventData.IniPlayerName))
-        local TankerMenu = MENU_GROUP:New( EventData.IniGroup, "Tanker Menu" )
-        MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", TankerMenu, NeariestTankerInfo, {EventData.IniUnit,EventData.IniGroup}  )
-        MENU_GROUP_COMMAND:New( EventData.IniGroup, "All Tankers Info", TankerMenu, AllTankersInfo, {EventData.IniUnit,EventData.IniGroup} )
+        --local TankerMenu = MENU_GROUP:New( EventData.IniGroup, "Tanker Menu" )
+        --MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", TankerMenu, NearestTankerInfo, { EventData.IniUnit, EventData.IniGroup}  )
+        --MENU_GROUP_COMMAND:New( EventData.IniGroup, "All Tankers Info", TankerMenu, AllTankersInfo, {EventData.IniUnit,EventData.IniGroup} )
+        if EventData.IniUnit:GetCoalition() == coalition.side.BLUE then
+            MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", MenuCoalitionTankerBlue, NearestTankerInfo, { EventData.IniUnit, EventData.IniGroup}  )
+            MENU_GROUP_COMMAND:New( EventData.IniGroup, "All Tankers Info", MenuCoalitionTankerBlue, AllTankersInfo, {EventData.IniUnit,EventData.IniGroup} )
+        else
+            MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", MenuCoalitionTankerRed, NearestTankerInfo, { EventData.IniUnit, EventData.IniGroup}  )
+            MENU_GROUP_COMMAND:New( EventData.IniGroup, "All Tankers Info", MenuCoalitionTankerRed, AllTankersInfo, {EventData.IniUnit,EventData.IniGroup} )
+        end
     end
 end
 function Set_CLIENT:OnEventRefueling(EventData)
