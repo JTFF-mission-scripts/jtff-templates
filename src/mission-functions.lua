@@ -5,6 +5,193 @@
 -- Generic Spawn object functions
 --
 env.info('JTFF-SHAREDLIB: shared library loading...')
+DEBUG_MSG = true
+
+function debug_msg(message)
+    if DEBUG_MSG then
+        env.info(string.format("[DEBUG] %s", message))
+    end
+end
+
+function give_bra_of_air_group(param)
+    local target_group = param[1]
+    local client_group = param[2]
+    local settings = param[3]
+    local coordinate_target = target_group:GetCoordinate()
+    local coordinate_client = client_group:GetCoordinate()
+    return string.format ("%s, %s",
+            coordinate_target:ToStringBRA(coordinate_client, settings),
+            coordinate_target:ToStringAspect(coordinate_client)
+    )
+end
+
+function give_heading_speed(param)
+    local target_group = param[1]
+    local settings = param[2]
+    local heading_target = target_group:GetHeading()
+    local speed_target = target_group:GetVelocityKNOTS()
+    if (settings:IsMetric()) then
+        speed_target = target_group:GetVelocityKMH()
+        return string.format (
+                "Heading : %.0f, Speed : %.0f km/h",
+                heading_target,
+                speed_target
+        )
+    end
+    return string.format (
+            "Heading : %.0f, Speed : %.0f kt",
+            heading_target,
+            speed_target
+    )
+end
+
+function findNearestTanker(PlayerUnit, PlayerGroup, Radius)
+
+    Radius=UTILS.NMToMeters(Radius or 50)
+
+    local isrefuelable, playerrefuelsystem=PlayerUnit:IsRefuelable()
+    if isrefuelable then
+        local coord=PlayerUnit:GetCoordinate()
+        local units=coord:ScanUnits(Radius)
+        local coalition=PlayerUnit:GetCoalition()
+
+        local dmin = math.huge
+        local tanker = nil --Wrapper.Unit#UNIT
+        local client = CLIENT:Find(PlayerUnit:GetDCSObject())
+        local setting = SETTINGS:Set(client:GetPlayerName())
+        for _,_unit in pairs(units.Set) do
+            local unit = _unit --Wrapper.Unit#UNIT
+            local istanker, tankerrefuelsystem=unit:IsTanker()
+            if istanker and
+                    playerrefuelsystem == tankerrefuelsystem and
+                    coalition == unit:GetCoalition() then
+
+                -- Distance.
+                local d = unit:GetCoordinate():Get2DDistance(coord)
+                if d < dmin then
+                    d = dmin
+                    tanker=unit
+                end
+            end
+        end
+
+        local tankerrefuelsystemName = "BOOM"
+        if playerrefuelsystem == 0 then
+            tankerrefuelsystemName = "PROBE"
+        end
+        local braa_message = give_bra_of_air_group({
+            tanker:GetGroup(),
+            PlayerGroup,
+            setting
+        })
+        local aspect_message = give_heading_speed({
+            tanker:GetGroup(),
+            setting
+        })
+        local fuelState = string.format(
+                "%s Lbs",
+                tanker:GetTemplateFuel()*2.205
+        )
+        if setting:IsMetric() then
+            local fuelState = string.format(
+                    "%s Kg",
+                    tanker:GetTemplateFuel()
+            )
+        end
+        local message = string.format(
+                "%s %s [%s]\nFuel State %s(%.2f)\n%s\n%s",
+                tanker:GetName(),
+                tanker:GetTypeName(),
+                tankerrefuelsystemName,
+                fuelState,
+                tanker:GetFuel()*100,
+                aspect_message,
+                braa_message
+        )
+        MESSAGE:NewType(
+                message,
+                MESSAGE.Type.Overview
+        ):ToGroup(PlayerGroup)
+    end
+    return nil
+end
+
+function findAllTanker(PlayerUnit, PlayerGroup, Radius)
+
+    Radius=UTILS.NMToMeters(Radius or 50)
+
+    local isrefuelable, playerrefuelsystem=PlayerUnit:IsRefuelable()
+    if isrefuelable then
+
+        local coord = PlayerUnit:GetCoordinate()
+        local units = coord:ScanUnits(Radius)
+        local coalition = PlayerUnit:GetCoalition()
+
+        local tanker = nil --Wrapper.Unit#UNIT
+        local client = CLIENT:Find(PlayerUnit:GetDCSObject())
+        local setting = SETTINGS:Set(client:GetPlayerName())
+        for _,_unit in pairs(units.Set) do
+            local unit=_unit --Wrapper.Unit#UNIT
+            local istanker, tankerrefuelsystem=unit:IsTanker()
+            if istanker and
+                    playerrefuelsystem == tankerrefuelsystem and
+                    coalition == unit:GetCoalition() then
+                tanker=unit
+                local tankerrefuelsystemName = "BOOM"
+                if playerrefuelsystem == 0 then
+                    tankerrefuelsystemName = "PROBE"
+                end
+                local braa_message = give_bra_of_air_group({
+                    tanker:GetGroup(),
+                    PlayerGroup,
+                    setting
+                })
+                local aspect_message = give_heading_speed({
+                    tanker:GetGroup(),
+                    setting
+                })
+                local fuelState = string.format(
+                        "%s Lbs",
+                        tanker:GetTemplateFuel()*2.205
+                )
+                if setting:IsMetric() then
+                    local fuelState = string.format(
+                            "%s Kg",
+                            tanker:GetTemplateFuel()
+                    )
+                end
+                local message = string.format(
+                        "%s %s [%s]\nFuel State %s (%.2f)\n%s\n%s",
+                        tanker:GetName(),
+                        tanker:GetTypeName(),
+                        tankerrefuelsystemName,
+                        fuelState,
+                        tanker:GetFuel()*100,
+                        aspect_message,
+                        braa_message
+                )
+                MESSAGE:NewType(
+                        message,
+                        MESSAGE.Type.Overview
+                ):ToGroup(PlayerGroup)
+            end
+        end
+    end
+    return nil
+end
+
+function NeariestTankerInfo(param)
+    findNearestTanker(
+            param[1],
+            param[2],
+            200
+    )
+end
+
+function AllTankersInfo(param)
+    findAllTanker(param[1],param[2], 200)
+end
+
 function taskTankerEscort(param)
     local recoveryTankerObject = param[1]
     local EscortGroup = param[2]
@@ -119,6 +306,7 @@ end
 function LeaveRecovery(objAirboss)
     local shipID = UNIT:FindByName(objAirboss.carrier:Name()):GetDCSObject():getID()
 end
+
 function resetRecoveryTanker(recoveryTankerObject)
     recoveryTankerObject:SetRespawnOnOff(true)
     recoveryTankerObject.tanker:Destroy()
@@ -128,6 +316,7 @@ function resetRecoveryTanker(recoveryTankerObject)
         --recoveryTankerObject.escortGroupObject = spawnRecoveryTankerEscort(recoveryTankerObject.escortSpawnObject,recoveryTankerObject.customconfig)
     end
 end
+
 function startCapZone(objCAPZone)
     local AICapGroup = objCAPZone.objSpawn:SpawnInZone(objCAPZone.objPatrolZone,
             true
@@ -160,10 +349,12 @@ function startCapZone(objCAPZone)
     --        )
     --)
 end
+
 function wipeCapZone(objCAPZone)
     fctKillSpawnObject(objCAPZone.objSpawn)
     trigger.action.outText('CAP Training Zone '..(objCAPZone.customconfig.name)..' cleaned !!', 30)
 end
+
 function fctKillSpawnObject(objSpawn)
     local GroupPlane, Index = objSpawn:GetFirstAliveGroup()
     while GroupPlane ~= nil do
@@ -172,4 +363,6 @@ function fctKillSpawnObject(objSpawn)
         GroupPlane, Index = objSpawn:GetNextAliveGroup( Index )
     end
 end
+
+
 env.info('JTFF-SHAREDLIB: shared library loaded succesfully')

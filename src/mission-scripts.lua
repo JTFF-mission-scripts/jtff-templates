@@ -5,6 +5,37 @@ MenuCoalitionBlue = MENU_COALITION:New(coalition.side.BLUE, "My Coalition resour
 MenuCoalitionRed = MENU_COALITION:New(coalition.side.RED, "My Coalition resources")
 
 -- *****************************************************************************
+--                     **                    Set_Client                       **
+--                     *********************************************************
+Set_CLIENT = SET_CLIENT:New():FilterOnce()
+Set_CLIENT:HandleEvent(EVENTS.Refueling)
+Set_CLIENT:HandleEvent(EVENTS.RefuelingStop)
+Set_CLIENT:HandleEvent(EVENTS.PlayerEnterAircraft)
+function Set_CLIENT:OnEventPlayerEnterAircraft(EventData)
+    if (EventData.IniGroup) then
+        debug_msg(string.format("Add Tanker Menu for group [%s], player name [%s]",EventData.IniGroupName , EventData.IniPlayerName))
+        local TankerMenu = MENU_GROUP:New( EventData.IniGroup, "Tanker Menu" )
+        MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", TankerMenu, NeariestTankerInfo, {EventData.IniUnit,EventData.IniGroup}  )
+        MENU_GROUP_COMMAND:New( EventData.IniGroup, "All Tankers Info", TankerMenu, AllTankersInfo, {EventData.IniUnit,EventData.IniGroup} )
+    end
+end
+function Set_CLIENT:OnEventRefueling(EventData)
+    if (EventData.IniGroup) then
+        local client = CLIENT:Find(EventData.IniDCSUnit)
+        local clientFuel = EventData.IniUnit:GetTemplateFuel()
+        debug_msg(string.format("[%s] Start to refuel at the tanker %[s], current fuel : %.0f Kg",EventData.IniPlayerName , EventData.TgtUnitName, clientFuel))
+        BASE:SetState( client, "Fuel", clientFuel )
+    end
+end
+function Set_CLIENT:OnEventRefuelingStop(EventData)
+    if (EventData.IniGroup) then
+        local client = CLIENT:Find(EventData.IniDCSUnit)
+        local clientFuelTaken = EventData.IniUnit:GetTemplateFuel() - BASE:GetState(client,"Fuel")
+        debug_msg(string.format("[%s] Stop to refuel at the tanker %[s], taken %.0f Kg",EventData.IniPlayerName , EventData.TgtUnitName, clientFuelTaken))
+    end
+end
+
+-- *****************************************************************************
 --                     **                     Tankers                         **
 --                     *********************************************************
 tankersArray = {}
