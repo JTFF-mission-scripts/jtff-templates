@@ -776,12 +776,12 @@ for index, foxzoneconfig in ipairs(FoxRangesConfig) do
         compteur = compteur + 1
         env.info('creation Fox Zone : '.. foxzoneconfig.name..'...')
         local objFoxZone = FOX:New()
-        objFoxZone:SetExplosionPower(0.01)
-                  :SetExplosionDistance(100)
-                  :SetDefaultMissileDestruction(true)
-                  :SetDefaultLaunchAlerts(foxzoneconfig.missilemessages)
+        objFoxZone:SetExplosionPower(0.1)
+                  :SetExplosionDistance(50)
+                  :SetExplosionDistanceBigMissiles(100)
+                  :SetDefaultMissileDestruction(foxzoneconfig.missileDestructionMessages)
+                  :SetDefaultLaunchAlerts(foxzoneconfig.missileLaunchMessages)
                   :SetDefaultLaunchMarks(false)
-                  :SetDefaultMissileDestruction(true)
         if foxzoneconfig.launchZoneGroupName then
             objFoxZone.objLaunchZone = ZONE_POLYGON:New(
                     'FOX_LAUNCH_ZONE_'..foxzoneconfig.name,
@@ -809,8 +809,31 @@ for index, foxzoneconfig in ipairs(FoxRangesConfig) do
         if foxzoneconfig.debug then
             objFoxZone:SetDebugOn()
         end
-        objFoxZone.menudisabled = false
+        objFoxZone.menudisabled = foxzoneconfig.f10Menu == false
+        objFoxZone:SetDisableF10Menu(objFoxZone.menudisabled)
         objFoxZone.customconfig = foxzoneconfig
+
+        -- **** Message to client *****
+        function objFoxZone:OnAfterEnterSafeZone(From, Event, To, player):
+            local message = '['..player.name..'| '..player.callsign..'] You\'re entering in the missile trainer area '.. foxzoneconfig.name..'. Not hesitate to shoot your friends'
+            MESSAGE:NewType(message,MESSAGE.Type.Overview):ToClient(player.client)
+        end
+        function objFoxZone:OnAfterExitSafeZone(From, Event, To, player):
+            local message = '['..player.name..'| '..player.callsign..'] You\'re leaving the missile trainer area '.. foxzoneconfig.name..'. Now missile can kill.'
+            MESSAGE:NewType(message,MESSAGE.Type.Overview):ToClient(player.client)
+        end
+        function objFoxZone:OnAfterMissileDestroyed(From, Event, To, missile):
+            local unitTargeted = missile.targetUnit --#Wrapper.Unit#UNIT
+            local playerTargeted = missile.targetPlayer --#FOX.PlayerData
+            local unitShooter = missile.shooterUnit --#Wrapper.Unit#UNIT
+            local missileType = missile.missileType --string
+            local missileName = missile.missileName --string
+
+            local playerNameTargeted = playerTargeted.name --string
+            local playerNameShooter = CLIENT:Find(unitShooter:GetDCSObject()):GetPlayerName()
+
+        end
+        -- *****************************
         FoxRangesArray[compteur] = objFoxZone
         FoxRangesArray[compteur]:Start()
     end
