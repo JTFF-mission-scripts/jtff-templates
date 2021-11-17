@@ -24,7 +24,11 @@ function Set_CLIENT:OnEventPlayerEnterAircraft(EventData)
             MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", MenuCoalitionTankerRed, NearestTankerInfo, { EventData.IniUnit, EventData.IniGroup}  )
             MENU_GROUP_COMMAND:New( EventData.IniGroup, "All Tankers Info", MenuCoalitionTankerRed, AllTankersInfo, {EventData.IniUnit,EventData.IniGroup} )
         end
-    end
+        local GroupMenu = MENU_GROUP:New( EventData.IniGroup, "My settings" )
+        debug_msg(string.format("Add Immortal Menu for group [%s], player name [%s]",EventData.IniGroupName , EventData.IniPlayerName))
+        BASE:SetState( EventData.IniGroup, "isImmortal", false )
+        MENU_GROUP_COMMAND:New( EventData.IniGroup, "Switch immortal status", GroupMenu, switchGroupImmortalStatus, EventData.IniGroup )
+    end 
 end
 function Set_CLIENT:OnEventRefueling(EventData)
     if (EventData.IniGroup) then

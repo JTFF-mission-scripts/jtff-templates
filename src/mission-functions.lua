@@ -13,6 +13,12 @@ function debug_msg(message)
     end
 end
 
+function switchGroupImmortalStatus(group)
+    status = not BASE:GetState(group, "isImmortal")
+    group:SetCommandImmortal(status)
+    BASE:SetState(group, "isImmortal", status)
+end
+
 function give_bra_of_air_group(param)
     local target_group = param[1]
     local client_group = param[2]
