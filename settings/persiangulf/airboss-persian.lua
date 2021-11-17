@@ -41,7 +41,7 @@ AirBossConfig = {
             lso = 'LSORelay-1',
         },
         singlecarrier = false,
-        event_duration_minutes = 90,
+        event_duration_minutes = 60,
         event_ia_reserved_minutes = 15,
         operationsstatspath = "C:/airboss-stats",
         operationstrapsheetpath = "C:/airboss-trapsheets"
@@ -88,7 +88,7 @@ AirBossConfig = {
             lso = 'LSORelay-2',
         },
         singlecarrier = false,
-        event_duration_minutes = 90,
+        event_duration_minutes = 60,
         event_ia_reserved_minutes = 15,
         operationsstatspath = "C:/airboss-stats",
         operationstrapsheetpath = "C:/airboss-trapsheets"
