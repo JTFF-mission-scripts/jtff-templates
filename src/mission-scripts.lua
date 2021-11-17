@@ -814,26 +814,41 @@ for index, foxzoneconfig in ipairs(FoxRangesConfig) do
         objFoxZone.customconfig = foxzoneconfig
 
         -- **** Message to client *****
-        function objFoxZone:OnAfterEnterSafeZone(From, Event, To, player):
-            local message = '['..player.name..'| '..player.callsign..'] You\'re entering in the missile trainer area '.. foxzoneconfig.name..'. Not hesitate to shoot your friends'
-            MESSAGE:NewType(message,MESSAGE.Type.Overview):ToClient(player.client)
+        function objFoxZone:OnAfterEnterSafeZone(From, Event, To, player)
+            local message = '[' .. player.name .. '] You\'re entering in the missile trainer area ' .. foxzoneconfig.name
+            MESSAGE:NewType(message, MESSAGE.Type.Overview):ToClient(player.client)
         end
-        function objFoxZone:OnAfterExitSafeZone(From, Event, To, player):
-            local message = '['..player.name..'| '..player.callsign..'] You\'re leaving the missile trainer area '.. foxzoneconfig.name..'. Now missile can kill.'
-            MESSAGE:NewType(message,MESSAGE.Type.Overview):ToClient(player.client)
+
+        function objFoxZone:OnAfterExitSafeZone(From, Event, To, player)
+            local message = '[' .. player.name .. '] You\'re leaving the missile trainer area ' .. foxzoneconfig.name
+            MESSAGE:NewType(message, MESSAGE.Type.Overview):ToClient(player.client)
         end
-        function objFoxZone:OnAfterMissileDestroyed(From, Event, To, missile):
-            local unitTargeted = missile.targetUnit --#Wrapper.Unit#UNIT
-            local playerTargeted = missile.targetPlayer --#FOX.PlayerData
-            local unitShooter = missile.shooterUnit --#Wrapper.Unit#UNIT
-            local missileType = missile.missileType --string
-            local missileName = missile.missileName --string
+        
+        function objFoxZone:OnAfterMissileDestroyed(From, Event, To, missile)
+            local unitTargeted = missile.targetUnit -- #Wrapper.Unit#UNIT
+            local playerTargeted = missile.targetPlayer -- #FOX.PlayerData
+            local unitShooter = missile.shooterUnit -- #Wrapper.Unit#UNIT
+            local missileType = missile.missileType -- string
+            local missileName = missile.missileName -- string
 
-            local playerNameTargeted = playerTargeted.name --string
-            local playerNameShooter = CLIENT:Find(unitShooter:GetDCSObject()):GetPlayerName()
-
+            local playerNameTargeted = playerTargeted.name -- string
+            local clientShooter = CLIENT:Find(unitShooter:GetDCSObject())
+            local message = ''
+            if (clientShooter ~= nil) then
+                local playerNameShooter = clientShooter:GetPlayerName()
+                message = playerNameTargeted .. ' HAVE BEEN SHOOT BY ' .. playerNameShooter
+            else
+                message = playerNameTargeted .. ' HAVE BEEN SHOOT BY ' .. unitShooter:GetName()
+            end
+            debug_msg(message)
+            Set_CLIENT:ForEachClientInZone(objFoxZone.objSafeZone, function(clientInZone)
+                if clientInZone:IsAlive() then
+                    MESSAGE:NewType(message, MESSAGE.Type.Update):ToClient(clientInZone)
+                end
+            end)
         end
         -- *****************************
+
         FoxRangesArray[compteur] = objFoxZone
         FoxRangesArray[compteur]:Start()
     end

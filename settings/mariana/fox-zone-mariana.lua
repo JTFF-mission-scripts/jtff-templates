@@ -7,6 +7,8 @@ FoxRangesConfig= {
         --safeZoneGroupName = 'engage zone Red',
         --launchZoneGroupName = 'engage zone Red',
         debug = false,
-        missilemessages = false
+        f10Menu = false,
+        missileLaunchMessages = false,
+        missileDestructionMessages = false
     }
 }
