@@ -776,10 +776,10 @@ for index, foxzoneconfig in ipairs(FoxRangesConfig) do
         compteur = compteur + 1
         env.info('creation Fox Zone : '.. foxzoneconfig.name..'...')
         local objFoxZone = FOX:New()
-        objFoxZone:SetExplosionPower(0.1)
-                  :SetExplosionDistance(50)
-                  :SetExplosionDistanceBigMissiles(100)
-                  :SetDefaultMissileDestruction(foxzoneconfig.missileDestructionMessages)
+        objFoxZone:SetExplosionPower(0.01)
+                  :SetExplosionDistance(100)
+                  :SetExplosionDistanceBigMissiles(150)
+                  :SetDefaultMissileDestruction(foxzoneconfig.missileDestruction)
                   :SetDefaultLaunchAlerts(foxzoneconfig.missileLaunchMessages)
                   :SetDefaultLaunchMarks(false)
         if foxzoneconfig.launchZoneGroupName then
@@ -832,9 +832,9 @@ for index, foxzoneconfig in ipairs(FoxRangesConfig) do
             local missileName = missile.missileName -- string
 
             local playerNameTargeted = playerTargeted.name -- string
-            local clientShooter = CLIENT:Find(unitShooter:GetDCSObject())
+            local clientShooter = CLIENT:Find(unitShooter:GetDCSObject(), '', false)
             local message = ''
-            if (clientShooter ~= nil) then
+            if (clientShooter) then
                 local playerNameShooter = clientShooter:GetPlayerName()
                 message = playerNameTargeted .. ' HAVE BEEN SHOOT BY ' .. playerNameShooter
             else

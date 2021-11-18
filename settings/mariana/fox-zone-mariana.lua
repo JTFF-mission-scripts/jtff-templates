@@ -9,6 +9,6 @@ FoxRangesConfig= {
         debug = false,
         f10Menu = false,
         missileLaunchMessages = false,
-        missileDestructionMessages = false
+        missileDestruction = true
     }
 }

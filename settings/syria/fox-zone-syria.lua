@@ -9,7 +9,7 @@ FoxRangesConfig= {
         debug = false,
         f10Menu = false,
         missileLaunchMessages = false,
-        missileDestructionMessages = false
+        missileDestruction = true
     },
     {
         name = '79th-South',
@@ -21,6 +21,6 @@ FoxRangesConfig= {
         debug = false,
         f10Menu = false,
         missileLaunchMessages = false,
-        missileDestructionMessages = false
+        missileDestruction = true
     }
 }
