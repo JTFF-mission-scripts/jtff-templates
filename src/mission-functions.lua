@@ -15,8 +15,10 @@ end
 
 function switchGroupImmortalStatus(group)
     status = not BASE:GetState(group, "isImmortal")
+    debug_msg(string.format("switch group %s to immortal status %s", group:GetName(), tostring(status)))
     group:SetCommandImmortal(status)
     BASE:SetState(group, "isImmortal", status)
+    MESSAGE:NewType("Immortal status of your group : " .. tostring(status) , MESSAGE.Type.Update):ToGroup(group)
 end
 
 function give_bra_of_air_group(param)
