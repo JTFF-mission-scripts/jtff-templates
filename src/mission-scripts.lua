@@ -13,6 +13,8 @@ Set_CLIENT:HandleEvent(EVENTS.RefuelingStop)
 Set_CLIENT:HandleEvent(EVENTS.PlayerEnterAircraft)
 function Set_CLIENT:OnEventPlayerEnterAircraft(EventData)
     if (EventData.IniGroup) then
+        local clientSetting = SETTINGS:Set( EventData.IniPlayerName)
+        clientSetting:SetImperial()
         debug_msg(string.format("Add Tanker Menu for group [%s], player name [%s]",EventData.IniGroupName , EventData.IniPlayerName))
         --local TankerMenu = MENU_GROUP:New( EventData.IniGroup, "Tanker Menu" )
         --MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", TankerMenu, NearestTankerInfo, { EventData.IniUnit, EventData.IniGroup}  )

@@ -58,7 +58,7 @@ function findNearestTanker(PlayerUnit, PlayerGroup, Radius)
         local dmin = math.huge
         local tanker = nil --Wrapper.Unit#UNIT
         local client = CLIENT:Find(PlayerUnit:GetDCSObject())
-        local setting = SETTINGS:Set(client:GetPlayerName())
+        local setting =  _DATABASE:GetPlayerSettings(client:GetPlayerName())
         for _,_unit in pairs(units.Set) do
             local unit = _unit --Wrapper.Unit#UNIT
             local istanker, tankerrefuelsystem=unit:IsTanker()
@@ -94,7 +94,7 @@ function findNearestTanker(PlayerUnit, PlayerGroup, Radius)
                 tanker:GetTemplateFuel()*2.205
         )
         if setting:IsMetric() then
-            local fuelState = string.format(
+            fuelState = string.format(
                     "%s Kg",
                     tanker:GetTemplateFuel()
             )
@@ -130,7 +130,7 @@ function findAllTanker(PlayerUnit, PlayerGroup, Radius)
 
         local tanker = nil --Wrapper.Unit#UNIT
         local client = CLIENT:Find(PlayerUnit:GetDCSObject())
-        local setting = SETTINGS:Set(client:GetPlayerName())
+        local setting =  _DATABASE:GetPlayerSettings(client:GetPlayerName())
         for _,_unit in pairs(units.Set) do
             local unit=_unit --Wrapper.Unit#UNIT
             local istanker, tankerrefuelsystem=unit:IsTanker()
@@ -157,7 +157,7 @@ function findAllTanker(PlayerUnit, PlayerGroup, Radius)
                         tanker:GetTemplateFuel()*2.205
                 )
                 if setting:IsMetric() then
-                    local fuelState = string.format(
+                    fuelState = string.format(
                             "%s Kg",
                             tanker:GetTemplateFuel()
                     )
