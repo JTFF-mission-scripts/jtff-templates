@@ -4,6 +4,8 @@ FoxRangesConfig= {
         enable = false,
         engageZoneGroupName = 'training-zone-pvp',
         debug = false,
-        missilemessages = true
+        f10Menu = false,
+        missileLaunchMessages = false,
+        missileDestruction = true
     }
 }

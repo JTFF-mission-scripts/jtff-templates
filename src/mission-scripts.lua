@@ -26,7 +26,11 @@ function Set_CLIENT:OnEventPlayerEnterAircraft(EventData)
             MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", MenuCoalitionTankerRed, NearestTankerInfo, { EventData.IniUnit, EventData.IniGroup}  )
             MENU_GROUP_COMMAND:New( EventData.IniGroup, "All Tankers Info", MenuCoalitionTankerRed, AllTankersInfo, {EventData.IniUnit,EventData.IniGroup} )
         end
-    end
+        local GroupMenu = MENU_GROUP:New( EventData.IniGroup, "My settings" )
+        debug_msg(string.format("Add Immortal Menu for group [%s], player name [%s]",EventData.IniGroupName , EventData.IniPlayerName))
+        BASE:SetState( EventData.IniGroup, "isImmortal", false )
+        MENU_GROUP_COMMAND:New( EventData.IniGroup, "Switch immortal status", GroupMenu, switchGroupImmortalStatus, EventData.IniGroup )
+    end 
 end
 function Set_CLIENT:OnEventRefueling(EventData)
     if (EventData.IniGroup) then
@@ -780,10 +784,10 @@ for index, foxzoneconfig in ipairs(FoxRangesConfig) do
         local objFoxZone = FOX:New()
         objFoxZone:SetExplosionPower(0.01)
                   :SetExplosionDistance(100)
-                  :SetDefaultMissileDestruction(true)
-                  :SetDefaultLaunchAlerts(foxzoneconfig.missilemessages)
+                  :SetExplosionDistanceBigMissiles(150)
+                  :SetDefaultMissileDestruction(foxzoneconfig.missileDestruction)
+                  :SetDefaultLaunchAlerts(foxzoneconfig.missileLaunchMessages)
                   :SetDefaultLaunchMarks(false)
-                  :SetDefaultMissileDestruction(true)
         if foxzoneconfig.launchZoneGroupName then
             objFoxZone.objLaunchZone = ZONE_POLYGON:New(
                     'FOX_LAUNCH_ZONE_'..foxzoneconfig.name,
@@ -811,8 +815,46 @@ for index, foxzoneconfig in ipairs(FoxRangesConfig) do
         if foxzoneconfig.debug then
             objFoxZone:SetDebugOn()
         end
-        objFoxZone.menudisabled = false
+        objFoxZone.menudisabled = foxzoneconfig.f10Menu == false
+        objFoxZone:SetDisableF10Menu(objFoxZone.menudisabled)
         objFoxZone.customconfig = foxzoneconfig
+
+        -- **** Message to client *****
+        function objFoxZone:OnAfterEnterSafeZone(From, Event, To, player)
+            local message = '[' .. player.name .. '] You\'re entering in the missile trainer area ' .. foxzoneconfig.name
+            MESSAGE:NewType(message, MESSAGE.Type.Overview):ToClient(player.client)
+        end
+
+        function objFoxZone:OnAfterExitSafeZone(From, Event, To, player)
+            local message = '[' .. player.name .. '] You\'re leaving the missile trainer area ' .. foxzoneconfig.name
+            MESSAGE:NewType(message, MESSAGE.Type.Overview):ToClient(player.client)
+        end
+        
+        function objFoxZone:OnAfterMissileDestroyed(From, Event, To, missile)
+            local unitTargeted = missile.targetUnit -- #Wrapper.Unit#UNIT
+            local playerTargeted = missile.targetPlayer -- #FOX.PlayerData
+            local unitShooter = missile.shooterUnit -- #Wrapper.Unit#UNIT
+            local missileType = missile.missileType -- string
+            local missileName = missile.missileName -- string
+
+            local playerNameTargeted = playerTargeted.name -- string
+            local clientShooter = CLIENT:Find(unitShooter:GetDCSObject(), '', false)
+            local message = ''
+            if (clientShooter) then
+                local playerNameShooter = clientShooter:GetPlayerName()
+                message = playerNameTargeted .. ' HAVE BEEN SHOOT BY ' .. playerNameShooter
+            else
+                message = playerNameTargeted .. ' HAVE BEEN SHOOT BY ' .. unitShooter:GetName()
+            end
+            debug_msg(message)
+            Set_CLIENT:ForEachClientInZone(objFoxZone.objSafeZone, function(clientInZone)
+                if clientInZone:IsAlive() then
+                    MESSAGE:NewType(message, MESSAGE.Type.Update):ToClient(clientInZone)
+                end
+            end)
+        end
+        -- *****************************
+
         FoxRangesArray[compteur] = objFoxZone
         FoxRangesArray[compteur]:Start()
     end

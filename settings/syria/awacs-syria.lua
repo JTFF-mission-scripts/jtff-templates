@@ -2,7 +2,7 @@ AwacsConfig = {
     {
         enable = true,
         autorespawn = true,
-        patternUnit = 'Escorte CSG-1 CVN-71-5',
+        patternUnit = 'Escorte CSG-1 CVN-71-1',
         baseUnit = 'CSG-1 CVN-2-1',
         terminalType = AIRBASE.TerminalType.OpenMedOrBig,
         groupName = 'WIZARD #IFF:4773FR',
