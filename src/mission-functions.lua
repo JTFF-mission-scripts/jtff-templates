@@ -6,6 +6,8 @@
 --
 env.info('JTFF-SHAREDLIB: shared library loading...')
 DEBUG_MSG = true
+map_marker = {}
+sead = SEAD:New({})
 
 function debug_msg(message)
     if DEBUG_MSG then
@@ -372,6 +374,273 @@ function fctKillSpawnObject(objSpawn)
         GroupPlane:Destroy(true)
         GroupPlane, Index = objSpawn:GetNextAliveGroup( Index )
     end
+end
+
+function getMaxThreatUnit(setUnits)
+    local setUnitsSorted = SET_UNIT:New()
+    setUnits:ForEachUnitPerThreatLevel(10, 0, function(unit)
+        setUnitsSorted:AddUnit(unit)
+    end)
+    debug_msg(string.format("Max priority unit : %s", setUnitsSorted:GetFirst():GetName()))
+    return setUnitsSorted:GetFirst()
+end
+
+function destroyGroup(group_name)
+    local set_group_alive = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
+    set_group_alive:ForEachGroupAlive(function(group_alive)
+        debug_msg(string.format("Group %s just removed", group_alive:GetName()))
+        if (map_marker[group_alive:GetName()]) then
+            COORDINATE:RemoveMark(map_marker[group_alive:GetName()])
+        end
+        group_alive:Destroy()
+    end)
+end
+
+function deleteSubRangeUnits(param)
+    local groupsToSpawn = param[1]
+    local rangeConfig = param[2]
+    local subRangeConfig = param[3]
+    local radioCommandSubRange = param[4]
+    for i = 1, #groupsToSpawn do
+        destroyGroup(groupsToSpawn[i])
+    end
+    MESSAGE:NewType(string.format("Remove the target site : %s-%s", rangeConfig.name, subRangeConfig.name),
+        MESSAGE.Type.Information):ToBlue()
+    radioCommandSubRange:RemoveSubMenus()
+
+    AddTargetsFunction(radioCommandSubRange, rangeConfig, subRangeConfig)
+end
+
+function smokeOnSubRange(param)
+    local groupsToSpawn = param[1]
+    for i = 1, #groupsToSpawn do
+        local group_name = string.format("%s", groupsToSpawn[i])
+        debug_msg(string.format("Smoke on group %s", group_name))
+        local dcs_groups = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
+        dcs_groups:ForEachGroupAlive(function(group_alive)
+            local list_units = group_alive:GetUnits()
+            local set_units_red = SET_UNIT:New()
+            local set_units_blue = SET_UNIT:New()
+            for index = 1, #list_units do
+                local unit_tmp = list_units[index]
+                if (unit_tmp:IsAlive() and unit_tmp:GetCoalition() == coalition.side.RED) then
+                    set_units_red:AddUnit(unit_tmp)
+                end
+            end
+            if (set_units_red:CountAlive() > 0) then
+                local unit_red_to_smoke = getMaxThreatUnit(set_units_red)
+                if (unit_red_to_smoke) then
+                    unit_red_to_smoke:SmokeRed()
+                    MESSAGE:NewType(string.format("[%s] Red smoke on : %s", group_alive:GetName(),
+                        unit_red_to_smoke:GetTypeName()), MESSAGE.Type.Overview):ToBlue()
+                end
+            elseif (set_units_blue:CountAlive() > 0) then
+                local unit_blue_to_smoke = getMaxThreatUnit(set_units_blue)
+                if (unit_blue_to_smoke) then
+                    unit_blue_to_smoke:SmokeRed()
+                    MESSAGE:NewType(string.format("[%s] Blue smoke on : %s", group_alive:GetName(),
+                        unit_blue_to_smoke:GetTypeName()), MESSAGE.Type.Overview):ToBlue()
+                end
+            end
+        end)
+    end
+end
+
+function giveToClientGroupCoordinates(param)
+    local groupsToSpawn = param[1]
+    for i = 1, #groupsToSpawn do
+        local group_name = string.format("%s", groupsToSpawn[i])
+        debug_msg(string.format("Coordinates of all groups with name prefix %s", group_name))
+        local dcs_groups = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
+        Set_CLIENT:ForEachClient(function(client)
+            if (client:IsActive()) then
+                debug_msg(string.format("For Client %s ", client:GetName()))
+                local coordinate_txt = ""
+                dcs_groups:ForEachGroupAlive(function(group_alive)
+                    debug_msg(string.format("Coordinates of the group %s", group_alive:GetName()))
+                    local coordinate = group_alive:GetCoordinate()
+                    local setting = _DATABASE:GetPlayerSettings(client:GetPlayerName())
+                    local coordinate_string = ""
+                    if (setting:IsA2G_LL_DDM()) then
+                        coordinate_string = coordinate:ToStringLLDDM(setting)
+                        debug_msg(string.format("%s IsA2G_LL_DDM", client:GetName()))
+                    elseif (setting:IsA2G_MGRS()) then
+                        coordinate_string = coordinate:ToStringMGRS(setting)
+                        debug_msg(string.format("%s IsA2G_MGRS", client:GetName()))
+                    elseif (setting:IsA2G_LL_DMS()) then
+                        coordinate_string = coordinate:ToStringLLDMS(setting)
+                        debug_msg(string.format("%s IsA2G_LL_DMS", client:GetName()))
+                    elseif (setting:IsA2G_BR()) then
+                        coordinate_string = coordinate:ToStringBR(client:GetCoordinate(), setting)
+                        debug_msg(string.format("%s IsA2G_BR", client:GetName()))
+                    end
+                    debug_msg(string.format("coordinate_txt [%s] : %s", group_alive:GetName(), coordinate_string))
+                    coordinate_txt = string.format("%s[%s] : %s\n", coordinate_txt, group_alive:GetName(),
+                        coordinate_string)
+                end)
+                debug_msg(string.format("Message to Client %s : %s", client:GetName(), coordinate_txt))
+                MESSAGE:NewType(coordinate_txt, MESSAGE.Type.Detailed):ToClient(client)
+            end
+        end)
+    end
+end
+
+function giveListOfGroupsAliveInRange(param)
+    local groupsToSpawn = param[1]
+    local rangeConfig = param[2]
+    local subRangeConfig = param[3]
+    debug_msg(string.format("List of groups in range %s-%s", rangeConfig.name, subRangeConfig.name))
+    local message = string.format("Targets groups in Range %s-%s :", rangeConfig.name, subRangeConfig.name)
+    for i = 1, #groupsToSpawn do
+        local group_name = string.format("%s", groupsToSpawn[i])
+        local dcs_groups = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
+        dcs_groups:ForEachGroupAlive(function(group_alive)
+            debug_msg(string.format("group %s", group_alive:GetName()))
+            message = string.format("%s %s | ", message, group_alive:GetName());
+        end)
+    end
+    Set_CLIENT:ForEachClient(function(client)
+        if (client:IsActive()) then
+            MESSAGE:NewType(message, MESSAGE.Type.Information):ToClient(client)
+        end
+    end)
+end
+
+function giveListOfUnitsAliveInGroup(param)
+    local groupsToSpawn = param[1]
+    local side = param[2]
+    local number_to_display = param[3]
+    for i = 2, #groupsToSpawn do
+        local group_name = string.format("%s", groupsToSpawn[i])
+        debug_msg(string.format("List of units of all groups with name prefix %s", group_name))
+        local dcs_groups = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
+        dcs_groups:ForEachGroupAlive(function(group_alive)
+            debug_msg(string.format("List of units of the group %s", group_alive:GetName()))
+            local info_unit_header = string.format("Units list of the group [%s]:", group_name)
+            Set_CLIENT:ForEachClient(function(client)
+                if (client:IsActive()) then
+                    MESSAGE:NewType(info_unit_header, MESSAGE.Type.Overview):ToClient(client)
+                end
+            end)
+            local list_units = group_alive:GetUnits()
+            local set_units = SET_UNIT:New()
+            for index = 1, #list_units do
+                local unit_tmp = list_units[index]
+                if (unit_tmp:IsAlive() and unit_tmp:GetCoalition() ~= side) then
+                    set_units:AddUnit(unit_tmp)
+                end
+            end
+            local increment = 0;
+            set_units:ForEachUnitPerThreatLevel(10, 0, function(unit_tmp)
+                if (increment < number_to_display) then
+                    local unit_life_pourcentage = (unit_tmp:GetLife() / (unit_tmp:GetLife0() + 1)) * 100
+                    local unit_coordinate = unit_tmp:GetCoordinate()
+                    local unit_altitude_m = unit_tmp:GetAltitude()
+                    local unit_coordinate_for_client = ""
+                    local unit_altitude_for_client = 0
+                    local unit_altitude_for_client_unit = ""
+                    Set_CLIENT:ForEachClient(function(client)
+                        if (client:IsActive()) then
+                            local setting = _DATABASE:GetPlayerSettings(client:GetPlayerName())
+                            unit_coordinate_for_client = ""
+                            if (setting:IsA2G_LL_DDM()) then
+                                unit_coordinate_for_client = unit_coordinate:ToStringLLDDM(setting)
+                            elseif (setting:IsA2G_MGRS()) then
+                                unit_coordinate_for_client = unit_coordinate:ToStringMGRS(setting)
+                            elseif (setting:IsA2G_LL_DMS()) then
+                                unit_coordinate_for_client = unit_coordinate:ToStringLLDMS(setting)
+                            elseif (setting:IsA2G_BR()) then
+                                unit_coordinate_for_client = unit_coordinate:ToStringBR(client:GetCoordinate(), setting)
+                            end
+                            if (setting:IsImperial()) then
+                                unit_altitude_for_client = UTILS.MetersToFeet(unit_altitude_m)
+                                unit_altitude_for_client_unit = "ft"
+                            elseif (setting:IsMetric()) then
+                                unit_altitude_for_client = unit_altitude_m
+                                unit_altitude_for_client_unit = "m"
+                            end
+                            local info_unit_tmp = string.format("[%i] %s (%i", unit_tmp:GetThreatLevel(),
+                                unit_tmp:GetTypeName(), unit_life_pourcentage) .. '%),\t' .. unit_coordinate_for_client ..
+                                                      string.format("\tAlt: %.0f%s", unit_altitude_for_client,
+                                    unit_altitude_for_client_unit)
+                            MESSAGE:NewType(info_unit_tmp, MESSAGE.Type.Overview):ToClient(client)
+                        end
+                    end)
+                    increment = increment + 1;
+                end
+            end)
+        end)
+    end
+end
+
+function markGroupOnMap(param)
+    local groupsToSpawn = param[1]
+    local side = param[2]
+    for i = 2, #groupsToSpawn do
+        local group_name = string.format("%s", groupsToSpawn[i])
+        debug_msg(string.format("Mark on map all groups with name prefix %s", group_name))
+        local dcs_groups = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
+        dcs_groups:ForEachGroupAlive(function(group_alive)
+            debug_msg(string.format("Mark on map the group %s", group_alive:GetName()))
+            local coordinate = group_alive:GetCoordinate()
+            map_marker[group_alive:GetName()] = coordinate:MarkToCoalition(group_alive:GetName(), side)
+        end)
+    end
+end
+
+function SpawnRanges(param)
+    local radioCommandSubRange = param[1]
+    local rangeConfig = param[2]
+    local rangeName = rangeConfig.name
+    local subRangeConfig = param[3]
+    local subRangeName = subRangeConfig.name
+    local groupsToSpawn = subRangeConfig.groupsToSpawn
+    local staticToSpawn = subRangeConfig.staticToSpawn
+    local holdFire = subRangeConfig.holdFire
+    local AI = subRangeConfig.AI
+
+    debug_msg(string.format("SpawnRanges : %s-%s", rangeName, subRangeName))
+    for i = 1, #groupsToSpawn do
+        local groupNameToSpawn = string.format("%s", groupsToSpawn[i])
+        if (GROUP:FindByName(groupNameToSpawn) ~= nil) then
+            local spawnGroup = SPAWN:New(groupNameToSpawn)
+            debug_msg(string.format("SPAWN %s", groupNameToSpawn))
+            local groupSpawning = spawnGroup:Spawn()
+            if (holdFire) then
+                groupSpawning:OptionROEHoldFire()
+            else
+                groupSpawning:OptionROEWeaponFree()
+            end
+            if (AI == true or AI == false) then
+                groupSpawning:SetAIOnOff(AI)
+            end
+            if (string.find(groupNameToSpawn, "SAM") ~= nil) then
+                sead:UpdateSet(groupNameToSpawn)
+                debug_msg(string.format("SEAD for %s", groupNameToSpawn))
+            end
+        else
+            debug_msg(string.format("GROUP to spawn %s not found in mission", groupNameToSpawn))
+        end
+    end
+
+    radioCommandSubRange:RemoveSubMenus()
+    local CommandZoneDetroy = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Delete", radioCommandSubRange,
+        deleteSubRangeUnits, {groupsToSpawn, rangeConfig, subRangeConfig, radioCommandSubRange})
+    local CommandZoneFumigene = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Smoke", radioCommandSubRange,
+        smokeOnSubRange, {groupsToSpawn})
+    local CommandZoneCoord = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Coordinates", radioCommandSubRange,
+        giveToClientGroupCoordinates, {groupsToSpawn})
+    local CommandZoneListGroup = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "List Groups", radioCommandSubRange,
+        giveListOfGroupsAliveInRange, {groupsToSpawn, rangeConfig, subRangeConfig})
+    local CommandZoneList = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "List Units", radioCommandSubRange,
+        giveListOfUnitsAliveInGroup, {groupsToSpawn, coalition.side.BLUE, 5})
+    MESSAGE:NewType(string.format("Targets in range %s in place", subRangeName), MESSAGE.Type.Information):ToBlue()
+    markGroupOnMap({groupsToSpawn, coalition.side.BLUE})
+end
+
+function AddTargetsFunction(radioCommandSubRange, rangeConfig, subRangeConfig)
+    local RadioCommandAdd = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Spawn", radioCommandSubRange, SpawnRanges,
+        {radioCommandSubRange, rangeConfig, subRangeConfig, AddTargetsFunction})
 end
 
 

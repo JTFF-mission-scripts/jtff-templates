@@ -15,6 +15,8 @@ function Set_CLIENT:OnEventPlayerEnterAircraft(EventData)
     if (EventData.IniGroup) then
         local clientSetting = SETTINGS:Set( EventData.IniPlayerName)
         clientSetting:SetImperial()
+        clientSetting:SetA2G_MGRS()
+        clientSetting:SetMenutextShort(true)
         debug_msg(string.format("Add Tanker Menu for group [%s], player name [%s]",EventData.IniGroupName , EventData.IniPlayerName))
         --local TankerMenu = MENU_GROUP:New( EventData.IniGroup, "Tanker Menu" )
         --MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", TankerMenu, NearestTankerInfo, { EventData.IniUnit, EventData.IniGroup}  )
@@ -877,5 +879,19 @@ for index, beaconconfig in ipairs(BeaconsConfig) do
                 beaconconfig.tacan.band,
                 beaconconfig.tacan.morse,
                 true)
+    end
+end
+
+
+-- *****************************************************************************
+--                     **                     RANGES                         **
+--                     *********************************************************
+
+mainRadioMenuForRanges   =  MENU_COALITION:New( coalition.side.BLUE , "RANGES" )
+for index, rangeConfig in ipairs(RangeConfig) do
+    local radioMenuForRange   =  MENU_COALITION:New( coalition.side.BLUE, rangeConfig.name ,   mainRadioMenuForRanges )
+    for index, subRangeConfig in ipairs(rangeConfig.subRange) do
+        local radioMenuSubRange     = MENU_COALITION:New(coalition.side.BLUE, subRangeConfig.name,   radioMenuForRange)
+        AddTargetsFunction(radioMenuSubRange, rangeConfig, subRangeConfig)
     end
 end
