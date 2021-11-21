@@ -15,6 +15,8 @@ function Set_CLIENT:OnEventPlayerEnterAircraft(EventData)
     if (EventData.IniGroup) then
         local clientSetting = SETTINGS:Set( EventData.IniPlayerName)
         clientSetting:SetImperial()
+        clientSetting:SetA2G_MGRS()
+        clientSetting:SetMenutextShort(true)
         debug_msg(string.format("Add Tanker Menu for group [%s], player name [%s]",EventData.IniGroupName , EventData.IniPlayerName))
         --local TankerMenu = MENU_GROUP:New( EventData.IniGroup, "Tanker Menu" )
         --MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", TankerMenu, NearestTankerInfo, { EventData.IniUnit, EventData.IniGroup}  )
@@ -877,5 +879,37 @@ for index, beaconconfig in ipairs(BeaconsConfig) do
                 beaconconfig.tacan.band,
                 beaconconfig.tacan.morse,
                 true)
+    end
+end
+
+
+-- *****************************************************************************
+--                     **                     RANGES                         **
+--                     *********************************************************
+
+RangeArray = {}
+compteur = 0
+mainRadioMenuForRangesBlue =  MENU_COALITION:New( coalition.side.BLUE , "RANGES" )
+mainRadioMenuForRangesRed =  MENU_COALITION:New( coalition.side.RED , "RANGES" )
+for index, rangeconfig in ipairs(RangeConfig) do
+    if rangeconfig.enable == true then
+        compteur = compteur + 1
+        env.info('creation Range : '.. rangeconfig.name..'...')
+        RangeArray[compteur] = {
+            customconfig = rangeconfig
+        }
+        if (rangeconfig.benefit_coalition == coalition.side.BLUE) then
+            local radioMenuForRange   =  MENU_COALITION:New( coalition.side.BLUE, rangeconfig.name , mainRadioMenuForRangesBlue)
+            for index, subRangeConfig in ipairs(rangeconfig.subRange) do
+                local radioMenuSubRange     = MENU_COALITION:New(rangeconfig.benefit_coalition, subRangeConfig.name,   radioMenuForRange)
+                AddTargetsFunction(radioMenuSubRange, rangeconfig, subRangeConfig)
+            end
+        else
+            local radioMenuForRange   =  MENU_COALITION:New( coalition.side.RED, rangeconfig.name , mainRadioMenuForRangesRed)
+            for index, subRangeConfig in ipairs(rangeconfig.subRange) do
+                local radioMenuSubRange     = MENU_COALITION:New(rangeconfig.benefit_coalition, subRangeConfig.name,   radioMenuForRange)
+                AddTargetsFunction(radioMenuSubRange, rangeconfig, subRangeConfig)
+            end
+        end
     end
 end
