@@ -413,8 +413,9 @@ end
 
 function smokeOnSubRange(param)
     local groupsToSpawn = param[1]
-    for i = 1, #groupsToSpawn do
-        local group_name = string.format("%s", groupsToSpawn[i])
+    local displayToCoalition = param[2]
+    for groupIndex = 1, #groupsToSpawn do
+        local group_name = string.format("%s", groupsToSpawn[groupIndex])
         debug_msg(string.format("Smoke on group %s", group_name))
         local dcs_groups = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
         dcs_groups:ForEachGroupAlive(function(group_alive)
@@ -432,14 +433,14 @@ function smokeOnSubRange(param)
                 if (unit_red_to_smoke) then
                     unit_red_to_smoke:SmokeRed()
                     MESSAGE:NewType(string.format("[%s] Red smoke on : %s", group_alive:GetName(),
-                        unit_red_to_smoke:GetTypeName()), MESSAGE.Type.Overview):ToBlue()
+                            unit_red_to_smoke:GetTypeName()), MESSAGE.Type.Overview):ToCoalition(displayToCoalition)
                 end
             elseif (set_units_blue:CountAlive() > 0) then
                 local unit_blue_to_smoke = getMaxThreatUnit(set_units_blue)
                 if (unit_blue_to_smoke) then
-                    unit_blue_to_smoke:SmokeRed()
+                    unit_blue_to_smoke:SmokeBlue()
                     MESSAGE:NewType(string.format("[%s] Blue smoke on : %s", group_alive:GetName(),
-                        unit_blue_to_smoke:GetTypeName()), MESSAGE.Type.Overview):ToBlue()
+                            unit_blue_to_smoke:GetTypeName()), MESSAGE.Type.Overview):ToCoalition(displayToCoalition)
                 end
             end
         end)
@@ -624,22 +625,22 @@ function SpawnRanges(param)
     end
 
     radioCommandSubRange:RemoveSubMenus()
-    local CommandZoneDetroy = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Delete", radioCommandSubRange,
+    local CommandZoneDetroy = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Delete", radioCommandSubRange,
         deleteSubRangeUnits, {groupsToSpawn, rangeConfig, subRangeConfig, radioCommandSubRange})
-    local CommandZoneFumigene = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Smoke", radioCommandSubRange,
-        smokeOnSubRange, {groupsToSpawn})
-    local CommandZoneCoord = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Coordinates", radioCommandSubRange,
+    local CommandZoneFumigene = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Smoke", radioCommandSubRange,
+        smokeOnSubRange, {groupsToSpawn, rangeConfig.benefit_coalition})
+    local CommandZoneCoord = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Coordinates", radioCommandSubRange,
         giveToClientGroupCoordinates, {groupsToSpawn})
-    local CommandZoneListGroup = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "List Groups", radioCommandSubRange,
+    local CommandZoneListGroup = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "List Groups", radioCommandSubRange,
         giveListOfGroupsAliveInRange, {groupsToSpawn, rangeConfig, subRangeConfig})
-    local CommandZoneList = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "List Units", radioCommandSubRange,
-        giveListOfUnitsAliveInGroup, {groupsToSpawn, coalition.side.BLUE, 5})
+    local CommandZoneList = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "List Units", radioCommandSubRange,
+        giveListOfUnitsAliveInGroup, {groupsToSpawn, rangeConfig.benefit_coalition, 5})
     MESSAGE:NewType(string.format("Targets in range %s(%s) in place", rangeName, subRangeName), MESSAGE.Type.Information):ToBlue()
-    markGroupOnMap({groupsToSpawn, coalition.side.BLUE})
+    markGroupOnMap({groupsToSpawn, rangeConfig.benefit_coalition})
 end
 
 function AddTargetsFunction(radioCommandSubRange, rangeConfig, subRangeConfig)
-    local RadioCommandAdd = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "Spawn", radioCommandSubRange, SpawnRanges,
+    local RadioCommandAdd = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Spawn", radioCommandSubRange, SpawnRanges,
         {radioCommandSubRange, rangeConfig, subRangeConfig, AddTargetsFunction})
 end
 
