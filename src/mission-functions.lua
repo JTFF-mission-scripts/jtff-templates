@@ -634,7 +634,7 @@ function SpawnRanges(param)
         giveListOfGroupsAliveInRange, {groupsToSpawn, rangeConfig, subRangeConfig})
     local CommandZoneList = MENU_COALITION_COMMAND:New(coalition.side.BLUE, "List Units", radioCommandSubRange,
         giveListOfUnitsAliveInGroup, {groupsToSpawn, coalition.side.BLUE, 5})
-    MESSAGE:NewType(string.format("Targets in range %s in place", subRangeName), MESSAGE.Type.Information):ToBlue()
+    MESSAGE:NewType(string.format("Targets in range %s(%s) in place", rangeName, subRangeName), MESSAGE.Type.Information):ToBlue()
     markGroupOnMap({groupsToSpawn, coalition.side.BLUE})
 end
 

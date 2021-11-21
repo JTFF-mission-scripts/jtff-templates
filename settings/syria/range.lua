@@ -25,15 +25,24 @@ RangeConfig = {{
 }, {
     name = "Paphos",
     subRange = {{
-        name = "siteSam",
-        groupsToSpawn = {"camion", "sa2"},
-        holdFire = true,
+        name = "Civilian vehicules",
+        groupsToSpawn = {"civil", "civil-1", "civil-2", "civil-3", "civil-4", "civil-5"}
+    }, {
+        name = "Air defense",
+        groupsToSpawn = {"AAA IR Paphos", "Vehicule Paphos"},
+        holdFire = false
+    }, {
+        name = "Parking Supply",
+        groupsToSpawn = {"Infantry Paphos", "SCUD Paphos", "Truck Paphos"},
         AI = false
     }, {
-        name = "cam",
-        groupsToSpawn = {"camion", "sa2"},
-        holdFire = true,
-        AI = false
+        name = "Convoy",
+        groupsToSpawn = {"Convoy Paphos"}
+    }, {
+        name = "Roadblock",
+        groupsToSpawn = {"Barrage Phalos nord def", "Barrage Phalos nord", "Barrage Phalos Nord est def-1",
+                         "Barrage Phalos Nord est", "Barrage Phalos est", "Barrage Phalos est def",
+                         "Barrage Phalos ouest def", "Barrage Phalos nord ouest"}
     }}
 }, {
     name = "Incirlik",
