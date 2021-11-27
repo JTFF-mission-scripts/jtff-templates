@@ -13,10 +13,13 @@ RangeConfig = {
             {
                 name = "Center",
                 groupsToSpawn = {"Humvee JTAC Akamas-1", "Compound Akamas", "Compound soldat", "Manpad Compound",
-                                 "Compound vehicule", "AAA Compound", "Compound vehicule civil", "BTR Compound",
-                                 "SAM SA6 Akamas"},
+                                 "Compound vehicule", "AAA Compound", "Compound vehicule civil", "BTR Compound"},
                 holdFire = true,
-                AI = false
+            },
+            {
+                name = "Center SAM",
+                groupsToSpawn = {"SAM SA6 Akamas"},
+                holdFire = false,
             },
             {
                 name = "Training Target",
@@ -28,6 +31,10 @@ RangeConfig = {
                 name = "SAM",
                 groupsToSpawn = {"SAM SA2 Akamas"},
                 holdFire = false
+            },
+            {
+                name = "Mobile Convoy",
+                groupsToSpawn = {"Akamas Convoy Mobile"},
             }
         }
     },
@@ -122,3 +129,43 @@ RangeConfig = {
         }
     }
 }
+
+RangeTrainingZone = {{
+    name = "Akamas",
+    enable = true,
+    targets = {{
+        type = "Strafepit",
+        unit_name = "Strafe Akamas",
+        foul_line = "Foul Line",
+        boxlength = 3000,
+        boxwidth = 300,
+        heading = nil,
+        inverseheading = true,
+        goodpass = 20
+    }, {
+        type = "Strafepit",
+        unit_name = "Strafe Akamas-2",
+        foul_line = "Foul Line-2",
+        boxlength = 3000,
+        boxwidth = 300,
+        heading = nil,
+        inverseheading = true,
+        goodpass = 20
+    }, {
+        type = "BombCircle",
+        unit_name = "Cercle B Akamas",
+        precision = 50
+    }, {
+        type = "BombCircle",
+        unit_name = "Cercle B Akamas-2",
+        precision = 50
+    }, {
+        type = "BombCircle",
+        unit_name = "Cercle A Akamas",
+        precision = 50
+    }, {
+        type = "BombCircle",
+        unit_name = "Cercle A Akamas-2",
+        precision = 50
+    }}
+}}
