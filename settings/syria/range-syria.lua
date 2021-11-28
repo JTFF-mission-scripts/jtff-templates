@@ -22,12 +22,6 @@ RangeConfig = {
                 holdFire = false,
             },
             {
-                name = "Training Target",
-                groupsToSpawn = {"Cercle Akamas", "Strafe Akamas"},
-                holdFire = true,
-                AI = false
-            },
-            {
                 name = "SAM",
                 groupsToSpawn = {"SAM SA2 Akamas"},
                 holdFire = false
@@ -74,12 +68,6 @@ RangeConfig = {
         enable = true,
         benefit_coalition = coalition.side.BLUE,
         subRange = {
-            {
-                name = "Training Area",
-                groupsToSpawn = {"Range INCIRLIK Target", "Range INCIRLIK Soft", "Range INCIRLIK Hard", "Range INCIRLIK JTAC"},
-                holdFire = true,
-                AI = false
-            },
             {
                 name = "Truck Line",
                 groupsToSpawn = {"RANGE °2", "RANGE °2-1"},
@@ -137,28 +125,19 @@ RangeTrainingZone = {{
         type = "Strafepit",
         unit_name = "Strafe Akamas",
         foul_line = "Foul Line",
-        boxlength = 3000,
-        boxwidth = 300,
-        heading = nil,
-        inverseheading = true,
-        goodpass = 20
-    }, {
-        type = "Strafepit",
-        unit_name = "Strafe Akamas-2",
-        foul_line = "Foul Line-2",
-        boxlength = 3000,
-        boxwidth = 300,
+        boxlength = 2000,
+        boxwidth = 200,
         heading = nil,
         inverseheading = true,
         goodpass = 20
     }, {
         type = "BombCircle",
         unit_name = "Cercle B Akamas",
-        precision = 50
+        precision = 30
     }, {
         type = "BombCircle",
         unit_name = "Cercle B Akamas-2",
-        precision = 50
+        precision = 30
     }, {
         type = "BombCircle",
         unit_name = "Cercle A Akamas",
@@ -168,4 +147,48 @@ RangeTrainingZone = {{
         unit_name = "Cercle A Akamas-2",
         precision = 50
     }}
+}, {
+    name = "Incirlik",
+    enable = true,
+    targets = {{
+        type = "Strafepit",
+        unit_name = "Range INCIRLIK Target-1",
+        foul_line = "Range INCIRLIK Target-3",
+        boxlength = 2000,
+        boxwidth = 200,
+        heading = nil,
+        inverseheading = true,
+        goodpass = 20
+    }, {
+        type = "Strafepit",
+        unit_name = "Range INCIRLIK Target-2",
+        foul_line = "Range INCIRLIK Target-4",
+        boxlength = 2000,
+        boxwidth = 200,
+        heading = nil,
+        inverseheading = true,
+        goodpass = 20
+    }, {
+        type = "BombCircle",
+        unit_name = "Ground-11-1",
+        precision = 30
+    }, {
+        type = "BombCircle",
+        unit_name = "Range INCIRLIK Circle-4",
+        precision = 30
+    }, {
+        type = "BombCircle",
+        unit_name = "Range INCIRLIK Circle-2",
+        precision = 50
+    }, {
+        type = "BombCircle",
+        unit_name = "Range INCIRLIK Circle-1",
+        precision = 50
+    }, {
+        type = "BombCircle",
+        unit_name = "Range INCIRLIK Circle-3",
+        precision = 50
+    }}
 }}
+
+
