@@ -118,77 +118,94 @@ RangeConfig = {
     }
 }
 
-RangeTrainingZone = {{
-    name = "Akamas",
-    enable = true,
-    targets = {{
-        type = "Strafepit",
-        unit_name = "Strafe Akamas",
-        foul_line = "Foul Line",
-        boxlength = 2000,
-        boxwidth = 200,
-        heading = nil,
-        inverseheading = true,
-        goodpass = 20
-    }, {
-        type = "BombCircle",
-        unit_name = "Cercle B Akamas",
-        precision = 30
-    }, {
-        type = "BombCircle",
-        unit_name = "Cercle B Akamas-2",
-        precision = 30
-    }, {
-        type = "BombCircle",
-        unit_name = "Cercle A Akamas",
-        precision = 50
-    }, {
-        type = "BombCircle",
-        unit_name = "Cercle A Akamas-2",
-        precision = 50
-    }}
-}, {
-    name = "Incirlik",
-    enable = true,
-    targets = {{
-        type = "Strafepit",
-        unit_name = "Range INCIRLIK Target-1",
-        foul_line = "Range INCIRLIK Target-3",
-        boxlength = 2000,
-        boxwidth = 200,
-        heading = nil,
-        inverseheading = true,
-        goodpass = 20
-    }, {
-        type = "Strafepit",
-        unit_name = "Range INCIRLIK Target-2",
-        foul_line = "Range INCIRLIK Target-4",
-        boxlength = 2000,
-        boxwidth = 200,
-        heading = nil,
-        inverseheading = true,
-        goodpass = 20
-    }, {
-        type = "BombCircle",
-        unit_name = "Ground-11-1",
-        precision = 30
-    }, {
-        type = "BombCircle",
-        unit_name = "Range INCIRLIK Circle-4",
-        precision = 30
-    }, {
-        type = "BombCircle",
-        unit_name = "Range INCIRLIK Circle-2",
-        precision = 50
-    }, {
-        type = "BombCircle",
-        unit_name = "Range INCIRLIK Circle-1",
-        precision = 50
-    }, {
-        type = "BombCircle",
-        unit_name = "Range INCIRLIK Circle-3",
-        precision = 50
-    }}
-}}
+TrainingRangeConfig = {
+    {
+        name = "Akamas",
+        enable = true,
+        targets = {
+            {
+                type = "Strafepit",
+                unit_name = "Strafe Akamas",
+                foul_line = "Foul Line",
+                boxlength = 2000,
+                boxwidth = 200,
+                heading = nil,
+                inverseheading = true,
+                goodpass = 20
+            },
+            {
+                type = "BombCircle",
+                unit_name = "Cercle B Akamas",
+                precision = 30
+            },
+            {
+                type = "BombCircle",
+                unit_name = "Cercle B Akamas-2",
+                precision = 30
+            },
+            {
+                type = "BombCircle",
+                unit_name = "Cercle A Akamas",
+                precision = 50
+            },
+            {
+                type = "BombCircle",
+                unit_name = "Cercle A Akamas-2",
+                precision = 50
+            }
+        }
+    },
+    {
+        name = "Incirlik",
+        enable = true,
+        targets = {
+            {
+                type = "Strafepit",
+                unit_name = "Range INCIRLIK Target-1",
+                foul_line = "Range INCIRLIK Target-3",
+                boxlength = 2000,
+                boxwidth = 200,
+                heading = nil,
+                inverseheading = true,
+                goodpass = 20
+            },
+            {
+                type = "Strafepit",
+                unit_name = "Range INCIRLIK Target-2",
+                foul_line = "Range INCIRLIK Target-4",
+                boxlength = 2000,
+                boxwidth = 200,
+                heading = nil,
+                inverseheading = true,
+                goodpass = 20
+            },
+            {
+                type = "BombCircle",
+                unit_name = "Ground-11-1",
+                precision = 30
+            },
+            {
+                type = "BombCircle",
+                unit_name = "Range INCIRLIK Circle-4",
+                precision = 30
+            },
+            {
+                type = "BombCircle",
+                unit_name = "Range INCIRLIK Circle-2",
+                precision = 50
+            },
+            {
+                type = "BombCircle",
+                unit_name = "Range INCIRLIK Circle-1",
+                precision = 50
+            },
+            {
+                type = "BombCircle",
+                unit_name = "Range INCIRLIK Circle-3",
+                precision = 50
+            }
+        }
+    }
+}
 
 

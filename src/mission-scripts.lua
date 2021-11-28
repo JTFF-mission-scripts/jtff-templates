@@ -914,19 +914,23 @@ for index, rangeconfig in ipairs(RangeConfig) do
     end
 end
 
-RangeTraining = {}
+-- *****************************************************************************
+--                     **                Training RANGES                      **
+--                     *********************************************************
+
+TrainingRangeArray = {}
 compteur = 0
-for index, rangeTraining in ipairs(RangeTrainingZone) do
-    if rangeTraining.enable == true then
+for index, traingingrangeconfig in ipairs(TrainingRangeConfig) do
+    if traingingrangeconfig.enable == true then
         compteur = compteur + 1
-        env.info('creation of Training Range : ' .. rangeTraining.name .. '...')
-        RangeTraining[compteur] = {
-            customconfig = rangeTraining
+        env.info('creation of Training Range : ' .. traingingrangeconfig.name .. '...')
+        TrainingRangeArray[compteur] = {
+            customconfig = traingingrangeconfig
         }
-        local trainingRange = RANGE:New(rangeTraining.name)
+        local trainingRange = RANGE:New(traingingrangeconfig.name)
         --local coord = COORDINATE:NewFromLLDD( 35.3, 32.16, 15)
         --trainingRange:SetRangeLocation(coord)
-        for index, subrangeTraining in ipairs(rangeTraining.targets) do
+        for index, subrangeTraining in ipairs(traingingrangeconfig.targets) do
             env.info('subrangeTraining type : ' .. subrangeTraining.type)
             if (subrangeTraining.type == "Strafepit") then
                 local fouldist = trainingRange:GetFoullineDistance(subrangeTraining.unit_name,
