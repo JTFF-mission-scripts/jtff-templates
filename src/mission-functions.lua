@@ -411,14 +411,46 @@ function deleteSubRangeUnits(param)
     AddTargetsFunction(radioCommandSubRange, rangeConfig, subRangeConfig)
 end
 
+function setROE(param)
+    local groupsToSpawn = param[1]
+    local ROEvalue = param[2]
+    for groupIndex = 1, #groupsToSpawn do
+        local group_name = string.format("%s", groupsToSpawn[groupIndex])
+        local dcs_groups = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
+        dcs_groups:ForEachGroupAlive(function(group_alive)
+            debug_msg(string.format("SET ROE of group %s at %i", group_alive:GetName(), ROEvalue))
+            if (ROEvalue ~= ENUMS.ROE.WeaponHold) then
+                group_alive:SetAIOn()
+            end
+            group_alive:OptionROE(ROEvalue)
+        end)
+    end
+end
+
+function setEngageAirWeapons(param)
+    local groupsToSpawn = param[1]
+    local value = param[2]
+    for groupIndex = 1, #groupsToSpawn do
+        local group_name = string.format("%s", groupsToSpawn[groupIndex])
+        local dcs_groups = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
+        dcs_groups:ForEachGroupAlive(function(group_alive)
+            debug_msg(string.format("SET Engage Air Weapons of group %s at %s", group_alive:GetName(), tostring(value)))
+            if (value) then
+                group_alive:SetAIOn()
+            end
+            group_alive:SetOption(AI.Option.Ground.id.ENGAGE_AIR_WEAPONS, value)
+        end)
+    end
+end
+
 function smokeOnSubRange(param)
     local groupsToSpawn = param[1]
     local displayToCoalition = param[2]
     for groupIndex = 1, #groupsToSpawn do
         local group_name = string.format("%s", groupsToSpawn[groupIndex])
-        debug_msg(string.format("Smoke on group %s", group_name))
         local dcs_groups = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
         dcs_groups:ForEachGroupAlive(function(group_alive)
+            debug_msg(string.format("Smoke on group %s", group_alive))
             local list_units = group_alive:GetUnits()
             local set_units_red = SET_UNIT:New()
             local set_units_blue = SET_UNIT:New()
@@ -598,7 +630,8 @@ function SpawnRanges(param)
     local groupsToSpawn = subRangeConfig.groupsToSpawn
     local staticToSpawn = subRangeConfig.staticToSpawn
     local holdFire = subRangeConfig.holdFire
-    local AI = subRangeConfig.AI
+    local engageAirWeapons = subRangeConfig.engageAirWeapons
+    local activateAI = subRangeConfig.AI
 
     debug_msg(string.format("SpawnRanges : %s-%s", rangeName, subRangeName))
     for i = 1, #groupsToSpawn do
@@ -610,10 +643,13 @@ function SpawnRanges(param)
             if (holdFire) then
                 groupSpawning:OptionROEHoldFire()
             else
-                groupSpawning:OptionROEWeaponFree()
+                groupSpawning:OptionROEOpenFire()
             end
-            if (AI == true or AI == false) then
-                groupSpawning:SetAIOnOff(AI)
+            if (engageAirWeapons) then
+                groupSpawning:SetOption(AI.Option.Ground.id.ENGAGE_AIR_WEAPONS, true)
+            end
+            if (activateAI == true or activateAI == false) then
+                groupSpawning:SetAIOnOff(activateAI)
             end
             if (string.find(groupNameToSpawn, "SAM") ~= nil) then
                 sead:UpdateSet(groupNameToSpawn)
@@ -627,15 +663,28 @@ function SpawnRanges(param)
     radioCommandSubRange:RemoveSubMenus()
     local CommandZoneDetroy = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Delete", radioCommandSubRange,
         deleteSubRangeUnits, {groupsToSpawn, rangeConfig, subRangeConfig, radioCommandSubRange})
+    local ROE = MENU_COALITION:New(rangeConfig.benefit_coalition, "ROE", radioCommandSubRange)
+    local ROEOpenFire = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Open Fire", ROE, setROE,
+        {groupsToSpawn, ENUMS.ROE.OpenFire})
+    local ROEReturnFire = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Return Fire", ROE, setROE,
+        {groupsToSpawn, ENUMS.ROE.ReturnFire})
+    local ROEHoldFire = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Hold Fire", ROE, setROE,
+        {groupsToSpawn, ENUMS.ROE.WeaponHold})
+    local Engage_Air_Weapons = MENU_COALITION:New(rangeConfig.benefit_coalition, "Engage Air Weapons", radioCommandSubRange)
+    local Engage_Air_Weapons_True = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "True", Engage_Air_Weapons, setEngageAirWeapons,
+        {groupsToSpawn, true})
+    local Engage_Air_Weapons_False = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "False", Engage_Air_Weapons, setEngageAirWeapons,
+        {groupsToSpawn, false})
     local CommandZoneFumigene = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Smoke", radioCommandSubRange,
         smokeOnSubRange, {groupsToSpawn, rangeConfig.benefit_coalition})
-    local CommandZoneCoord = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Coordinates", radioCommandSubRange,
-        giveToClientGroupCoordinates, {groupsToSpawn})
-    local CommandZoneListGroup = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "List Groups", radioCommandSubRange,
-        giveListOfGroupsAliveInRange, {groupsToSpawn, rangeConfig, subRangeConfig})
-    local CommandZoneList = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "List Units", radioCommandSubRange,
-        giveListOfUnitsAliveInGroup, {groupsToSpawn, rangeConfig.benefit_coalition, 5})
-    MESSAGE:NewType(string.format("Targets in range %s(%s) in place", rangeName, subRangeName), MESSAGE.Type.Information):ToBlue()
+    local CommandZoneCoord = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Coordinates",
+        radioCommandSubRange, giveToClientGroupCoordinates, {groupsToSpawn})
+    local CommandZoneListGroup = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "List Groups",
+        radioCommandSubRange, giveListOfGroupsAliveInRange, {groupsToSpawn, rangeConfig, subRangeConfig})
+    local CommandZoneList = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "List Units",
+        radioCommandSubRange, giveListOfUnitsAliveInGroup, {groupsToSpawn, rangeConfig.benefit_coalition, 5})
+    MESSAGE:NewType(string.format("Targets in range %s(%s) in place", rangeName, subRangeName), MESSAGE.Type.Information)
+        :ToBlue()
     markGroupOnMap({groupsToSpawn, rangeConfig.benefit_coalition})
 end
 
