@@ -48,26 +48,26 @@ AirBossConfig = {
     },
     {
         enable = true,
-        carriername = 'CSG-2 CVN-75',
-        alias = 'truman',
+        carriername = 'CSG-2 CVN-73',
+        alias = 'washington',
         coalition = 'blue',
         enable_menumarkzones = true,
         enable_menusmokezones = true,
         enable_niceguy = true,
         handleAI = true,
         tacan = {
-            channel = 75,
+            channel = 73,
             mode = 'X',
-            morse = 'TRU',
+            morse = 'WSN',
         },
         icls = {
-            channel = 11,
-            morse = 'TRULSO',
+            channel = 13,
+            morse = 'WSNLSO',
         },
         freq = {
-            base = 127.3,
-            marshall = 127.5,
-            lso = 127.4
+            base = 126.3,
+            marshall = 126.5,
+            lso = 126.4
         },
         infintepatrol = true,
         controlarea = 65,
@@ -83,8 +83,8 @@ AirBossConfig = {
             uturn = true
         },
         releayunit = {
-            marshall = 'MarshallRelay-75',
-            lso = 'LSORelay-75',
+            marshall = 'MarshallRelay-73',
+            lso = 'LSORelay-73',
         },
         singlecarrier = false,
         event_duration_minutes = 90,

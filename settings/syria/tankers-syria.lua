@@ -42,7 +42,7 @@ TankersConfig = {
         speed = 320,
         tacan = {
             channel = 105,
-            morse = 'SHL',
+            morse = 'SH2',
         },
         freq = 264.250,
         fuelwarninglevel = 35,
