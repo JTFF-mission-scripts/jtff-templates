@@ -1,0 +1,31 @@
+{
+  "name": "jtff-templates",
+  "version": "5.0.0-snapshot",
+  "description": "build jtff-template missions",
+  "main": "none",
+  "scripts": {
+    "test": "node src/nodejs/test.js",
+    "jtff-version": "node src/nodejs/jtff-version.js",
+    "build": "node src/nodejs/build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JTFF-mission-scripts/jtff-templates.git"
+  },
+  "author": "Sebastien LONGO",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/JTFF-mission-scripts/jtff-templates/issues"
+  },
+  "homepage": "https://github.com/JTFF-mission-scripts/jtff-templates#readme",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "fs": "^0.0.1-security",
+    "jszip": "^3.7.1",
+    "path": "^0.12.7",
+    "util": "^0.12.4"
+  },
+  "exports": [
+    "src/nodejs/jtff-version.js"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "general": {
+    "missionPrefix": "dist/Theatre",
+    "missionSuffix": "VIDE-JTFF-READY"
+  },
+  "missionTemplates": [
+    {
+      "theatre": "syria",
+      "prefix": "template"
+    },
+    {
+      "theatre": "persiangulf",
+      "prefix": "template"
+    },
+    {
+      "theatre": "mariana",
+      "prefix": "template"
+    }
+  ]
+}
