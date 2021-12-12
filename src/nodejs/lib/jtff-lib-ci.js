@@ -67,9 +67,14 @@ function mizUpdate(mizPath, copyPath, strTheatreSettings) {
             mizUpdateSrcLuaFiles(zip);
             mizUpdateSettingsLuaFiles(zip, strTheatreSettings);
             mizUpdateSoundFolders(zip);
-            zip
-                .generateNodeStream({type:'nodebuffer',streamFiles:true})
-                .pipe(fs.createWriteStream(copyPath? copyPath: mizPath))
+            zip.generateNodeStream({
+                type:'nodebuffer',
+                streamFiles:true,
+                compression: "DEFLATE",
+                compressionOptions: {
+                    level: 9
+                }
+            }).pipe(fs.createWriteStream(copyPath? copyPath: mizPath))
                 .on('finish', function () {
                     // JSZip generates a readable stream with a "end" event,
                     // but is piped here in a writable stream which emits a "finish" event.
