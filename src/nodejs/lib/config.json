@@ -1,7 +1,7 @@
 {
   "general": {
     "missionPrefix": "dist/Theatre",
-    "missionSuffix": "VIDE-JTFF-READY"
+    "missionSuffix": "JTFF"
   },
   "missionTemplates": [
     {
