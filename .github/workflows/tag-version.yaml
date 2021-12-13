@@ -1,9 +1,6 @@
 name: tag-version
 on:
   push:
-    branches:
-      - master
-      - feature/ci
     tags:
 jobs:
   build-mission-files:
