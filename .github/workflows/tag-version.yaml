@@ -10,6 +10,7 @@ jobs:
       - name: 'deploy CI scripts'
         run: npm install
       - name: 'force mission version'
+        if: github.ref == 'refs/heads/feature/ci'
         run: npm run jtff-version $GITHUB_REF_NAME
       - name: 'build missions'
         run: npm run build
