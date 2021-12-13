@@ -1,5 +1,5 @@
 const jtffci = require("./lib/jtff-lib-ci");
-const config = require("./lib/config.json");
+const config = require("../../config.json");
 
 // jtffci.copyMiz("Theatre_Syrien_VIDE_JTFF_READY.miz", "testcopy.miz");
 // jtffci.mizUpdateSettings("Theatre_Syrien_VIDE_JTFF_READY.miz", "testcopy.miz");

@@ -1,35 +1,23 @@
 "use strict";
 
-const { exec } = require("child_process");
 const jszip = require("jszip");
 const fs = require("fs");
 const path = require("path");
 const { promisify } = require('util');
 const lstat = promisify(fs.lstat);
+const config = require("../../../config.json");
 
-function getVersionFromPackageJson() {
-    return getVersionObject(require("../../../package.json").version);
+function getVersion() {
+    return getVersionObject(config.general.missionVersion);
 }
+
 function setVersionfromString(strVersion) {
     return setVersion(getVersionObject(strVersion))
 }
 function setVersion(versionObject) {
-    exec(
-        "npm pkg set version=\'"
-        + displayVersion(versionObject)
-        + "\'"
-        , (error, stdout, stderr) => {
-            if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                console.log(`stderr: ${stderr}`);
-                return;
-            }
-            console.log(`stdout: ${stdout}`);
-        });
-
+    config.general.missionVersion = displayVersion(versionObject);
+    let data = JSON.stringify(config, null, 4);
+    fs.writeFileSync("config.json", data);
 }
 function displayVersion(versionObject) {
     return [versionObject.major, versionObject.minor, versionObject.releaseSuffix ? versionObject.patch + '-' + versionObject.releaseSuffix : versionObject.patch].join('.')
@@ -133,7 +121,7 @@ async function copyMiz(srcMizPath, dstMizPath) {
 
 
 module.exports = {
-    getVersionFromPackageJson: getVersionFromPackageJson,
+    getVersion: getVersion,
     setVersionfromString: setVersionfromString,
     setVersion: setVersion,
     displayVersion: displayVersion,

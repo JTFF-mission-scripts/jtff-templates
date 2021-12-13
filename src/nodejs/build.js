@@ -1,6 +1,9 @@
 const jtffci = require("./lib/jtff-lib-ci");
-const config = require("./lib/config.json");
+const config = require("../../config.json");
+const fs = require("fs");
 
+
+fs.mkdirSync(config.general.missionFolder, { recursive: true });
 config.missionTemplates.forEach(missionTemplate => {
     jtffci.mizUpdate([
         missionTemplate.prefix,
@@ -8,13 +11,13 @@ config.missionTemplates.forEach(missionTemplate => {
         missionTemplate.theatre,
         ".miz"
     ].join(""), [
-        config.general.missionPrefix,
+        config.general.missionFolder+'/'+config.general.missionPrefix,
         '_',
         missionTemplate.theatre,
         '_',
         config.general.missionSuffix,
         '_',
-        jtffci.displayVersion(jtffci.getVersionFromPackageJson()),
+        jtffci.displayVersion(jtffci.getVersion()),
         ".miz"
     ].join(""),missionTemplate.theatre);
 });

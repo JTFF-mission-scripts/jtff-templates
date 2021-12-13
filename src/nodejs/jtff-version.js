@@ -5,6 +5,6 @@ if (process.argv.slice(2).length > 0 ) {
     jtffci.setVersionfromString(process.argv.slice(2)[0]);
 } else {
     console.log('getting version...');
-    console.log((jtffci.getVersionFromPackageJson()));
+    console.log((jtffci.getVersion()));
 }
 

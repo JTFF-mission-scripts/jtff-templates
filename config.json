@@ -1,0 +1,22 @@
+{
+    "general": {
+        "missionFolder": "dist",
+        "missionPrefix": "Theatre",
+        "missionSuffix": "JTFF",
+        "missionVersion": "5.0.0-snapshot"
+    },
+    "missionTemplates": [
+        {
+            "theatre": "syria",
+            "prefix": "template"
+        },
+        {
+            "theatre": "persiangulf",
+            "prefix": "template"
+        },
+        {
+            "theatre": "mariana",
+            "prefix": "template"
+        }
+    ]
+}
