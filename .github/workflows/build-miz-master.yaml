@@ -1,7 +1,10 @@
-name: tag-version
+name: build-miz-master
 on:
   push:
+    branches:
+      - master
     tags:
+      - "*"
 jobs:
   build-mission-files:
     runs-on: ubuntu-latest
@@ -10,7 +13,7 @@ jobs:
       - name: 'deploy CI scripts'
         run: npm install
       - name: 'force mission version'
-        if: github.ref == 'refs/heads/feature/ci'
+        if: contains(github.ref, 'refs/tags/')
         run: npm run jtff-version $GITHUB_REF_NAME
       - name: 'build missions'
         run: npm run build
@@ -19,4 +22,3 @@ jobs:
         with:
           name: missionFiles
           path: dist/*.miz
-

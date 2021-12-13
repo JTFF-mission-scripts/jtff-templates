@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - develop
+      - release/**
       - feature/**
 jobs:
   build-mission-files:
