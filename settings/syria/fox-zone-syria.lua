@@ -7,7 +7,9 @@ FoxRangesConfig= {
         --safeZoneGroupName = 'engage zone Red',
         --launchZoneGroupName = 'engage zone Red',
         debug = false,
-        missilemessages = false
+        f10Menu = false,
+        missileLaunchMessages = false,
+        missileDestruction = true
     },
     {
         name = '79th-South',
@@ -17,6 +19,8 @@ FoxRangesConfig= {
         --safeZoneGroupName = 'engage zone Red-1',
         --launchZoneGroupName = 'engage zone Red-1',
         debug = false,
-        missilemessages = false
+        f10Menu = false,
+        missileLaunchMessages = false,
+        missileDestruction = true
     }
 }

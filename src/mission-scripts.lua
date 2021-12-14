@@ -5,6 +5,52 @@ MenuCoalitionBlue = MENU_COALITION:New(coalition.side.BLUE, "My Coalition resour
 MenuCoalitionRed = MENU_COALITION:New(coalition.side.RED, "My Coalition resources")
 
 -- *****************************************************************************
+--                     **                    Set_Client                       **
+--                     *********************************************************
+Set_CLIENT = SET_CLIENT:New():FilterOnce()
+Set_CLIENT:HandleEvent(EVENTS.Refueling)
+Set_CLIENT:HandleEvent(EVENTS.RefuelingStop)
+Set_CLIENT:HandleEvent(EVENTS.PlayerEnterAircraft)
+function Set_CLIENT:OnEventPlayerEnterAircraft(EventData)
+    if (EventData.IniGroup) then
+        local clientSetting = SETTINGS:Set( EventData.IniPlayerName)
+        clientSetting:SetImperial()
+        clientSetting:SetA2G_MGRS()
+        clientSetting:SetMenutextShort(true)
+        debug_msg(string.format("Add Tanker Menu for group [%s], player name [%s]",EventData.IniGroupName , EventData.IniPlayerName))
+        --local TankerMenu = MENU_GROUP:New( EventData.IniGroup, "Tanker Menu" )
+        --MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", TankerMenu, NearestTankerInfo, { EventData.IniUnit, EventData.IniGroup}  )
+        --MENU_GROUP_COMMAND:New( EventData.IniGroup, "All Tankers Info", TankerMenu, AllTankersInfo, {EventData.IniUnit,EventData.IniGroup} )
+        if EventData.IniUnit:GetCoalition() == coalition.side.BLUE then
+            MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", MenuCoalitionTankerBlue, NearestTankerInfo, { EventData.IniUnit, EventData.IniGroup}  )
+            MENU_GROUP_COMMAND:New( EventData.IniGroup, "All Tankers Info", MenuCoalitionTankerBlue, AllTankersInfo, {EventData.IniUnit,EventData.IniGroup} )
+        else
+            MENU_GROUP_COMMAND:New( EventData.IniGroup, "Nearest Tanker Info", MenuCoalitionTankerRed, NearestTankerInfo, { EventData.IniUnit, EventData.IniGroup}  )
+            MENU_GROUP_COMMAND:New( EventData.IniGroup, "All Tankers Info", MenuCoalitionTankerRed, AllTankersInfo, {EventData.IniUnit,EventData.IniGroup} )
+        end
+        local GroupMenu = MENU_GROUP:New( EventData.IniGroup, "My settings" )
+        debug_msg(string.format("Add Immortal Menu for group [%s], player name [%s]",EventData.IniGroupName , EventData.IniPlayerName))
+        BASE:SetState( EventData.IniGroup, "isImmortal", false )
+        MENU_GROUP_COMMAND:New( EventData.IniGroup, "Switch immortal status", GroupMenu, switchGroupImmortalStatus, EventData.IniGroup )
+    end 
+end
+function Set_CLIENT:OnEventRefueling(EventData)
+    if (EventData.IniGroup) then
+        local client = CLIENT:Find(EventData.IniDCSUnit)
+        local clientFuel = EventData.IniUnit:GetTemplateFuel()
+        debug_msg(string.format("[%s] Start to refuel at the tanker %[s], current fuel : %.0f Kg",EventData.IniPlayerName , EventData.TgtUnitName, clientFuel))
+        BASE:SetState( client, "Fuel", clientFuel )
+    end
+end
+function Set_CLIENT:OnEventRefuelingStop(EventData)
+    if (EventData.IniGroup) then
+        local client = CLIENT:Find(EventData.IniDCSUnit)
+        local clientFuelTaken = EventData.IniUnit:GetTemplateFuel() - BASE:GetState(client,"Fuel")
+        debug_msg(string.format("[%s] Stop to refuel at the tanker %[s], taken %.0f Kg",EventData.IniPlayerName , EventData.TgtUnitName, clientFuelTaken))
+    end
+end
+
+-- *****************************************************************************
 --                     **                     Tankers                         **
 --                     *********************************************************
 tankersArray = {}
@@ -740,10 +786,10 @@ for index, foxzoneconfig in ipairs(FoxRangesConfig) do
         local objFoxZone = FOX:New()
         objFoxZone:SetExplosionPower(0.01)
                   :SetExplosionDistance(100)
-                  :SetDefaultMissileDestruction(true)
-                  :SetDefaultLaunchAlerts(foxzoneconfig.missilemessages)
+                  :SetExplosionDistanceBigMissiles(150)
+                  :SetDefaultMissileDestruction(foxzoneconfig.missileDestruction)
+                  :SetDefaultLaunchAlerts(foxzoneconfig.missileLaunchMessages)
                   :SetDefaultLaunchMarks(false)
-                  :SetDefaultMissileDestruction(true)
         if foxzoneconfig.launchZoneGroupName then
             objFoxZone.objLaunchZone = ZONE_POLYGON:New(
                     'FOX_LAUNCH_ZONE_'..foxzoneconfig.name,
@@ -771,8 +817,46 @@ for index, foxzoneconfig in ipairs(FoxRangesConfig) do
         if foxzoneconfig.debug then
             objFoxZone:SetDebugOn()
         end
-        objFoxZone.menudisabled = false
+        objFoxZone.menudisabled = foxzoneconfig.f10Menu == false
+        objFoxZone:SetDisableF10Menu(objFoxZone.menudisabled)
         objFoxZone.customconfig = foxzoneconfig
+
+        -- **** Message to client *****
+        function objFoxZone:OnAfterEnterSafeZone(From, Event, To, player)
+            local message = '[' .. player.name .. '] You\'re entering in the missile trainer area ' .. foxzoneconfig.name
+            MESSAGE:NewType(message, MESSAGE.Type.Overview):ToClient(player.client)
+        end
+
+        function objFoxZone:OnAfterExitSafeZone(From, Event, To, player)
+            local message = '[' .. player.name .. '] You\'re leaving the missile trainer area ' .. foxzoneconfig.name
+            MESSAGE:NewType(message, MESSAGE.Type.Overview):ToClient(player.client)
+        end
+        
+        function objFoxZone:OnAfterMissileDestroyed(From, Event, To, missile)
+            local unitTargeted = missile.targetUnit -- #Wrapper.Unit#UNIT
+            local playerTargeted = missile.targetPlayer -- #FOX.PlayerData
+            local unitShooter = missile.shooterUnit -- #Wrapper.Unit#UNIT
+            local missileType = missile.missileType -- string
+            local missileName = missile.missileName -- string
+
+            local playerNameTargeted = playerTargeted.name -- string
+            local clientShooter = CLIENT:Find(unitShooter:GetDCSObject(), '', false)
+            local message = ''
+            if (clientShooter) then
+                local playerNameShooter = clientShooter:GetPlayerName()
+                message = playerNameTargeted .. ' HAVE BEEN SHOOT BY ' .. playerNameShooter
+            else
+                message = playerNameTargeted .. ' HAVE BEEN SHOOT BY ' .. unitShooter:GetName()
+            end
+            debug_msg(message)
+            Set_CLIENT:ForEachClientInZone(objFoxZone.objSafeZone, function(clientInZone)
+                if clientInZone:IsAlive() then
+                    MESSAGE:NewType(message, MESSAGE.Type.Update):ToClient(clientInZone)
+                end
+            end)
+        end
+        -- *****************************
+
         FoxRangesArray[compteur] = objFoxZone
         FoxRangesArray[compteur]:Start()
     end
@@ -795,5 +879,71 @@ for index, beaconconfig in ipairs(BeaconsConfig) do
                 beaconconfig.tacan.band,
                 beaconconfig.tacan.morse,
                 true)
+    end
+end
+
+
+-- *****************************************************************************
+--                     **                     RANGES                         **
+--                     *********************************************************
+
+RangeArray = {}
+compteur = 0
+mainRadioMenuForRangesBlue =  MENU_COALITION:New( coalition.side.BLUE , "RANGES" )
+mainRadioMenuForRangesRed =  MENU_COALITION:New( coalition.side.RED , "RANGES" )
+for index, rangeconfig in ipairs(RangeConfig) do
+    if rangeconfig.enable == true then
+        compteur = compteur + 1
+        env.info('creation Range : '.. rangeconfig.name..'...')
+        RangeArray[compteur] = {
+            customconfig = rangeconfig
+        }
+        if (rangeconfig.benefit_coalition == coalition.side.BLUE) then
+            local radioMenuForRange   =  MENU_COALITION:New( coalition.side.BLUE, rangeconfig.name , mainRadioMenuForRangesBlue)
+            for index, subRangeConfig in ipairs(rangeconfig.subRange) do
+                local radioMenuSubRange     = MENU_COALITION:New(rangeconfig.benefit_coalition, subRangeConfig.name,   radioMenuForRange)
+                AddTargetsFunction(radioMenuSubRange, rangeconfig, subRangeConfig)
+            end
+        else
+            local radioMenuForRange   =  MENU_COALITION:New( coalition.side.RED, rangeconfig.name , mainRadioMenuForRangesRed)
+            for index, subRangeConfig in ipairs(rangeconfig.subRange) do
+                local radioMenuSubRange     = MENU_COALITION:New(rangeconfig.benefit_coalition, subRangeConfig.name,   radioMenuForRange)
+                AddTargetsFunction(radioMenuSubRange, rangeconfig, subRangeConfig)
+            end
+        end
+    end
+end
+
+-- *****************************************************************************
+--                     **                Training RANGES                      **
+--                     *********************************************************
+
+TrainingRangeArray = {}
+compteur = 0
+for index, traingingrangeconfig in ipairs(TrainingRangeConfig) do
+    if traingingrangeconfig.enable == true then
+        compteur = compteur + 1
+        env.info('creation of Training Range : ' .. traingingrangeconfig.name .. '...')
+        TrainingRangeArray[compteur] = {
+            customconfig = traingingrangeconfig
+        }
+        local trainingRange = RANGE:New(traingingrangeconfig.name)
+        --local coord = COORDINATE:NewFromLLDD( 35.3, 32.16, 15)
+        --trainingRange:SetRangeLocation(coord)
+        for index, subrangeTraining in ipairs(traingingrangeconfig.targets) do
+            env.info('subrangeTraining type : ' .. subrangeTraining.type)
+            if (subrangeTraining.type == "Strafepit") then
+                local fouldist = trainingRange:GetFoullineDistance(subrangeTraining.unit_name,
+                    subrangeTraining.foul_line)
+                env.info('Add strafe pit : ' .. subrangeTraining.unit_name)
+                trainingRange:AddStrafePit(subrangeTraining.unit_name, subrangeTraining.boxlength,
+                    subrangeTraining.boxwidth, subrangeTraining.heading, subrangeTraining.inverseheading,
+                    subrangeTraining.goodpass, fouldist)
+            elseif (subrangeTraining.type == "BombCircle") then
+                env.info('Add bombing target : ' .. subrangeTraining.unit_name)
+                trainingRange:AddBombingTargets(subrangeTraining.unit_name, subrangeTraining.precision)
+            end
+        end
+        trainingRange:Start()
     end
 end

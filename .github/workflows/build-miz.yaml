@@ -1,0 +1,21 @@
+name: build-miz
+on:
+  push:
+    branches:
+      - develop
+      - release/**
+      - feature/**
+jobs:
+  build-mission-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'deploy CI scripts'
+        run: npm install
+      - name: 'build missions'
+        run: npm run build
+      - name: 'stores mission files'
+        uses: actions/upload-artifact@v2
+        with:
+          name: missionFiles
+          path: dist/*.miz
