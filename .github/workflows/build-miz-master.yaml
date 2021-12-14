@@ -20,7 +20,7 @@ jobs:
           git config user.email github-actions@github.com
           git add .
           git commit -m "skip(ci): freeze version"
-          git push origin HEAD:<name-of-remote-branch>
+          git push origin HEAD:master
       - name: 'build missions'
         run: npm run build
       - name: 'stores mission files'
