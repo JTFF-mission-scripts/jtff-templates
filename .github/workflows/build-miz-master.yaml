@@ -4,7 +4,7 @@ on:
     branches:
       - master
     tags:
-      - "*"
+      - "*.*.*"
 jobs:
   build-mission-files:
     runs-on: ubuntu-latest
@@ -13,7 +13,7 @@ jobs:
       - name: 'deploy CI scripts'
         run: npm install
       - name: 'force mission version'
-        if: contains(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           npm run jtff-version $GITHUB_REF_NAME
           git config user.name github-actions
@@ -23,6 +23,12 @@ jobs:
           git push origin HEAD:master
       - name: 'build missions'
         run: npm run build
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            dist/*.miz
       - name: 'stores mission files'
         uses: actions/upload-artifact@v2
         with:
