@@ -14,7 +14,13 @@ jobs:
         run: npm install
       - name: 'force mission version'
         if: contains(github.ref, 'refs/tags/')
-        run: npm run jtff-version $GITHUB_REF_NAME
+        run: |
+          npm run jtff-version $GITHUB_REF_NAME
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "skip(ci): freeze version"
+          git push
       - name: 'build missions'
         run: npm run build
       - name: 'stores mission files'
