@@ -20,4 +20,19 @@ config.missionTemplates.forEach(missionTemplate => {
         jtffci.displayVersion(jtffci.getVersion()),
         ".miz"
     ].join(""),missionTemplate.theatre);
+    publicationConfig = {
+        theatre: missionTemplate.theatre,
+        mizFiles: [
+            config.general.missionFolder+'/'+config.general.missionPrefix,
+            '_',
+            missionTemplate.theatre,
+            '_',
+            config.general.missionSuffix,
+            '_',
+            jtffci.displayVersion(jtffci.getVersion()),
+            ".miz"
+        ].join(""),
+        gdriveFolder: missionTemplate.destFolderId
+    };
+    fs.writeFileSync(config.general.missionFolder+'/'+missionTemplate.theatre+'.pub.json', JSON.stringify(publicationConfig, null, 4));
 });

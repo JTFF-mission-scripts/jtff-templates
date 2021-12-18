@@ -3,20 +3,29 @@
         "missionFolder": "dist",
         "missionPrefix": "Theatre",
         "missionSuffix": "JTFF",
-        "missionVersion": "5.8.0"
+        "missionVersion": "5.0.0-snapshot"
+    },
+    "google": {
+        "scopes": [
+            "https://www.googleapis.com/auth/drive"
+        ],
+        "tokenPath": "dist/gtoken.json"
     },
     "missionTemplates": [
         {
             "theatre": "syria",
-            "prefix": "template"
+            "prefix": "template",
+            "destFolderId": "15CrplYJsmv8GNu2obuX-TuCWLrUff1NS"
         },
         {
             "theatre": "persiangulf",
-            "prefix": "template"
+            "prefix": "template",
+            "destFolderId": "10l2tL2yTUs_h6LxDurjM_VEANmBgwo31"
         },
         {
             "theatre": "mariana",
-            "prefix": "template"
+            "prefix": "template",
+            "destFolderId": "1OgCy3jyDKw9FRxpDL09XyeTBy-DZZL6R"
         }
     ]
 }

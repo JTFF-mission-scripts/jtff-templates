@@ -2,7 +2,8 @@ name: build-miz
 on:
   push:
     branches:
-      - develop
+      - 'develop'
+      - 'release/*.*.*'
 jobs:
   build-mission-files:
     runs-on: ubuntu-latest
@@ -10,10 +11,22 @@ jobs:
       - uses: actions/checkout@v2
       - name: 'deploy CI scripts'
         run: npm install
+      - id: getConfig
+        run: |
+          echo "::set-output name=config::$(jq -rc . config.json)\n"
+      - name: 'set RC version'
+        if: startsWith(github.ref, 'refs/heads/release/')
+        run: |
+          npm run jtff-version ${{ fromJson(steps.getConfig.outputs.config).general.missionVersion }}$GITHUB_RUN_NUMBER
+      - name: 'set snapshot version'
+        if: startsWith(github.ref, 'refs/heads/develop')
+        run: |
+          npm run jtff-version ${{ fromJson(steps.getConfig.outputs.config).general.missionVersion }}$GITHUB_RUN_NUMBER
       - name: 'build missions'
-        run: npm run build
-      - name: 'stores mission files'
-        uses: actions/upload-artifact@v2
-        with:
-          name: missionFiles
-          path: dist/*.miz
+        run: |
+          npm run build
+      - name: 'publish generated files'
+        env:
+          GDRIVE_TOKEN_CACHE_JSON: ${{ secrets.GDRIVE_TOKEN_CACHE_JSON }}
+        run: |
+          npm run jtff-publish
