@@ -27,7 +27,7 @@ jobs:
       - name: 'build missions'
         run: npm run build
       - name: 'Tag version'
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        if: !(startsWith(github.ref, 'refs/tags/'))
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
@@ -43,9 +43,8 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git checkout develop
-          git pull
           git merge --no-ff master
           npm run jtff-nextversion
           git add .
-          git commit -am "skip(ci): prepare next version"
-          git push origin develop
+          git commit -m "skip(ci): prepare next version"
+          git push origin HEAD:develop
