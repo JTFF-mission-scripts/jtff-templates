@@ -47,5 +47,5 @@ jobs:
           git merge --no-ff master
           npm run jtff-nextversion
           git add .
-          git commit -m "skip(ci): prepare next version"
+          git commit -am "skip(ci): prepare next version"
           git push origin develop
