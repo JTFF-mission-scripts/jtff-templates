@@ -38,12 +38,19 @@ jobs:
         with:
           name: missionFiles
           path: dist/*.miz
+      - name: 'Merge master -> develop'
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: master
+          target_branch: develop
+          github_token: ${{ github.token }}
       - name: 'Prepare next version'
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git checkout develop
-          git merge --no-ff master
+          git pull
           npm run jtff-nextversion
           git add .
           git commit -m "skip(ci): prepare next version"
