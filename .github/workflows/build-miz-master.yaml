@@ -33,11 +33,11 @@ jobs:
           git config user.email github-actions@github.com
           git tag `jq -r .general.missionVersion config.json`
           git push origin HEAD:master --tags
-      - name: 'stores mission files'
-        uses: actions/upload-artifact@v2
-        with:
-          name: missionFiles
-          path: dist/*.miz
+      - name: 'publish generated files'
+        env:
+          GDRIVE_TOKEN_CACHE_JSON: ${{ secrets.GDRIVE_TOKEN_CACHE_JSON }}
+        run: |
+          npm run jtff-publish
       - name: 'Merge master -> develop'
         uses: devmasx/merge-branch@master
         with:
