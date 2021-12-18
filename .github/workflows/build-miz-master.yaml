@@ -45,12 +45,13 @@ jobs:
           from_branch: master
           target_branch: develop
           github_token: ${{ github.token }}
+      - uses: actions/checkout@v2
+        with:
+          ref: develop
       - name: 'Prepare next version'
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git checkout develop
-          git pull
           npm run jtff-nextversion
           git add .
           git commit -m "skip(ci): prepare next version"
