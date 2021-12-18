@@ -23,7 +23,7 @@ jobs:
           git config user.email github-actions@github.com
           git add .
           git commit -m "skip(ci): freeze version"
-          git push origin HEAD:master
+          git push origin master
       - name: 'build missions'
         run: npm run build
       - name: 'Tag version'
