@@ -6,6 +6,8 @@
   "scripts": {
     "test": "node src/nodejs/test.js",
     "jtff-version": "node src/nodejs/jtff-version.js",
+    "jtff-release": "node src/nodejs/release.js",
+    "jtff-nextversion": "node src/nodejs/prepare-nextversion.js",
     "build": "node src/nodejs/build.js",
     "clean": "node src/nodejs/clean.js"
   },
