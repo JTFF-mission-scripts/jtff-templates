@@ -3,7 +3,7 @@
         "missionFolder": "dist",
         "missionPrefix": "Theatre",
         "missionSuffix": "JTFF",
-        "missionVersion": "5.3.0"
+        "missionVersion": "5.4.0-snapshot"
     },
     "missionTemplates": [
         {
