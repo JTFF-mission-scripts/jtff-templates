@@ -10,6 +10,7 @@
     "jtff-nextversion": "node src/nodejs/prepare-nextversion.js",
     "jtff-getmiz": "node src/nodejs/get-mizfiles.js",
     "jtff-publish": "node src/nodejs/publish.js",
+    "jtff-template": "node src/nodejs/template-update.js",
     "build": "node src/nodejs/build.js",
     "clean": "node src/nodejs/clean.js"
   },

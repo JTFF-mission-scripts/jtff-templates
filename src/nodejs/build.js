@@ -4,8 +4,8 @@ const fs = require("fs");
 
 
 fs.mkdirSync(config.general.missionFolder, { recursive: true });
-config.missionTemplates.forEach(missionTemplate => {
-    jtffci.mizUpdate([
+config.missionTemplates.forEach(async missionTemplate => {
+    await jtffci.mizUpdate([
         missionTemplate.prefix,
         '_',
         missionTemplate.theatre,

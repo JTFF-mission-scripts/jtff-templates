@@ -48,30 +48,25 @@ function nextPatch(versionObject) {
     newVersionObject.patch = newVersionObject.patch + 1;
     return newVersionObject;
 }
-function mizUpdate(mizPath, copyPath, strTheatreSettings) {
+async function mizUpdate(mizPath, copyPath, strTheatreSettings) {
     var MizFile = new jszip();
-    fs.readFile(mizPath, function(err, mizData) {
-        if (err) throw err;
-        MizFile.loadAsync(mizData).then(async function (zip) {
-            mizUpdateSrcLuaFiles(zip);
-            mizUpdateSettingsLuaFiles(zip, strTheatreSettings);
-            mizUpdateSoundFolders(zip);
-            zip.generateNodeStream({
-                type:'nodebuffer',
-                streamFiles:true,
-                compression: "DEFLATE",
-                compressionOptions: {
-                    level: 9
-                }
-            }).pipe(fs.createWriteStream(copyPath? copyPath: mizPath))
-                .on('finish', function () {
-                    // JSZip generates a readable stream with a "end" event,
-                    // but is piped here in a writable stream which emits a "finish" event.
-                    console.log((copyPath? copyPath: mizPath) + " written.");
-                });
-        });
+    const mizData = fs.readFileSync(mizPath);
+    const zip = await MizFile.loadAsync(mizData);
+    mizUpdateSrcLuaFiles(zip);
+    mizUpdateSettingsLuaFiles(zip, strTheatreSettings);
+    mizUpdateSoundFolders(zip);
+    await zip.generateAsync({
+        type:'nodebuffer',
+        streamFiles:true,
+        compression: "DEFLATE",
+        compressionOptions: {
+            level: 9
+        }
+    }).then(inputZip => {
+        fs.writeFileSync(copyPath? copyPath: mizPath, inputZip);
     });
 }
+
 function mizUpdateLuaFile(zip, filePath) {
     zip.remove("l10n/DEFAULT/" + path.basename(filePath));
     var stream = fs.createReadStream(filePath);
