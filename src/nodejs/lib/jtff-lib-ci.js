@@ -53,6 +53,7 @@ async function mizUpdate(mizPath, copyPath, strTheatreSettings) {
     const mizData = fs.readFileSync(mizPath);
     const zip = await MizFile.loadAsync(mizData);
     mizUpdateSrcLuaFiles(zip);
+    mizUpdateLibLuaFiles(zip);
     mizUpdateSettingsLuaFiles(zip, strTheatreSettings);
     mizUpdateSoundFolders(zip);
     await zip.generateAsync({
@@ -79,6 +80,14 @@ function mizUpdateSrcLuaFiles(zip) {
         mizUpdateLuaFile(zip, "src/" + file);
     };
 }
+
+function mizUpdateLibLuaFiles(zip) {
+    for (let file of fs.readdirSync('lib').filter( file => file.endsWith(".lua"))) {
+        console.log('updating lib/' + file + ' file in miz file');
+        mizUpdateLuaFile(zip, "lib/" + file);
+    };
+}
+
 function mizUpdateSettingsLuaFiles(zip, strTheatre) {
     for (let file of fs.readdirSync('settings/'+strTheatre).filter( file => file.endsWith(".lua"))) {
         console.log('updating settings/'+strTheatre+'/' + file + ' file in miz file');
