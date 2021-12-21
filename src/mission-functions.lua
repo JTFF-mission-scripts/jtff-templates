@@ -404,7 +404,7 @@ function deleteSubRangeUnits(param)
     for i = 1, #groupsToSpawn do
         destroyGroup(groupsToSpawn[i])
     end
-    MESSAGE:NewType(string.format("Remove the target site : %s-%s", rangeConfig.name, subRangeConfig.name),
+    MESSAGE:NewType(string.format("Remove the site : %s-%s", rangeConfig.name, subRangeConfig.name),
         MESSAGE.Type.Information):ToBlue()
     radioCommandSubRange:RemoveSubMenus()
 
@@ -639,7 +639,12 @@ function SpawnRanges(param)
         if (GROUP:FindByName(groupNameToSpawn) ~= nil) then
             local spawnGroup = SPAWN:New(groupNameToSpawn)
             debug_msg(string.format("SPAWN %s", groupNameToSpawn))
-            local groupSpawning = spawnGroup:Spawn()
+            local groupSpawning
+            if (subRangeConfig.spawnZone) then
+                groupSpawning = spawnGroup:SpawnInZone(ZONE:New(subRangeConfig.spawnZone),true)
+            else
+                groupSpawning = spawnGroup:Spawn()
+            end
             if (holdFire) then
                 groupSpawning:OptionROEHoldFire()
             else
@@ -683,14 +688,82 @@ function SpawnRanges(param)
         radioCommandSubRange, giveListOfGroupsAliveInRange, {groupsToSpawn, rangeConfig, subRangeConfig})
     local CommandZoneList = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "List Units",
         radioCommandSubRange, giveListOfUnitsAliveInGroup, {groupsToSpawn, rangeConfig.benefit_coalition, 5})
-    MESSAGE:NewType(string.format("Targets in range %s(%s) in place", rangeName, subRangeName), MESSAGE.Type.Information)
+    MESSAGE:NewType(string.format("Units in range %s(%s) in place", rangeName, subRangeName), MESSAGE.Type.Information)
         :ToBlue()
     markGroupOnMap({groupsToSpawn, rangeConfig.benefit_coalition})
 end
 
+function SpawnFacRanges(param)
+    local radioCommandSubRange = param[1]
+    local facRangeConfig = param[2]
+    local facRangeName = facRangeConfig.name
+    local facSubRangeConfig = param[3]
+    local facSubRangeName = facSubRangeConfig.name
+    local groupsToSpawn = facSubRangeConfig.groupsToSpawn
+    local staticToSpawn = facSubRangeConfig.staticToSpawn
+
+    debug_msg(string.format("SpawnFacRanges : %s-%s", facRangeName, facSubRangeName))
+    for i = 1, #groupsToSpawn do
+        local groupNameToSpawn = string.format("%s", groupsToSpawn[i])
+        if (GROUP:FindByName(groupNameToSpawn) ~= nil) then
+            local spawnGroup = SPAWN:New(groupNameToSpawn)
+            debug_msg(string.format("SPAWN %s", groupNameToSpawn))
+            local groupSpawning
+            if (facSubRangeConfig.spawnZone) then
+                groupSpawning = spawnGroup:SpawnInZone(ZONE:New(facSubRangeConfig.spawnZone),true)
+            else
+                groupSpawning = spawnGroup:Spawn()
+            end
+        else
+            debug_msg(string.format("GROUP to spawn %s not found in mission", groupNameToSpawn))
+        end
+    end
+
+    radioCommandSubRange:RemoveSubMenus()
+    local CommandZoneDetroy = MENU_COALITION_COMMAND:New(facRangeConfig.benefit_coalition, "Delete", radioCommandSubRange,
+            deleteSubRangeUnits, { groupsToSpawn, facRangeConfig, facSubRangeConfig, radioCommandSubRange})
+    local CommandZoneFumigene = MENU_COALITION_COMMAND:New(facRangeConfig.benefit_coalition, "Smoke", radioCommandSubRange,
+            smokeOnSubRange, { groupsToSpawn, facRangeConfig.benefit_coalition})
+    local CommandZoneCoord = MENU_COALITION_COMMAND:New(facRangeConfig.benefit_coalition, "Coordinates",
+            radioCommandSubRange, giveToClientGroupCoordinates, {groupsToSpawn})
+    local CommandZoneListGroup = MENU_COALITION_COMMAND:New(facRangeConfig.benefit_coalition, "List Groups",
+            radioCommandSubRange, giveListOfGroupsAliveInRange, { groupsToSpawn, facRangeConfig, facSubRangeConfig })
+    local CommandZoneList = MENU_COALITION_COMMAND:New(facRangeConfig.benefit_coalition, "List Units",
+            radioCommandSubRange, giveListOfUnitsAliveInGroup, { groupsToSpawn, facRangeConfig.benefit_coalition, 5})
+    MESSAGE:NewType(string.format("FAC in range %s(%s) in place", facRangeName, facSubRangeName), MESSAGE.Type.Information)
+           :ToBlue()
+    markGroupOnMap({ groupsToSpawn, facRangeConfig.benefit_coalition})
+end
+
+
 function AddTargetsFunction(radioCommandSubRange, rangeConfig, subRangeConfig)
-    local RadioCommandAdd = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Spawn", radioCommandSubRange, SpawnRanges,
-        {radioCommandSubRange, rangeConfig, subRangeConfig, AddTargetsFunction})
+    local RadioCommandAdd = MENU_COALITION_COMMAND:New(
+            rangeConfig.benefit_coalition,
+            "Spawn",
+            radioCommandSubRange,
+            SpawnRanges,
+            {
+                radioCommandSubRange,
+                rangeConfig,
+                subRangeConfig,
+                AddTargetsFunction
+            }
+    )
+end
+
+function AddFacFunction(radioCommandSubRange, facRangeConfig, facSubRangeConfig)
+    local RadioCommandAdd = MENU_COALITION_COMMAND:New(
+            facRangeConfig.benefit_coalition,
+            "Spawn",
+            radioCommandSubRange,
+            SpawnFacRanges,
+            {
+                radioCommandSubRange,
+                facRangeConfig,
+                facSubRangeConfig,
+                AddFacFunction
+            }
+    )
 end
 
 
