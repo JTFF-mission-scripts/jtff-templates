@@ -55,17 +55,16 @@ async function mizUpdate(mizPath, copyPath, strTheatreSettings) {
     mizUpdateSrcLuaFiles(zip);
     mizUpdateLibLuaFiles(zip);
     mizUpdateSettingsLuaFiles(zip, strTheatreSettings);
-    mizUpdateSoundFolders(zip);
-    await zip.generateAsync({
+    await mizUpdateSoundFolders(zip);
+    const inputZip = await zip.generateAsync({
         type:'nodebuffer',
         streamFiles:true,
         compression: "DEFLATE",
         compressionOptions: {
             level: 9
         }
-    }).then(inputZip => {
-        fs.writeFileSync(copyPath? copyPath: mizPath, inputZip);
     });
+    fs.writeFileSync(copyPath? copyPath: mizPath, inputZip);
 }
 
 function mizUpdateLuaFile(zip, filePath) {
@@ -94,12 +93,12 @@ function mizUpdateSettingsLuaFiles(zip, strTheatre) {
         mizUpdateLuaFile(zip, 'settings/'+strTheatre+'/' + file);
     };
 }
-function mizUpdateSoundFolders(zip) {
+async function mizUpdateSoundFolders(zip) {
     console.log('adding sound files from resources/sounds folder...');
-    addFilesToZip(zip, 'resources/sounds', fs.readdirSync('resources/sounds'));
+    await addFilesToZip(zip, 'resources/sounds', fs.readdirSync('resources/sounds'));
 }
-function addFilesToZip (zip, directoryPath, filesToInclude) {
-    const promiseArr = filesToInclude.map(async file => {
+async function addFilesToZip (zip, directoryPath, filesToInclude) {
+    const promiseArr = await filesToInclude.map(async file => {
         const filePath = path.join(directoryPath, file)
         try {
             const fileStats = await lstat(filePath)
