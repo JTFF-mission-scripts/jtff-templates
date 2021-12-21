@@ -13,19 +13,24 @@
     },
     "missionTemplates": [
         {
-            "theatre": "syria",
+            "theatre": "Syria",
             "prefix": "template",
             "destFolderId": "15CrplYJsmv8GNu2obuX-TuCWLrUff1NS"
         },
         {
-            "theatre": "persiangulf",
+            "theatre": "PersianGulf",
             "prefix": "template",
             "destFolderId": "10l2tL2yTUs_h6LxDurjM_VEANmBgwo31"
         },
         {
-            "theatre": "mariana",
+            "theatre": "Mariana",
             "prefix": "template",
             "destFolderId": "1OgCy3jyDKw9FRxpDL09XyeTBy-DZZL6R"
+        },
+        {
+            "theatre": "NTTR",
+            "prefix": "template",
+            "destFolderId": "1u9vL2s2jKdlFVHLCBMrqxSD6E4wIM4YS"
         }
     ]
 }
