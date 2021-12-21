@@ -50,6 +50,11 @@ function Set_CLIENT:OnEventRefuelingStop(EventData)
     end
 end
 
+Set_CLIENT_Bleu = SET_CLIENT:New():FilterCoalitions(coalition.side.BLUE):FilterOnce()
+debug_msg(string.format("Nbre Blue Client : %i", Set_CLIENT_Bleu:Count()))
+Set_CLIENT_Red = SET_CLIENT:New():FilterCoalitions(coalition.side.RED):FilterOnce()
+debug_msg(string.format("Nbre Red Client : %i", Set_CLIENT_Red:Count()))
+
 -- *****************************************************************************
 --                     **                     Tankers                         **
 --                     *********************************************************

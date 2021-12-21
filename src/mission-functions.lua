@@ -6,12 +6,26 @@
 --
 env.info('JTFF-SHAREDLIB: shared library loading...')
 DEBUG_MSG = true
+DEBUG_SQ_MSG = false
+DEBUG_DETECT_MSG = false
 map_marker = {}
 sead = SEAD:New({})
 
 function debug_msg(message)
     if DEBUG_MSG then
         env.info(string.format("[DEBUG] %s", message))
+    end
+end
+
+function debug_detection_msg(message)
+    if DEBUG_DETECT_MSG then
+        env.info(string.format("[DETECTION] %s", message))
+    end
+end
+
+function debug_squeduler_msg(message)
+    if DEBUG_SQ_MSG then
+        env.info(string.format("[DEBUG SQ] %s", message))
     end
 end
 
@@ -22,6 +36,19 @@ function switchGroupImmortalStatus(group)
     BASE:SetState(group, "isImmortal", status)
     MESSAGE:NewType("Immortal status of your group : " .. tostring(status) , MESSAGE.Type.Update):ToGroup(group)
 end
+
+function destroy_group(group_name)
+    local set_group_alive = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
+    set_group_alive:ForEachGroupAlive(
+            function(group_alive)
+                debug_msg(string.format("Group %s just removed", group_alive:GetName()))
+                if (map_marker[group_alive:GetName()]) then
+                    COORDINATE:RemoveMark(map_marker[group_alive:GetName()])
+                end
+                group_alive:Destroy()
+            end )
+end
+
 
 function give_bra_of_air_group(param)
     local target_group = param[1]
