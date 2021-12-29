@@ -1,7 +1,7 @@
 AtisConfig = {
     {
         enable = true,
-        airfield = AIRBASE.Nevada.Nellis_AFB,
+        airfield = 'Nellis',
         radio = {
             freq = 270.1,
             power = 100,
