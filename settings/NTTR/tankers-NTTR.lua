@@ -191,7 +191,7 @@ TankersConfig = {
         },
         freq = 318.4,
         fuelwarninglevel = 35,
-        racetrack = {
+        racetrack = 4
             front = 40,
             back = 0
         },
