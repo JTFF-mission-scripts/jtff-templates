@@ -112,13 +112,23 @@ for index, tankerconfig in ipairs(TankersConfig) do
                 )
                 --trigger.action.outText('Tanker configured to RTB in  : '..(self.customconfig.missionmaxduration)..' minutes max...', 45)
             end
-            self.menureset = MENU_COALITION_COMMAND:New(
-                    coalition.side.BLUE,
-                    "Reset Tanker "..self.customconfig.callsign.alias..'-'..self.customconfig.callsign.number..'-1',
-                    MenuCoalitionTankerBlue,
-                    resetRecoveryTanker,
-                    self
-            )
+            if (self.customconfig.benefit_coalition == coalition.side.RED) then
+                self.menureset = MENU_COALITION_COMMAND:New(
+                        coalition.side.RED,
+                        "Reset Tanker "..self.customconfig.callsign.alias..'-'..self.customconfig.callsign.number..'-1',
+                        MenuCoalitionTankerRed,
+                        resetRecoveryTanker,
+                        self
+                )
+            else
+                self.menureset = MENU_COALITION_COMMAND:New(
+                        coalition.side.BLUE,
+                        "Reset Tanker "..self.customconfig.callsign.alias..'-'..self.customconfig.callsign.number..'-1',
+                        MenuCoalitionTankerBlue,
+                        resetRecoveryTanker,
+                        self
+                )
+            end
         end
         function objTanker:OnAfterRTB(from, event, to, airbase)
             if self.customconfig.escortgroupname then
@@ -563,13 +573,23 @@ for index, awacsconfig in ipairs(AwacsConfig) do
                 )
                 --trigger.action.outText('AWACS configured to RTB in  : '..(self.customconfig.missionmaxduration)..' minutes max...', 45)
             end
-            self.menureset = MENU_COALITION_COMMAND:New(
-                    coalition.side.BLUE,
-                    "Reset AWACS "..self.customconfig.callsign.alias..'-'..self.customconfig.callsign.number..'-1',
-                    MenuCoalitionAwacsBlue,
-                    resetRecoveryTanker,
-                    self
-            )
+            if (self.customconfig.benefit_coalition == coalition.side.RED) then
+                self.menureset = MENU_COALITION_COMMAND:New(
+                        coalition.side.RED,
+                        "Reset AWACS "..self.customconfig.callsign.alias..'-'..self.customconfig.callsign.number..'-1',
+                        MenuCoalitionAwacsRed,
+                        resetRecoveryTanker,
+                        self
+                )
+            else
+                self.menureset = MENU_COALITION_COMMAND:New(
+                        coalition.side.BLUE,
+                        "Reset AWACS "..self.customconfig.callsign.alias..'-'..self.customconfig.callsign.number..'-1',
+                        MenuCoalitionAwacsBlue,
+                        resetRecoveryTanker,
+                        self
+                )
+            end
         end
         function objAwacs:OnAfterRTB(from, event, to, airbase)
             if self.customconfig.escortgroupname then
