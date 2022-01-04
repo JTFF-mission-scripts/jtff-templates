@@ -1,7 +1,7 @@
 AtisConfig = {
     {
         enable = true,
-        airfield = 'Nellis',
+        airfield = AIRBASE.Nevada.Nellis_AFB,
         radio = {
             freq = 270.1,
             power = 100,
@@ -13,7 +13,7 @@ AtisConfig = {
         },
         active = {
             number = '03',
-            side = 'R'
+            side = 'L'
         },
         tacan = {
             channel = 12
@@ -28,7 +28,7 @@ AtisConfig = {
     },
     {
         enable = true,
-        airfield = 'Tonopah Test Range',
+        airfield = AIRBASE.Nevada.Tonopah_Test_Range_Airfield,
         radio = {
             freq = 113.0,
             power = 100,
