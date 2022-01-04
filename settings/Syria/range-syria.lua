@@ -29,6 +29,7 @@ RangeConfig = {
             {
                 name = "Mobile Convoy",
                 groupsToSpawn = {"Akamas Convoy Mobile"},
+                holdFire = true,
             }
         }
     },
@@ -39,7 +40,8 @@ RangeConfig = {
         subRange = {
             {
                 name = "Civilian vehicules",
-                groupsToSpawn = {"civil", "civil-1", "civil-2", "civil-3", "civil-4", "civil-5"}
+                groupsToSpawn = {"civil", "civil-1", "civil-2", "civil-3", "civil-4", "civil-5"},
+                holdFire = true
             },
             {
                 name = "Air defense",
@@ -49,17 +51,20 @@ RangeConfig = {
             {
                 name = "Parking Supply",
                 groupsToSpawn = {"Infantry Paphos", "SCUD Paphos", "Truck Paphos"},
-                AI = false
+                AI = false,
+                holdFire = true
             },
             {
                 name = "Convoy",
-                groupsToSpawn = {"Convoy Paphos"}
+                groupsToSpawn = {"Convoy Paphos"},
+                holdFire = true
             },
             {
                 name = "Roadblock",
                 groupsToSpawn = {"Barrage Phalos nord def", "Barrage Phalos nord", "Barrage Phalos Nord est def-1",
                                  "Barrage Phalos Nord est", "Barrage Phalos est", "Barrage Phalos est def",
-                                 "Barrage Phalos ouest def", "Barrage Phalos nord ouest"}
+                                 "Barrage Phalos ouest def", "Barrage Phalos nord ouest"},
+                holdFire = true
             }
         }
     },
@@ -77,7 +82,8 @@ RangeConfig = {
             {
                 name = "On the road",
                 groupsToSpawn = {"Convoy", "Convoy Manpad", "Convoy Manpad-1", "Convoy Manpad-2", "Convoy Manpad-3",
-                                 "Convoy Manpad-4", "Convoy Manpad-5"}
+                                 "Convoy Manpad-4", "Convoy Manpad-5"},
+                holdFire = true
             }
         }
     },
@@ -136,22 +142,22 @@ TrainingRangeConfig = {
             {
                 type = "BombCircle",
                 unit_name = "Cercle B Akamas",
-                precision = 30
+                precision = 25
             },
             {
                 type = "BombCircle",
                 unit_name = "Cercle B Akamas-2",
-                precision = 30
+                precision = 25
             },
             {
                 type = "BombCircle",
                 unit_name = "Cercle A Akamas",
-                precision = 50
+                precision = 25
             },
             {
                 type = "BombCircle",
                 unit_name = "Cercle A Akamas-2",
-                precision = 50
+                precision = 25
             }
         }
     },
@@ -163,7 +169,7 @@ TrainingRangeConfig = {
                 type = "Strafepit",
                 unit_name = "Range INCIRLIK Target-1",
                 foul_line = "Range INCIRLIK Target-3",
-                boxlength = 2000,
+                boxlength = 1000,
                 boxwidth = 200,
                 heading = nil,
                 inverseheading = true,
@@ -173,7 +179,7 @@ TrainingRangeConfig = {
                 type = "Strafepit",
                 unit_name = "Range INCIRLIK Target-2",
                 foul_line = "Range INCIRLIK Target-4",
-                boxlength = 2000,
+                boxlength = 1000,
                 boxwidth = 200,
                 heading = nil,
                 inverseheading = true,
