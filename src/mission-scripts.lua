@@ -952,9 +952,10 @@ for index, traingingrangeconfig in ipairs(TrainingRangeConfig) do
         TrainingRangeArray[compteur] = {
             customconfig = traingingrangeconfig
         }
-        local trainingRange = RANGE:New(traingingrangeconfig.name)
-        --local coord = COORDINATE:NewFromLLDD( 35.3, 32.16, 15)
-        --trainingRange:SetRangeLocation(coord)
+        trainingRange = RANGE:New(traingingrangeconfig.name)
+        trainingRange:SetDefaultPlayerSmokeBomb(false)
+        trainingRange:SetRangeRadius(0.5) -- bomb impact at more than 500m is out of range
+        trainingRange:SetScoreBombDistance(250)-- bomb impact at more than 250m won't be taken into account
         for index, subrangeTraining in ipairs(traingingrangeconfig.targets) do
             env.info('subrangeTraining type : ' .. subrangeTraining.type)
             if (subrangeTraining.type == "Strafepit") then
