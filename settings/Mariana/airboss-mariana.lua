@@ -9,6 +9,13 @@ AirBossConfig = {
         enable_niceguy = true,
         handleAI = true,
         recoverytanker = 'nanny-1 #IFF:4775FR',
+        recoveryops = {
+            mode = 'cyclic',
+            cyclic = {
+                event_duration_minutes = 60,
+                event_ia_reserved_minutes = 15,
+            }
+        },
         tacan = {
             channel = 71,
             mode = 'X',
@@ -41,8 +48,6 @@ AirBossConfig = {
             lso = 'LSORelay-1',
         },
         singlecarrier = false,
-        event_duration_minutes = 60,
-        event_ia_reserved_minutes = 15,
         operationsstatspath = "C:/airboss-stats",
         operationstrapsheetpath = "C:/airboss-trapsheets"
     },
@@ -56,6 +61,13 @@ AirBossConfig = {
         enable_niceguy = true,
         handleAI = true,
         recoverytanker = 'nanny-2 #IFF:4776FR',
+        recoveryops = {
+            mode = 'cyclic',
+            cyclic = {
+                event_duration_minutes = 60,
+                event_ia_reserved_minutes = 5,
+            }
+        },
         tacan = {
             channel = 51,
             mode = 'X',
@@ -88,8 +100,6 @@ AirBossConfig = {
             lso = 'LSORelay-2',
         },
         singlecarrier = false,
-        event_duration_minutes = 60,
-        event_ia_reserved_minutes = 5,
         operationsstatspath = "C:/airboss-stats",
         operationstrapsheetpath = "C:/airboss-trapsheets"
     }

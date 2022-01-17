@@ -1,0 +1,9 @@
+Champs dde tir sur l'ile de Medinilla 
+- N 16° 1' 6"   E 146° 3'33"
+- N 16° 1.112'   E 146° 3.565'
+- CT 99371 71214
+            
+            205 ft
+
+**Zone d'entrainement A2A Navy **:
+MGRS = TC+TD+TE

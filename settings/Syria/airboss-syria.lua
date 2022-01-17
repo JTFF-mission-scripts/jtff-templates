@@ -9,6 +9,13 @@ AirBossConfig = {
         enable_niceguy = true,
         handleAI = true,
         recoverytanker = 'nanny-1 #IFF:4775FR',
+        recoveryops = {
+            mode = 'cyclic',
+            cyclic = {
+                event_duration_minutes = 60,
+                event_ia_reserved_minutes = 15,
+            }
+        },
         tacan = {
             channel = 71,
             mode = 'X',
@@ -41,8 +48,6 @@ AirBossConfig = {
             lso = 'LSORelay',
         },
         singlecarrier = false,
-        event_duration_minutes = 60,
-        event_ia_reserved_minutes = 15,
         operationsstatspath = "C:/airboss-stats",
         operationstrapsheetpath = "C:/airboss-trapsheets"
     },
@@ -55,6 +60,42 @@ AirBossConfig = {
         enable_menusmokezones = true,
         enable_niceguy = true,
         handleAI = true,
+        recoveryops = {
+            mode = 'alpha',
+            cyclic = {
+                event_duration_minutes = 90,
+                event_ia_reserved_minutes = 15,
+            },
+            alpha = {
+                recoveries = {
+                    {
+                        recovery_start_minutes = 15,
+                        recovery_duration_minutes = 60,
+                        recovery_case = 1
+                    },
+                    {
+                        recovery_start_minutes = 105,
+                        recovery_duration_minutes = 60,
+                        recovery_case = 1
+                    },
+                    {
+                        recovery_start_minutes = 195,
+                        recovery_duration_minutes = 60,
+                        recovery_case = 1
+                    },
+                    {
+                        recovery_start_minutes = 195+90,
+                        recovery_duration_minutes = 60,
+                        recovery_case = 1
+                    },
+                    {
+                        recovery_start_minutes = 195+180,
+                        recovery_duration_minutes = 60,
+                        recovery_case = 1
+                    }
+                }
+            }
+        },
         tacan = {
             channel = 73,
             mode = 'X',
@@ -87,8 +128,6 @@ AirBossConfig = {
             lso = 'LSORelay-73',
         },
         singlecarrier = false,
-        event_duration_minutes = 90,
-        event_ia_reserved_minutes = 15,
         operationsstatspath = "C:/airboss-stats",
         operationstrapsheetpath = "C:/airboss-trapsheets"
     }

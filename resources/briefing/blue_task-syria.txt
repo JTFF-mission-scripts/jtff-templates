@@ -1,0 +1,8 @@
+** Naval A2A training zone with FOX training scripts**
+MGRS = TF+TE+1/2*QA+1/2*QV
+
+** USAF A2A training zone with FOX training scripts**
+MGRS = VC+WC+1/2*XC
+
+** Naval A2G training range at Cyprus**
+MGRS = VD38
