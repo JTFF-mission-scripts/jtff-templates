@@ -1,0 +1,22 @@
+* ATIS dispo à Andersen sur Black3
+
+* Traffic Civil
+EL Al 757 - 1562
+AirChina A330 - 1563
+Cathay 747 - 1564
+Quantas 747 - 3212
+DHL 757 - 7316
+MEA 320 - 2631
+TNT 737 - 3242
+
+
+* Tankers :
+Texaco-2-1 - Basket - 101Y - FL260
+Arco-6-1 - Boom - 102Y - FL270
+Shell-3-1 - Boom - 103Y - FL150
+
+
+Naval Ops:
+* CVN71 - 71X - ICLS11
+* AIRBOSS Activé : https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Ops.Airboss.html
+* Shell-1-1 - Basket - 104Y - FL80

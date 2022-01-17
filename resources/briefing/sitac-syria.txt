@@ -1,0 +1,31 @@
+* ATIS dispo à Incirlik sur Black3
+
+* Traffic Civil
+Air Algérie 737 2361
+Cathay 747 - 5156
+DHL 757 - 7316
+EL Al 757 - 1562
+El Al 757 - 0254
+El Al 757 - 1657
+Iran Air 320 - 5616
+ISRAIR 320 - 2376
+ISRAIR 320 - 7116
+MEA 320 - 2631
+Quantas 747 - 3212
+TNT 737 - 3242
+Virgin 747 - 7377
+
+Tankers :
+Texaco - Basket - 101Y - FL260
+Arco - Boom - 102Y - FL270
+Arco2 - Boom - 103Y - FL150
+
+
+Naval Ops:
+* CVN71 - 71X - ICLS11
+* AIRBOSS Activé : https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Ops.Airboss.html
+* Shell-1 - Basket - 104Y - FL80
+
+* CVN73 - 73X - ICLS13
+* AIRBOSS Activé : https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Ops.Airboss.html
+* Shell-2 - Basket - 105Y - FL80
