@@ -6,3 +6,6 @@ MGRS = VC+WC+1/2*XC
 
 ** Naval A2G training range at Cyprus**
 MGRS = VD38
+
+** SAM IADS SA17 implemented at Bassel-El-Assad**
+MGRS = YE62
