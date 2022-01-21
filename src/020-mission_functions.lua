@@ -440,9 +440,14 @@ end
 
 function deleteIADSUnits(param)
     local iadsConfig = param[1]
-    local radioCommandSpawnIADS = param[2]
+    local redIADS = param[2]
+    local radioCommandSpawnIADS = param[3]
     local iadsName = iadsConfig.name
     local nodesConfig = iadsConfig.nodes
+
+    if (redIADS ~= nil) then
+        deactivateSkynet({iadsConfig, redIADS, radioCommandSpawnIADS})
+    end
 
     for index, nodeConfig in ipairs(nodesConfig) do
         local ewrList = nodeConfig.ewr
@@ -787,66 +792,77 @@ function SpawnFacRanges(param)
     markGroupOnMap({ groupsToSpawn, facRangeConfig.benefit_coalition})
 end
 
-function activateSkynet(param)
-    local IADS_Config = param[1]
+function deactivateSkynet(param)
+    local iadsConfig = param[1]
     local redIADS = param[2]
-    local CommandIADSActivate = param[3]
-    debug_msg(string.format("IADS - Skynet activation for %s", IADS_Config.name))
+    local radioCommandSpawnIADS = param[3]
+
+    redIADS:removeRadioMenu()
+    redIADS:deactivate()
+
+    radioCommandSpawnIADS:RemoveSubMenus()
+    local CommandIADSDetroy = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Delete", radioCommandSpawnIADS,
+        deleteIADSUnits, {iadsConfig, radioCommandSpawnIADS})
+    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Activate Skynet",
+        radioCommandSpawnIADS, activateSkynet, {iadsConfig, redIADS, radioCommandSpawnIADS})
+    MESSAGE:NewType(string.format("Skynet of %s is desactivated", iadsConfig.name), MESSAGE.Type.Information):ToBlue()
+end
+
+function activateSkynet(param)
+    local iadsConfig = param[1]
+    local redIADS = param[2]
+    local radioCommandSpawnIADS = param[3]
+    debug_msg(string.format("IADS - Skynet activation for %s", iadsConfig.name))
     -- create an instance of the IADS
-    redIADS = SkynetIADS:create(IADS_Config.name)
+    redIADS = SkynetIADS:create(iadsConfig.name)
 
     ---debug settings remove from here on if you do not wan't any output on what the IADS is doing by default
     local iadsDebug = redIADS:getDebugSettings()
-    iadsDebug.IADSStatus = true
-    iadsDebug.radarWentDark = true
-    iadsDebug.contacts = true
-    iadsDebug.radarWentLive = true
-    iadsDebug.noWorkingCommmandCenter = true
-    iadsDebug.ewRadarNoConnection = true
-    iadsDebug.samNoConnection = true
-    iadsDebug.jammerProbability = true
-    iadsDebug.addedEWRadar = true
-    iadsDebug.hasNoPower = true
-    iadsDebug.harmDefence = true
-    iadsDebug.samSiteStatusEnvOutput = true
-    iadsDebug.earlyWarningRadarStatusEnvOutput = true
+    iadsDebug.IADSStatus = false
+    iadsDebug.radarWentDark = false
+    iadsDebug.contacts = false
+    iadsDebug.radarWentLive = false
+    iadsDebug.noWorkingCommmandCenter = false
+    iadsDebug.ewRadarNoConnection = false
+    iadsDebug.samNoConnection = false
+    iadsDebug.jammerProbability = false
+    iadsDebug.addedEWRadar = false
+    iadsDebug.hasNoPower = false
+    iadsDebug.harmDefence = false
+    iadsDebug.samSiteStatusEnvOutput = false
+    iadsDebug.earlyWarningRadarStatusEnvOutput = false
     iadsDebug.commandCenterStatusEnvOutput = false
     ---end remove debug ---
 
-    -- add all units with unit name beginning with 'EW' to the IADS:
-    redIADS:addEarlyWarningRadarsByPrefix(IADS_Config.ewPrefix)
-
-    -- add all groups begining with group name 'SAM' to the IADS:
-    redIADS:addSAMSitesByPrefix(IADS_Config.samPrefix)
-
-    -- all SA-10 sites shall act as EW sites, meaning their radars will be on all the time:
-    -- redIADS:getSAMSiteByGroupName('SAM-SA-5-Homs'):setActAsEW(true)
-
     -- add a command center:
-    for index, headQuarter in ipairs(IADS_Config.headQuarter) do
+    for index, headQuarter in ipairs(iadsConfig.headQuarter) do
         local commandCenter = StaticObject.getByName(headQuarter)
         redIADS:addCommandCenter(commandCenter)
     end
 
-    for index, node in ipairs(IADS_Config.nodes) do
+    for index, node in ipairs(iadsConfig.nodes) do
         debug_msg(string.format("IADS - Connection Node %s", node.connection))
         local connectionNode = StaticObject.getByName(node.connection)
         for index, ewr in ipairs(node.ewr) do
             if (ewr ~= nil and connectionNode ~= nil) then
-                debug_msg(string.format("IADS - ewr name %s", ewr))
+                debug_msg(string.format("IADS - EWR Unit name in config file : %s", ewr))
                 local set_ewr_units = SET_UNIT:New():FilterPrefixes(ewr):FilterOnce()
                 set_ewr_units:ForEachUnit(function(ewr_alive)
-                    debug_msg(string.format("ewr Unit found %s", ewr_alive:Name()))
-                    redIADS:getEarlyWarningRadarByUnitName(ewr_alive:Name()):addConnectionNode(connectionNode)
+                    if ewr_alive:IsAlive() then
+                        debug_msg(string.format("Alive EWR Unit name found %s", ewr_alive:Name()))
+                        redIADS:addEarlyWarningRadar(ewr_alive:Name())
+                        redIADS:getEarlyWarningRadarByUnitName(ewr_alive:Name()):addConnectionNode(connectionNode)
+                    end
                 end)
             end
         end
         for index, sam in ipairs(node.sam) do
             if (sam ~= nil and connectionNode ~= nil) then
-                debug_msg(string.format("IADS - Sam name %s", sam))
+                debug_msg(string.format("IADS - Sam Group name in config file :  %s", sam))
                 local set_group_alive = SET_GROUP:New():FilterPrefixes(sam):FilterOnce()
                 set_group_alive:ForEachGroupAlive(function(group_alive)
-                    debug_msg(string.format("IADS - sam Unit found %s", group_alive:GetName()))
+                    debug_msg(string.format("IADS - Alive Sam Group found %s", group_alive:GetName()))
+                    redIADS:addSAMSite(group_alive:GetName())
                     redIADS:getSAMSiteByGroupName(group_alive:GetName()):addConnectionNode(connectionNode)
                 end)
             end
@@ -854,13 +870,20 @@ function activateSkynet(param)
     end
 
     -- activate the radio menu to toggle IADS Status output
-    if (IADS_Config.radioMenu) then
-        debug_msg(string.format("IADS - Add radio menu %s", IADS_Config.name))
+    if (iadsConfig.radioMenu) then
+        debug_msg(string.format("IADS - Add radio menu %s", iadsConfig.name))
         redIADS:addRadioMenu()
     end
 
     -- activate the IADS
     redIADS:setupSAMSitesAndThenActivate()
+
+    radioCommandSpawnIADS:RemoveSubMenus()
+    local CommandIADSDetroy = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Delete", radioCommandSpawnIADS,
+        deleteIADSUnits, {iadsConfig,  redIADS, radioCommandSpawnIADS})
+    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Disable Skynet",
+        radioCommandSpawnIADS, deactivateSkynet, {iadsConfig, redIADS, radioCommandSpawnIADS})
+    MESSAGE:NewType(string.format("Skynet of %s activate in 60 secondes", iadsConfig.name), MESSAGE.Type.Information):ToBlue()
 end
 
 function SpawnIADS(param)
@@ -870,26 +893,28 @@ function SpawnIADS(param)
     local iadsName = iadsConfig.name
     local nodesConfig = iadsConfig.nodes
 
+    local samGroupsSpawned = {}
+
     for index, nodeConfig in ipairs(nodesConfig) do
         local connection = nodeConfig.connection
         local ewrList = nodeConfig.ewr
         local samList = nodeConfig.sam
-        -- for index, ewrGroup in ipairs(ewrList) do
-        --     local groupNameToSpawn = string.format("%s", ewrGroup)
-        --     if (GROUP:FindByName(groupNameToSpawn) ~= nil) then
-        --         local spawnGroup = SPAWN:New(groupNameToSpawn)
-        --         debug_msg(string.format("SPAWN EWR : %s", groupNameToSpawn))
-        --         local groupSpawning = spawnGroup:Spawn()
-        --     else
-        --         debug_msg(string.format("EWR GROUP to spawn %s not found in mission", groupNameToSpawn))
-        --     end
-        -- end
+        for index, ewrGroup in ipairs(ewrList) do
+            local groupNameToSpawn = string.format("%s", ewrGroup)
+            if (GROUP:FindByName(groupNameToSpawn) ~= nil) then
+                local spawnGroup = SPAWN:New(groupNameToSpawn)
+                debug_msg(string.format("SPAWN EWR : %s", groupNameToSpawn))
+                local groupSpawning = spawnGroup:Spawn()
+            else
+                debug_msg(string.format("EWR GROUP to spawn %s not found in mission", groupNameToSpawn))
+            end
+        end
         for index, samGroup in ipairs(samList) do
             local groupNameToSpawn = string.format("%s", samGroup)
             if (GROUP:FindByName(groupNameToSpawn) ~= nil) then
                 local spawnGroup = SPAWN:New(groupNameToSpawn)
                 debug_msg(string.format("SPAWN SAM : %s", groupNameToSpawn))
-                local groupSpawning = spawnGroup:Spawn()
+                samGroupsSpawned[index] = spawnGroup:Spawn()
             else
                 debug_msg(string.format("SAM GROUP to spawn %s not found in mission", groupNameToSpawn))
             end
@@ -901,7 +926,7 @@ function SpawnIADS(param)
     local CommandIADSDetroy = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Delete", radioCommandSpawnIADS,
         deleteIADSUnits, {iadsConfig, radioCommandSpawnIADS})
     local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Skynet Activation",
-        radioCommandSpawnIADS, activateSkynet, {iadsConfig, redIADS, CommandIADSActivate})
+        radioCommandSpawnIADS, activateSkynet, {iadsConfig, redIADS, radioCommandSpawnIADS})
     MESSAGE:NewType(string.format("IADS Units %s in place", iadsName), MESSAGE.Type.Information):ToBlue()
 end
 

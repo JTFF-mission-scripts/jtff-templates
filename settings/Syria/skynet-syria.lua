@@ -1,7 +1,7 @@
 SkynetConfig = {
     {
         name = "Syrian IADS",
-        enable = false,
+        enable = true,
         benefit_coalition = coalition.side.BLUE,
         radioMenu = true,
         ewPrefix = "EWR",
@@ -30,14 +30,14 @@ SkynetConfig = {
                 sam = {"SAM-SA-2-Tiyas", "SAM-SA-3-Tiyas", "SAM-SA-3-SouthTiyas"}
             }, {
                 connection = "Node_Homs",
-                ewr = {"EWR_Damascus-North"},
+                ewr = {"EWR_Damascus_North"},
                 sam = {
                     "SAM-SA-2-Homs", "SAM-SA-3-Homs", "SAM-SA-3-SouthHoms", "SAM-SA-5-Homs", "SAM-SA-6-Homs",
                     "SAM-SA-6-Shayrat"
                 }
             }, {
                 connection = "Node_Damascus",
-                ewr = {"EWR_Damascus-3", "EWR_Sayqal"},
+                ewr = {"EWR_Damascus_West", "EWR_Sayqal"},
                 sam = {
                     "SAM-SA-2-Marj", "SAM-SA-2-Damascus", "SAM-SA-3-Damascus", "SAM-SA-5-Khalkhalah", "SAM-SA-5-Damascus",
                     "SAM-SA-6-Damascus", "SAM-SA-6-Mezzeh", "SAM-SA-2-Dumayr"
@@ -51,7 +51,7 @@ SkynetConfig = {
     },
     {
         name = "Syrian IADS Light",
-        enable = false,
+        enable = true,
         benefit_coalition = coalition.side.BLUE,
         radioMenu = true,
         ewPrefix = "EWR",
@@ -69,7 +69,7 @@ SkynetConfig = {
             }, {
                 connection = "Node_Baniyas",
                 ewr = {"EWR_Baniyas"},
-                sam = {"SAM-SA-2-Tartus", "SAM-SA-3-Tartus", "SAM-SA-3-ReneMouawad"}
+                sam = {"SAM-SA-2-Tartus", "SAM-SA-3-Tartus"}
             }, {
                 connection = "Node_Hama",
                 ewr = {"EWR_Hama"},
@@ -80,15 +80,15 @@ SkynetConfig = {
                 sam = {"SAM-SA-2-Tiyas", "SAM-SA-3-SouthTiyas"}
             }, {
                 connection = "Node_Homs",
-                ewr = {"EWR_Damascus-North"},
+                ewr = {"EWR_Damascus_North"},
                 sam = {
                     "SAM-SA-2-Homs", "SAM-SA-3-Homs", "SAM-SA-5-Homs", "SAM-SA-6-Homs"
                 }
             }, {
                 connection = "Node_Damascus",
-                ewr = {"EWR_Damascus-3", "EWR_Sayqal"},
+                ewr = {"EWR_Damascus_West", "EWR_Sayqal"},
                 sam = {
-                    "SAM-SA-2-Damascus", "SAM-SA-3-Damascus", "SAM-SA-5-Khalkhalah", "SAM-SA-5-Damascus",
+                    "SAM-SA-2-Damascus", "SAM-SA-3-Damascus", "SAM-SA-5-Damascus",
                     "SAM-SA-6-Damascus"
                 }
             }, {
