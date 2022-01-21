@@ -4,8 +4,6 @@ SkynetConfig = {
         enable = true,
         benefit_coalition = coalition.side.BLUE,
         radioMenu = true,
-        ewPrefix = "EWR",
-        samPrefix = "SAM",
         headQuarter = {"IADS_QG"},
         nodes = {
             {
@@ -54,8 +52,6 @@ SkynetConfig = {
         enable = true,
         benefit_coalition = coalition.side.BLUE,
         radioMenu = true,
-        ewPrefix = "EWR",
-        samPrefix = "SAM",
         headQuarter = {"IADS_QG"},
         nodes = {
             {
@@ -95,6 +91,20 @@ SkynetConfig = {
                 connection = "Node_Thalah",
                 ewr = {"EWR_Thalah"},
                 sam = {"SAM-SA-2-Thalah"}
+            }
+        }
+    },
+    {
+        name = "Tazz IADS",
+        enable = true,
+        benefit_coalition = coalition.side.BLUE,
+        radioMenu = true,
+        headQuarter = {"IADS_QG1"},
+        nodes = {
+            {
+                connection = "IADS_QG1",
+                ewr = {"EW_NorthBassel", "EW_SouthBassel"},
+                sam = {"SAM1 - SA-15-1", "SAM1 - SA-17M1-2", "SAM1 - SA-19", "SAM - SAM LOW ALTITUDE"}
             }
         }
     }

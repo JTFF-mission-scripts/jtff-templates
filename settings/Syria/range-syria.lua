@@ -86,41 +86,6 @@ RangeConfig = {
                 holdFire = true
             }
         }
-    },
-    {
-        name = "SAM Syrian",
-        enable = true,
-        benefit_coalition = coalition.side.BLUE,
-        subRange = {
-            {
-                name = "Khalkhalah",
-                groupsToSpawn = {"SAM SA-11 Khalkhalah"}
-            },
-            {
-                name = "Marj Ruhayyil",
-                groupsToSpawn = {"SAM SA-6 Marj Ruhayyil"}
-            },
-            {
-                name = "Damascus",
-                groupsToSpawn = {"SAM SA-2 Damascus"}
-            },
-            {
-                name = "Marj North",
-                groupsToSpawn = {"SAM SA-11 Marj North"}
-            },
-            {
-                name = "Al-Dumayr",
-                groupsToSpawn = {"SAM SA-6 Al-Dumayr", "SAM SA-3 Al-Dumayr"}
-            },
-            {
-                name = "Sayqal",
-                groupsToSpawn = {"SAM SA-11 Sayqal"}
-            },
-            {
-                name = "Tabqa",
-                groupsToSpawn = {"SAM SA-6 Tabqa", "SAM SA-8 Tabqa", "SA-13 Tabqa", "AAA Tabqa", "Tank Taqba"}
-            }
-        }
     }
 }
 
