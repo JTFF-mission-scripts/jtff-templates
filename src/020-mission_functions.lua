@@ -440,32 +440,46 @@ end
 
 function deleteIADSUnits(param)
     local iadsConfig = param[1]
-    local redIADS = param[2]
-    local radioCommandSpawnIADS = param[3]
+    local skynetIADSObject = param[2]
+    local parentMenu = param[3]
     local iadsName = iadsConfig.name
     local nodesConfig = iadsConfig.nodes
 
-    if (redIADS ~= nil) then
-        deactivateSkynet({iadsConfig, redIADS, radioCommandSpawnIADS})
+    if (skynetIADSObject ~= nil) then
+        deactivateSkynet({ iadsConfig, skynetIADSObject, parentMenu })
     end
 
     for index, nodeConfig in ipairs(nodesConfig) do
-        local ewrList = nodeConfig.ewr
-        local samList = nodeConfig.sam
+        local ewrList = nodeConfig.ewrs
+        local sitesList = nodeConfig.sites
         for index, ewrGroup in ipairs(ewrList) do
             local groupNameToDelete = string.format("%s", ewrGroup)
             destroy_group(groupNameToDelete)
         end
-        for index, samGroup in ipairs(samList) do
-            local groupNameToDelete = string.format("%s", samGroup)
-            destroy_group(groupNameToDelete)
+        for siteindex, site in ipairs(sitesList) do
+            if (type(site) == "string") then
+                local groupNameToDelete = string.format("%s", site)
+                destroy_group(groupNameToDelete)
+            elseif (type(site) == "table") then
+                local groupNameToDelete = string.format("%s", site.sam)
+                destroy_group(groupNameToDelete)
+            end
+            if (type(site.pointDefenses) == "string") then
+                local groupNameToDelete = string.format("%s", site.pointDefenses)
+                destroy_group(groupNameToDelete)
+            elseif (type(site.pointDefenses) == "table") then
+                for pdIndex, pdSamGroupName in ipairs(site.pointDefenses) do
+                    local groupNameToDelete = string.format("%s", pdSamGroupName)
+                    destroy_group(groupNameToDelete)
+                end
+            end
         end
     end
 
     MESSAGE:NewType(string.format("Remove IADS : %s", iadsName), MESSAGE.Type.Information):ToBlue()
-    radioCommandSpawnIADS:RemoveSubMenus()
+    parentMenu:RemoveSubMenus()
 
-    AddIADSFunction(radioCommandSpawnIADS, iadsConfig)
+    AddIADSFunction(parentMenu, iadsConfig, skynetIADSObject)
 end
 
 function setROE(param)
@@ -792,32 +806,40 @@ function SpawnFacRanges(param)
     markGroupOnMap({ groupsToSpawn, facRangeConfig.benefit_coalition})
 end
 
+function skynetUpdateDisplay(param)
+    local skynetIADSObject = param[1]
+    local option =  param[2]
+    local value =   param[3]
+
+    skynetIADSObject:getDebugSettings()[option] = value
+end
+
 function deactivateSkynet(param)
     local iadsConfig = param[1]
-    local redIADS = param[2]
-    local radioCommandSpawnIADS = param[3]
+    local skynetIADSObject = param[2]
+    local parentMenu = param[3]
 
-    redIADS:removeRadioMenu()
-    redIADS:deactivate()
+    --skynetIADSObject:removeRadioMenu()
+    skynetIADSObject:deactivate()
 
-    radioCommandSpawnIADS:RemoveSubMenus()
-    local CommandIADSDetroy = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Delete", radioCommandSpawnIADS,
-        deleteIADSUnits, {iadsConfig, radioCommandSpawnIADS})
+    parentMenu:RemoveSubMenus()
+    local CommandIADSDetroy = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Delete", parentMenu,
+        deleteIADSUnits, { iadsConfig, skynetIADSObject, parentMenu })
     local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Activate Skynet",
-        radioCommandSpawnIADS, activateSkynet, {iadsConfig, redIADS, radioCommandSpawnIADS})
+            parentMenu, activateSkynet, { iadsConfig, skynetIADSObject, parentMenu })
     MESSAGE:NewType(string.format("Skynet of %s is desactivated", iadsConfig.name), MESSAGE.Type.Information):ToBlue()
 end
 
 function activateSkynet(param)
     local iadsConfig = param[1]
-    local redIADS = param[2]
-    local radioCommandSpawnIADS = param[3]
+    local skynetIADSObject = param[2]
+    local parentMenu = param[3]
     debug_msg(string.format("IADS - Skynet activation for %s", iadsConfig.name))
     -- create an instance of the IADS
-    redIADS = SkynetIADS:create(iadsConfig.name)
+    skynetIADSObject = SkynetIADS:create(iadsConfig.name)
 
     ---debug settings remove from here on if you do not wan't any output on what the IADS is doing by default
-    local iadsDebug = redIADS:getDebugSettings()
+    local iadsDebug = skynetIADSObject:getDebugSettings()
     iadsDebug.IADSStatus = false
     iadsDebug.radarWentDark = false
     iadsDebug.contacts = false
@@ -837,34 +859,120 @@ function activateSkynet(param)
     -- add a command center:
     for index, headQuarter in ipairs(iadsConfig.headQuarter) do
         local commandCenter = StaticObject.getByName(headQuarter)
-        redIADS:addCommandCenter(commandCenter)
+        skynetIADSObject:addCommandCenter(commandCenter)
     end
 
     for index, node in ipairs(iadsConfig.nodes) do
         debug_msg(string.format("IADS - Connection Node %s", node.connection))
         local connectionNode = StaticObject.getByName(node.connection)
-        for index, ewr in ipairs(node.ewr) do
+        for index, ewr in ipairs(node.ewrs) do
             if (ewr ~= nil and connectionNode ~= nil) then
                 debug_msg(string.format("IADS - EWR Unit name in config file : %s", ewr))
                 local set_ewr_units = SET_UNIT:New():FilterPrefixes(ewr):FilterOnce()
                 set_ewr_units:ForEachUnit(function(ewr_alive)
                     if ewr_alive:IsAlive() then
                         debug_msg(string.format("Alive EWR Unit name found %s", ewr_alive:Name()))
-                        redIADS:addEarlyWarningRadar(ewr_alive:Name())
-                        redIADS:getEarlyWarningRadarByUnitName(ewr_alive:Name()):addConnectionNode(connectionNode)
+                        skynetIADSObject:addEarlyWarningRadar(ewr_alive:Name())
+                        skynetIADSObject:getEarlyWarningRadarByUnitName(ewr_alive:Name()):addConnectionNode(connectionNode)
                     end
                 end)
             end
         end
-        for index, sam in ipairs(node.sam) do
-            if (sam ~= nil and connectionNode ~= nil) then
-                debug_msg(string.format("IADS - Sam Group name in config file :  %s", sam))
-                local set_group_alive = SET_GROUP:New():FilterPrefixes(sam):FilterOnce()
-                set_group_alive:ForEachGroupAlive(function(group_alive)
-                    debug_msg(string.format("IADS - Alive Sam Group found %s", group_alive:GetName()))
-                    redIADS:addSAMSite(group_alive:GetName())
-                    redIADS:getSAMSiteByGroupName(group_alive:GetName()):addConnectionNode(connectionNode)
-                end)
+        for siteIndex, site in ipairs(node.sites) do
+            if (site ~= nil and connectionNode ~= nil) then
+                if (type(site) == "string") then
+                    debug_msg(string.format("IADS - Sam Group name in config file :  %s", site))
+                    local set_group_alive = SET_GROUP:New():FilterPrefixes(site):FilterOnce()
+                    set_group_alive:ForEachGroupAlive(function(group_alive)
+                        debug_msg(string.format("IADS - Alive Sam Group found %s", group_alive:GetName()))
+                        skynetIADSObject:addSAMSite(group_alive:GetName())
+                        skynetIADSObject:getSAMSiteByGroupName(group_alive:GetName()):addConnectionNode(connectionNode)
+                    end)
+                elseif (type(site) == "table") then
+                    debug_msg(string.format("IADS - Sam Group name in config file :  %s", site.sam))
+                    local set_group_alive = SET_GROUP:New():FilterPrefixes(site.sam):FilterOnce()
+                    set_group_alive:ForEachGroupAlive(function(samGroupAlive)
+                        debug_msg(string.format("IADS - Alive Sam Group found %s", samGroupAlive:GetName()))
+                        skynetIADSObject:addSAMSite(samGroupAlive:GetName())
+                        local skynetSam = skynetIADSObject:getSAMSiteByGroupName(samGroupAlive:GetName())
+                        skynetSam:addConnectionNode(connectionNode)
+                        if (type(site.actAsEW) == "boolean") then
+                            debug_msg(string.format("IADS - actAsEW %s", tostring(site.actAsEW)))
+                            skynetSam:setActAsEW(site.actAsEW)
+                        end
+                        if (type(site.harmDetectionChance) == "number") then
+                            debug_msg(string.format("IADS - HARM detection chance : %i", site.harmDetectionChance))
+                            skynetSam:setHARMDetectionChance(site.harmDetectionChance)
+                        end
+                        if (type(site.goLiveRangePercent) == "number") then
+                            debug_msg(string.format("IADS - Go Live Range : %i perc", site.goLiveRangePercent))
+                            skynetSam
+                                    :setEngagementZone(SkynetIADSAbstractRadarElement.GO_LIVE_WHEN_IN_SEARCH_RANGE)
+                                    :setGoLiveRangeInPercent(site.goLiveRangePercent)
+                        else
+                            skynetSam
+                                    :setEngagementZone(SkynetIADSAbstractRadarElement.GO_LIVE_WHEN_IN_SEARCH_RANGE)
+                        end
+                        if (type(site.pointDefenses) == "string") then
+                            local set_pdgroup_alive = SET_GROUP:New():FilterPrefixes(site.pointDefenses):FilterOnce()
+                            set_pdgroup_alive:ForEachGroupAlive(function(pdGroupAlive)
+                                debug_msg(string.format("IADS - Alive Point Defense Sam Group found %s", pdGroupAlive:GetName()))
+                                skynetIADSObject:addSAMSite(pdGroupAlive:GetName())
+                                local skynetPdSam = skynetIADSObject:getSAMSiteByGroupName(pdGroupAlive:GetName())
+                                skynetPdSam:addConnectionNode(connectionNode)
+                                if (type(site.pdactAsEw) == "boolean") then
+                                    debug_msg(string.format("IADS - actAsEW %s", tostring(site.pdactAsEw)))
+                                    skynetPdSam:setActAsEW(site.pdactAsEw)
+                                end
+                                if (type(site.pdharmDetectionChance) == "number") then
+                                    debug_msg(string.format("IADS - HARM detection chance : %i", site.pdharmDetectionChance))
+                                    skynetPdSam:setHARMDetectionChance(site.pdharmDetectionChance)
+                                end
+                                if (type(site.pdgoLiveRangePercent) == "number") then
+                                    debug_msg(string.format("IADS - Go Live Range : %i perc", site.pdgoLiveRangePercent))
+                                    skynetPdSam
+                                            :setEngagementZone(SkynetIADSAbstractRadarElement.GO_LIVE_WHEN_IN_SEARCH_RANGE)
+                                            :setGoLiveRangeInPercent(site.pdgoLiveRangePercent)
+                                else
+                                    skynetPdSam
+                                            :setEngagementZone(SkynetIADSAbstractRadarElement.GO_LIVE_WHEN_IN_SEARCH_RANGE)
+                                end
+                                debug_msg(string.format("IADS - Point Defense Sam Group %s Defending SAM %s", pdGroupAlive:GetName(), samGroupAlive:GetName()))
+                                skynetSam:addPointDefence(skynetPdSam)
+                            end)
+                        elseif (type(site.pointDefenses) == "table") then
+                            for pdIndex, pdSamGroupName in ipairs(site.pointDefenses) do
+                                debug_msg(string.format("IADS - Point Defense Sam Group name in config file :  %s", pdSamGroupName))
+                                local set_pdgroup_alive = SET_GROUP:New():FilterPrefixes(pdSamGroupName):FilterOnce()
+                                set_pdgroup_alive:ForEachGroupAlive(function(pdGroupAlive)
+                                    debug_msg(string.format("IADS - Alive Point Defense Sam Group found %s", pdGroupAlive:GetName()))
+                                    skynetIADSObject:addSAMSite(pdGroupAlive:GetName())
+                                    local skynetPdSam = skynetIADSObject:getSAMSiteByGroupName(pdGroupAlive:GetName())
+                                    skynetPdSam:addConnectionNode(connectionNode)
+                                    if (type(site.pdactAsEw) == "boolean") then
+                                        debug_msg(string.format("IADS - actAsEW %s", tostring(site.pdactAsEw)))
+                                        skynetPdSam:setActAsEW(site.pdactAsEw)
+                                    end
+                                    if (type(site.pdharmDetectionChance) == "number") then
+                                        debug_msg(string.format("IADS - HARM detection chance : %i", site.pdharmDetectionChance))
+                                        skynetPdSam:setHARMDetectionChance(site.pdharmDetectionChance)
+                                    end
+                                    if (type(site.pdgoLiveRangePercent) == "number") then
+                                        debug_msg(string.format("IADS - Go Live Range : %i perc", site.pdgoLiveRangePercent))
+                                        skynetPdSam
+                                                :setEngagementZone(SkynetIADSAbstractRadarElement.GO_LIVE_WHEN_IN_SEARCH_RANGE)
+                                                :setGoLiveRangeInPercent(site.pdgoLiveRangePercent)
+                                    else
+                                        skynetPdSam
+                                                :setEngagementZone(SkynetIADSAbstractRadarElement.GO_LIVE_WHEN_IN_SEARCH_RANGE)
+                                    end
+                                    debug_msg(string.format("IADS - Point Defense Sam Group %s Defending SAM %s", pdGroupAlive:GetName(), samGroupAlive:GetName()))
+                                    skynetSam:addPointDefence(skynetPdSam)
+                                end)
+                            end
+                        end
+                    end)
+                end
             end
         end
     end
@@ -872,61 +980,102 @@ function activateSkynet(param)
     -- activate the radio menu to toggle IADS Status output
     if (iadsConfig.radioMenu) then
         debug_msg(string.format("IADS - Add radio menu %s", iadsConfig.name))
-        redIADS:addRadioMenu()
+        skynetIADSObject:addRadioMenu()
     end
 
     -- activate the IADS
-    redIADS:setupSAMSitesAndThenActivate()
+    skynetIADSObject:setupSAMSitesAndThenActivate()
 
-    radioCommandSpawnIADS:RemoveSubMenus()
-    local CommandIADSDetroy = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Delete", radioCommandSpawnIADS,
-        deleteIADSUnits, {iadsConfig,  redIADS, radioCommandSpawnIADS})
+    parentMenu:RemoveSubMenus()
+    local CommandIADSDetroy = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Delete", parentMenu,
+        deleteIADSUnits, { iadsConfig, skynetIADSObject, parentMenu })
+    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Show IADS Status",
+            parentMenu, skynetUpdateDisplay, {skynetIADSObject, 'IADSStatus', true})
+    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Hide IADS Status",
+            parentMenu, skynetUpdateDisplay, {skynetIADSObject, 'IADSStatus', false})
+    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Show contacts",
+            parentMenu, skynetUpdateDisplay, {skynetIADSObject, 'contacts', true})
+    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Hide contacts",
+            parentMenu, skynetUpdateDisplay, {skynetIADSObject, 'contacts', false})
     local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Disable Skynet",
-        radioCommandSpawnIADS, deactivateSkynet, {iadsConfig, redIADS, radioCommandSpawnIADS})
-    MESSAGE:NewType(string.format("Skynet of %s activate in 60 secondes", iadsConfig.name), MESSAGE.Type.Information):ToBlue()
+            parentMenu, deactivateSkynet, { iadsConfig, skynetIADSObject, parentMenu })
+    MESSAGE:NewType(string.format("Skynet of %s activate in 60 secondes", iadsConfig.name), MESSAGE.Type.Information):ToCoalition(iadsConfig.benefit_coalition)
 end
 
 function SpawnIADS(param)
-    local radioCommandSpawnIADS = param[1]
+    local parentMenu = param[1]
     local iadsConfig = param[2]
-    local redIADS = param[3]
+    local skynetIADSObject = param[3]
     local iadsName = iadsConfig.name
     local nodesConfig = iadsConfig.nodes
 
     local samGroupsSpawned = {}
 
     for index, nodeConfig in ipairs(nodesConfig) do
-        local connection = nodeConfig.connection
-        local ewrList = nodeConfig.ewr
-        local samList = nodeConfig.sam
+        local ewrList = nodeConfig.ewrs
+        local siteList = nodeConfig.sites
         for index, ewrGroup in ipairs(ewrList) do
             local groupNameToSpawn = string.format("%s", ewrGroup)
             if (GROUP:FindByName(groupNameToSpawn) ~= nil) then
                 local spawnGroup = SPAWN:New(groupNameToSpawn)
                 debug_msg(string.format("SPAWN EWR : %s", groupNameToSpawn))
-                local groupSpawning = spawnGroup:Spawn()
+                local groupSpawning = spawnGroup:Spawn():OptionAlarmStateRed()
             else
                 debug_msg(string.format("EWR GROUP to spawn %s not found in mission", groupNameToSpawn))
             end
         end
-        for index, samGroup in ipairs(samList) do
-            local groupNameToSpawn = string.format("%s", samGroup)
-            if (GROUP:FindByName(groupNameToSpawn) ~= nil) then
-                local spawnGroup = SPAWN:New(groupNameToSpawn)
-                debug_msg(string.format("SPAWN SAM : %s", groupNameToSpawn))
-                samGroupsSpawned[index] = spawnGroup:Spawn()
-            else
-                debug_msg(string.format("SAM GROUP to spawn %s not found in mission", groupNameToSpawn))
+        for siteIndex, site in ipairs(siteList) do
+            if (type(site) == "string") then
+                local groupNameToSpawn = string.format("%s", site)
+                if (GROUP:FindByName(groupNameToSpawn) ~= nil) then
+                    local spawnGroup = SPAWN:New(groupNameToSpawn)
+                    debug_msg(string.format("SPAWN SAM : %s", groupNameToSpawn))
+                    samGroupsSpawned[index] = spawnGroup:Spawn():OptionAlarmStateRed()
+                else
+                    debug_msg(string.format("SAM GROUP to spawn %s not found in mission", groupNameToSpawn))
+                end
+            elseif (type(site) == "table") then
+                debug_msg(string.format("SAM in config file is table"))
+                local groupNameToSpawn = string.format("%s", site.sam)
+                if (GROUP:FindByName(groupNameToSpawn) ~= nil) then
+                    local spawnGroup = SPAWN:New(groupNameToSpawn)
+                    debug_msg(string.format("SPAWN SAM : %s", groupNameToSpawn))
+                    samGroupsSpawned[index] = spawnGroup:Spawn():OptionAlarmStateRed()
+                else
+                    debug_msg(string.format("SAM GROUP to spawn %s not found in mission", groupNameToSpawn))
+                end
+            end
+            if (type(site.pointDefenses) == "string") then
+                local pdGroupNameToSpawn = string.format("%s", site.pointDefenses)
+                if (GROUP:FindByName(pdGroupNameToSpawn) ~= nil) then
+                    local spawnGroup = SPAWN:New(pdGroupNameToSpawn)
+                    debug_msg(string.format("SPAWN SAM-PointDefense : %s", pdGroupNameToSpawn))
+                    spawnGroup:Spawn():OptionAlarmStateRed()
+                else
+                    debug_msg(string.format("SAM-PointDefense GROUP to spawn %s not found in mission", pdGroupNameToSpawn))
+                end
+            elseif (type(site.pointDefenses) == "table") then
+                local pdSamGroupsSpawned = {}
+                for pdindex, pdSamGroup in ipairs(site.pointDefenses) do
+                    local pdGroupNameToSpawn = string.format("%s", pdSamGroup)
+                    if (GROUP:FindByName(pdGroupNameToSpawn) ~= nil) then
+                        local spawnGroup = SPAWN:New(pdGroupNameToSpawn)
+                        debug_msg(string.format("SPAWN SAM-PointDefense : %s", pdGroupNameToSpawn))
+                        pdSamGroupsSpawned[pdindex] = spawnGroup:Spawn():OptionAlarmStateRed()
+                    else
+                        debug_msg(string.format("SAM-PointDefense GROUP to spawn %s not found in mission", pdGroupNameToSpawn))
+                    end
+                end
             end
         end
     end
 
     debug_msg(string.format("Spawn IADS : %s DONE", iadsName))
-    radioCommandSpawnIADS:RemoveSubMenus()
-    local CommandIADSDetroy = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Delete", radioCommandSpawnIADS,
-        deleteIADSUnits, {iadsConfig, radioCommandSpawnIADS})
+    parentMenu:RemoveSubMenus()
+    local CommandIADSDetroy = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Delete", parentMenu,
+        deleteIADSUnits, { iadsConfig, skynetIADSObject, parentMenu })
     local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Skynet Activation",
-        radioCommandSpawnIADS, activateSkynet, {iadsConfig, redIADS, radioCommandSpawnIADS})
+            parentMenu, activateSkynet, { iadsConfig, skynetIADSObject, parentMenu })
     MESSAGE:NewType(string.format("IADS Units %s in place", iadsName), MESSAGE.Type.Information):ToBlue()
 end
 
@@ -960,9 +1109,9 @@ function AddFacFunction(radioCommandSubRange, facRangeConfig, facSubRangeConfig)
     )
 end
 
-function AddIADSFunction(radioMenuSpawnIADS, iadsconfig, redIADS)
-    local RadioCommandAdd = MENU_COALITION_COMMAND:New(iadsconfig.benefit_coalition, "Spawn", radioMenuSpawnIADS,
-        SpawnIADS, {radioMenuSpawnIADS, iadsconfig, redIADS, AddIADSFunction})
+function AddIADSFunction(parentMenu, iadsconfig, skynetIADSObject)
+    local RadioCommandAdd = MENU_COALITION_COMMAND:New(iadsconfig.benefit_coalition, "Spawn", parentMenu,
+        SpawnIADS, { parentMenu, iadsconfig, skynetIADSObject})
 end
 
 env.info('JTFF-SHAREDLIB: shared library loaded succesfully')

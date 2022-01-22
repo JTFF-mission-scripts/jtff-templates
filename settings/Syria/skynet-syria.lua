@@ -3,47 +3,138 @@ SkynetConfig = {
         name = "Syrian IADS",
         enable = true,
         benefit_coalition = coalition.side.BLUE,
-        radioMenu = true,
         headQuarter = {"IADS_QG"},
         nodes = {
             {
                 connection = "Node_Aleppo",
-                ewr = {"EWR_Kuweires"},
-                sam = {"SAM-SA-2-Aleppo", "SAM-SA-3-Aleppo", "SAM-SA-3-Kuweires", "SAM-SA-3-WestAleppo"}
+                ewrs = {"EWR_Kuweires"},
+                sites = {
+                    {
+                        sam = "SAM-SA-2-Aleppo",
+                    },
+                    {
+                        sam = "SAM-SA-3-Aleppo",
+                    },
+                    {
+                        sam = "SAM-SA-3-Kuweires",
+                    },
+                    {
+                        sam = "SAM-SA-3-WestAleppo",
+                    },
+                }
             }, {
                 connection = "Node_Latakia",
-                ewr = {"EWR_Latakia"},
-                sam = {"SAM-SA-2-Latakia", "SAM-SA-3-Jablah", "SAM-SA-3-Latakia"}
+                ewrs = {"EWR_Latakia"},
+                sites = {
+                    {
+                        sam = "SAM-SA-2-Latakia",
+                    },
+                    {
+                        sam = "SAM-SA-3-Jablah",
+                    },
+                    {
+                        sam = "SAM-SA-3-Latakia",
+                    },
+                }
             }, {
                 connection = "Node_Baniyas",
-                ewr = {"EWR_Baniyas"},
-                sam = {"SAM-SA-2-Tartus", "SAM-SA-3-Tartus", "SAM-SA-3-ReneMouawad"}
+                ewrs = {"EWR_Baniyas"},
+                sites = {
+                    {
+                        sam = "SAM-SA-2-Tartus",
+                    },
+                    {
+                        sam = "SAM-SA-3-Tartus",
+                    },
+                    {
+                        sam = "SAM-SA-3-ReneMouawad",
+                    },
+                },
             }, {
                 connection = "Node_Hama",
-                ewr = {"EWR_Hama"},
-                sam = {"SAM-SA-5-Baniyas", "SAM-SA-5-Tartus"}
+                ewrs = {"EWR_Hama"},
+                sites = {
+                    {
+                        sam = "SAM-SA-5-Baniyas",
+                    },
+                    {
+                        sam = "SAM-SA-5-Tartus",
+                    },
+                },
             }, {
                 connection = "Node_Tiyas",
-                ewr = {"EWR_Tiyas"},
-                sam = {"SAM-SA-2-Tiyas", "SAM-SA-3-Tiyas", "SAM-SA-3-SouthTiyas"}
+                ewrs = {"EWR_Tiyas"},
+                sites = {
+                    {
+                        sam = "SAM-SA-2-Tiyas",
+                    },
+                    {
+                        sam = "SAM-SA-3-Tiyas",
+                    },
+                    {
+                        sam = "SAM-SA-3-SouthTiyas",
+                    },
+                },
             }, {
                 connection = "Node_Homs",
-                ewr = {"EWR_Damascus_North"},
-                sam = {
-                    "SAM-SA-2-Homs", "SAM-SA-3-Homs", "SAM-SA-3-SouthHoms", "SAM-SA-5-Homs", "SAM-SA-6-Homs",
-                    "SAM-SA-6-Shayrat"
-                }
+                ewrs = {"EWR_Damascus_North"},
+                sites = {
+                    {
+                        sam = "SAM-SA-2-Homs",
+                    },
+                    {
+                        sam = "SAM-SA-3-Homs",
+                    },
+                    {
+                        sam = "SAM-SA-3-SouthHoms",
+                    },
+                    {
+                        sam = "SAM-SA-5-Homs",
+                    },
+                    {
+                        sam = "SAM-SA-6-Homs",
+                    },
+                    {
+                        sam = "SAM-SA-6-Shayrat",
+                    },
+                },
             }, {
                 connection = "Node_Damascus",
-                ewr = {"EWR_Damascus_West", "EWR_Sayqal"},
-                sam = {
-                    "SAM-SA-2-Marj", "SAM-SA-2-Damascus", "SAM-SA-3-Damascus", "SAM-SA-5-Khalkhalah", "SAM-SA-5-Damascus",
-                    "SAM-SA-6-Damascus", "SAM-SA-6-Mezzeh", "SAM-SA-2-Dumayr"
-                }
+                ewrs = {"EWR_Damascus_West", "EWR_Sayqal"},
+                sites = {
+                    {
+                        sam = "SAM-SA-2-Marj",
+                    },
+                    {
+                        sam = "SAM-SA-2-Damascus",
+                    },
+                    {
+                        sam = "SAM-SA-3-Damascus",
+                    },
+                    {
+                        sam = "SAM-SA-5-Khalkhalah",
+                    },
+                    {
+                        sam = "SAM-SA-5-Damascus",
+                    },
+                    {
+                        sam = "SAM-SA-6-Damascus",
+                    },
+                    {
+                        sam = "SAM-SA-6-Mezzeh",
+                    },
+                    {
+                        sam = "SAM-SA-2-Dumayr",
+                    },
+                },
             }, {
                 connection = "Node_Thalah",
-                ewr = {"EWR_Thalah"},
-                sam = {"SAM-SA-2-Thalah"}
+                ewrs = {"EWR_Thalah"},
+                sites = {
+                    {
+                        sam = "SAM-SA-2-Thalah",
+                    },
+                },
             }
         }
     },
@@ -51,60 +142,113 @@ SkynetConfig = {
         name = "Syrian IADS Light",
         enable = true,
         benefit_coalition = coalition.side.BLUE,
-        radioMenu = true,
         headQuarter = {"IADS_QG"},
         nodes = {
             {
                 connection = "Node_Aleppo",
-                ewr = {"EWR_Kuweires"},
-                sam = {"SAM-SA-2-Aleppo", "SAM-SA-3-Aleppo"}
+                ewrs = {"EWR_Kuweires"},
+                sites = {
+                    {
+                        sam = "SAM-SA-2-Aleppo",
+                        harmDetectionChance = 95,
+                        goLiveRangePercent = 75,
+                        actAsEw = true,
+                        pointDefenses = {
+                            "SAM-SA-15-Aleppo",
+                            "SAM-SA-15-Aleppo-1",
+                            "SAM-SA-15-Aleppo-2",
+                        }
+                    },
+                    {
+                        sam = "SAM-SA-3-Aleppo",
+                    }
+                },
             }, {
                 connection = "Node_Latakia",
-                ewr = {"EWR_Latakia"},
-                sam = {"SAM-SA-2-Latakia", "SAM-SA-3-Jablah"}
+                ewrs = {"EWR_Latakia"},
+                sites = {
+                    {
+                        sam = "SAM-SA-2-Latakia",
+                    },
+                    {
+                        sam = "SAM-SA-3-Jablah",
+                    }
+                },
             }, {
                 connection = "Node_Baniyas",
-                ewr = {"EWR_Baniyas"},
-                sam = {"SAM-SA-2-Tartus", "SAM-SA-3-Tartus"}
+                ewrs = {"EWR_Baniyas"},
+                sites = {
+                    {
+                        sam = "SAM-SA-2-Tartus",
+                    },
+                    {
+                        sam = "SAM-SA-3-Tartus",
+                    }
+                },
             }, {
                 connection = "Node_Hama",
-                ewr = {"EWR_Hama"},
-                sam = {"SAM-SA-5-Tartus"}
+                ewrs = {"EWR_Hama"},
+                sites = {
+                    {
+                        sam = "SAM-SA-5-Tartus",
+                        harmDetectionChance = 100,
+                        goLiveRangePercent = 80,
+                        actAsEw = true,
+                    },
+                },
             }, {
                 connection = "Node_Tiyas",
-                ewr = {"EWR_Tiyas"},
-                sam = {"SAM-SA-2-Tiyas", "SAM-SA-3-SouthTiyas"}
+                ewrs = {"EWR_Tiyas"},
+                sites = { "SAM-SA-2-Tiyas", "SAM-SA-3-SouthTiyas"},
             }, {
                 connection = "Node_Homs",
-                ewr = {"EWR_Damascus_North"},
-                sam = {
-                    "SAM-SA-2-Homs", "SAM-SA-3-Homs", "SAM-SA-5-Homs", "SAM-SA-6-Homs"
-                }
+                ewrs = {"EWR_Damascus_North"},
+                sites = {
+                    "SAM-SA-2-Homs",
+                    "SAM-SA-3-Homs",
+                    "SAM-SA-5-Homs",
+                    "SAM-SA-6-Homs",
+                },
             }, {
                 connection = "Node_Damascus",
-                ewr = {"EWR_Damascus_West", "EWR_Sayqal"},
-                sam = {
-                    "SAM-SA-2-Damascus", "SAM-SA-3-Damascus", "SAM-SA-5-Damascus",
+                ewrs = {"EWR_Damascus_West", "EWR_Sayqal"},
+                sites = {
+                    "SAM-SA-2-Damascus",
+                    "SAM-SA-3-Damascus",
+                    "SAM-SA-5-Damascus",
                     "SAM-SA-6-Damascus"
-                }
+                },
             }, {
                 connection = "Node_Thalah",
-                ewr = {"EWR_Thalah"},
-                sam = {"SAM-SA-2-Thalah"}
+                ewrs = {"EWR_Thalah"},
+                sites = {"SAM-SA-2-Thalah"},
             }
         }
     },
     {
-        name = "Tazz IADS",
+        name = "Bassel El Assad IADS",
         enable = true,
         benefit_coalition = coalition.side.BLUE,
-        radioMenu = true,
         headQuarter = {"IADS_QG1"},
         nodes = {
             {
                 connection = "IADS_QG1",
-                ewr = {"EW_NorthBassel", "EW_SouthBassel"},
-                sam = {"SAM1 - SA-15-1", "SAM1 - SA-17M1-2", "SAM1 - SA-19", "SAM - SAM LOW ALTITUDE"}
+                ewrs = {"EW_NorthBassel", "EW_SouthBassel"},
+                sites = {
+                    {
+                        sam = "SAM1 - SA-17M1-2",
+                        harmDetectionChance = 65,
+                        goLiveRangePercent = 60,
+                        pdharmDetectionChance = 90,
+                        actAsEw = false,
+                        pointDefenses = "SAM1 - SA-15-1"
+                    },
+                    {
+                        sam = "SAM1 - SA-19",
+                        goLiveRangePercent = 70,
+                    },
+                    "SAM - SAM LOW ALTITUDE",
+                },
             }
         }
     }
