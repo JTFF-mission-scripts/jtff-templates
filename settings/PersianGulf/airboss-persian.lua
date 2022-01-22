@@ -62,10 +62,39 @@ AirBossConfig = {
         handleAI = true,
         recoverytanker = 'nanny-2 #IFF:4776FR',
         recoveryops = {
-            mode = 'cyclic',
+            mode = 'alpha',
             cyclic = {
                 event_duration_minutes = 60,
                 event_ia_reserved_minutes = 15,
+            },
+            alpha = {
+                recoveries = {
+                    {
+                        recovery_start_minutes = 15,
+                        recovery_duration_minutes = 60,
+                        recovery_case = 1
+                    },
+                    {
+                        recovery_start_minutes = 105,
+                        recovery_duration_minutes = 60,
+                        recovery_case = 1
+                    },
+                    {
+                        recovery_start_minutes = 195,
+                        recovery_duration_minutes = 60,
+                        recovery_case = 1
+                    },
+                    {
+                        recovery_start_minutes = 195+90,
+                        recovery_duration_minutes = 60,
+                        recovery_case = 1
+                    },
+                    {
+                        recovery_start_minutes = 195+180,
+                        recovery_duration_minutes = 60,
+                        recovery_case = 1
+                    }
+                }
             }
         },
         tacan = {
