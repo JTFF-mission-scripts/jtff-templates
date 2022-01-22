@@ -154,9 +154,9 @@ SkynetConfig = {
                         goLiveRangePercent = 75,
                         actAsEw = true,
                         pointDefenses = {
-                            "SAM-SA-15-Aleppo",
                             "SAM-SA-15-Aleppo-1",
                             "SAM-SA-15-Aleppo-2",
+                            "SAM-SA-15-Aleppo-3",
                         }
                     },
                     {
@@ -229,25 +229,25 @@ SkynetConfig = {
         name = "Bassel El Assad IADS",
         enable = true,
         benefit_coalition = coalition.side.BLUE,
-        headQuarter = {"IADS_QG1"},
+        headQuarter = {"IADS_QG_Bassel"},
         nodes = {
             {
-                connection = "IADS_QG1",
+                connection = "IADS_QG_Bassel",
                 ewrs = {"EW_NorthBassel", "EW_SouthBassel"},
                 sites = {
                     {
-                        sam = "SAM1 - SA-17M1-2",
+                        sam = "SAM-SA-17M1-Bassel",
                         harmDetectionChance = 65,
                         goLiveRangePercent = 60,
                         pdharmDetectionChance = 90,
                         actAsEw = false,
-                        pointDefenses = "SAM1 - SA-15-1"
+                        pointDefenses = "SAM-SA-15-PD-Bassel"
                     },
                     {
-                        sam = "SAM1 - SA-19",
+                        sam = "SAM-SA-19-Bassel",
                         goLiveRangePercent = 70,
                     },
-                    "SAM - SAM LOW ALTITUDE",
+                    "SAM-ShortRange-Bassel",
                 },
             }
         }
