@@ -186,3 +186,33 @@ TankersConfig = {
         }
     }
 }
+OnDemandTankersConfig = {
+    --Texaco 3 KC135MPRS
+    {
+        enable = true,
+        type = "mprs",
+        benefit_coalition = coalition.side.BLUE,
+        baseUnit = AIRBASE.PersianGulf.Al_Dhafra_AB,
+        terminalType = AIRBASE.TerminalType.OpenBig,
+        groupName = 'TEXACO 3-1 #IFF:4275FR',
+        missionmaxduration = 135,
+        altitude = 25000,
+        speed = 420,
+        tacan = {
+            channel = 120,
+            morse = 'TX3',
+        },
+        freq = 317.5,
+        fuelwarninglevel = 15,
+        racetrack = {
+            front = 20,
+            back = 0
+        },
+        modex = 015,
+        callsign = {
+            alias = 'Texaco-3',
+            name = CALLSIGN.Tanker.Texaco,
+            number = 3
+        }
+    },
+}

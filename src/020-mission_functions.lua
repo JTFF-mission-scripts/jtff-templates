@@ -1114,4 +1114,49 @@ function AddIADSFunction(parentMenu, iadsconfig, skynetIADSObject)
         SpawnIADS, { parentMenu, iadsconfig, skynetIADSObject})
 end
 
+function triggerOnDemandTanker(type, maxtime, coord)
+    for index, OnDemandTanker in ipairs(OnDemandTankersConfig) do
+        if OnDemandTanker.type == type then
+            debug_msg(string.format('OnDemandTanker : Found type %s Tanker : %s Group!', type, OnDemandTanker.groupName))
+            local SpawnTanker = SPAWN:New(OnDemandTanker.groupName)
+            local TankerGroup = nil
+            local RefuelTask = nil
+            local OrbitTask = nil
+            local RTBAirbase = nil
+            local TankerRoute = {}
+            if (OnDemandTanker.baseUnit) then
+                TankerGroup = SpawnTanker:SpawnAtAirbase(AIRBASE:FindByName(OnDemandTanker.baseUnit))
+                TankerRoute[1] = AIRBASE:FindByName(OnDemandTanker.baseUnit):GetCoordinate():WaypointAirTakeOffParking()
+                RTBAirbase = AIRBASE:FindByName(OnDemandTanker.baseUnit)
+            else
+                TankerGroup = SpawnTanker:SpawnFromCoordinate(coord)
+                TankerRoute[1] = coord:SetAltitude(OnDemandTanker.altitude):WaypointAirFlyOverPoint(nil,OnDemandTanker.speed)
+                RTBAirbase = coord:GetClosestAirbase2(Airbase.Category.AIRDROME, OnDemandTanker.benefit_coalition)
+            end
+            RefuelTask = TankerGroup:EnRouteTaskTanker()
+            OrbitTask = TankerGroup:TaskControlled(
+                    TankerGroup:TaskOrbitCircle(OnDemandTanker.altitude, OnDemandTanker.speed),
+                    TankerGroup:TaskCondition( nil, nil, nil, nil, (maxtime) * 60, nil )
+            )
+            TankerRoute[2] = coord:SetAltitude(OnDemandTanker.altitude):WaypointAirTurningPoint(nil,OnDemandTanker.speed, {RefuelTask,OrbitTask}, "Refuel")
+            TankerRoute[3] = RTBAirbase:GetCoordinate():WaypointAirLanding(OnDemandTanker.speed, RTBAirbase)
+            TankerGroup:Route(TankerRoute)
+            if (OnDemandTanker.tacan) then
+                TankerGroup:CommandActivateBeacon(
+                        BEACON.Type.TACAN,
+                        BEACON.System.TACAN,
+                        UTILS.TACANToFrequency(OnDemandTanker.tacan.channel, "Y"),
+                        TankerGroup:GetUnits(1),
+                        OnDemandTanker.tacan.channel,
+                        "Y",
+                        true,
+                        OnDemandTanker.tacan.morse,
+                        true,
+                        5
+                )
+            end
+        end
+    end
+end
+
 env.info('JTFF-SHAREDLIB: shared library loaded succesfully')
