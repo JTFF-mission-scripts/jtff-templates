@@ -105,18 +105,21 @@ for index, tankerconfig in ipairs(TankersConfig) do
     end
 end
 
-local RestrToCoal = nil
+-- *****************************************************************************
+--                     **                OnDemand Tankers                     **
+--                     *********************************************************
+--local RestrToCoal = nil
 local MarkHandler = {}
-local DebugMode = true
+local DebugMode = false
 
 local CmdSymbol = "-"
 
 function MarkHandler:onEvent(event)
 
     if event.id == 25 then
-        trigger.action.outText(" ", 0, true)
+        --trigger.action.outText(" ", 0, true)
     elseif (event.id == 27 and string.find(event.text, CmdSymbol)) then
-        if (event.coalition == RestrToCoal or RestrToCoal == nil) then
+        --if (event.coalition == RestrToCoal or RestrToCoal == nil) then
             local full = nil
             local remString = nil
             local cmd = nil
@@ -198,7 +201,7 @@ function MarkHandler:onEvent(event)
                 end
                 triggerOnDemandTanker(param1, param2, mcoord)
             end
-        end
+        --end
     end
 
 end
