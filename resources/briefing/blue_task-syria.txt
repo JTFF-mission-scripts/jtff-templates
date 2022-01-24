@@ -10,3 +10,6 @@ Documentation here -> https://docs.google.com/document/d/16BSchDDEBZCKe3xUXBRrgP
 
 ** SAM IADS SA17 implemented at Bassel-El-Assad**
 MGRS = YE62
+
+** SAM IADS On Syria Territory
+Documentation on https://drive.google.com/drive/folders/1WRh9TvolEpLJy-c-IrJGYQNO7qzPu5S9?usp=sharing

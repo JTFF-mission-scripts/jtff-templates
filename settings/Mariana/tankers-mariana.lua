@@ -150,3 +150,5 @@ TankersConfig = {
         }
     }
 }
+
+OnDemandTankersConfig = {}

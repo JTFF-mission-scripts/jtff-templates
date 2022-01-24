@@ -5,7 +5,7 @@
 -- Generic Spawn object functions
 --
 env.info('JTFF-SHAREDLIB: shared library loading...')
-DEBUG_MSG = true
+DEBUG_MSG = false
 DEBUG_SQ_MSG = false
 DEBUG_DETECT_MSG = false
 map_marker = {}
@@ -35,18 +35,6 @@ function switchGroupImmortalStatus(group)
     group:SetCommandImmortal(status)
     BASE:SetState(group, "isImmortal", status)
     MESSAGE:NewType("Immortal status of your group : " .. tostring(status) , MESSAGE.Type.Update):ToGroup(group)
-end
-
-function destroy_group(group_name)
-    local set_group_alive = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
-    set_group_alive:ForEachGroupAlive(
-            function(group_alive)
-                debug_msg(string.format("Group %s just removed", group_alive:GetName()))
-                if (map_marker[group_alive:GetName()]) then
-                    COORDINATE:RemoveMark(map_marker[group_alive:GetName()])
-                end
-                group_alive:Destroy()
-            end )
 end
 
 
@@ -414,13 +402,14 @@ end
 
 function destroyGroup(group_name)
     local set_group_alive = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
-    set_group_alive:ForEachGroupAlive(function(group_alive)
-        debug_msg(string.format("Group %s just removed", group_alive:GetName()))
-        if (map_marker[group_alive:GetName()]) then
-            COORDINATE:RemoveMark(map_marker[group_alive:GetName()])
-        end
-        group_alive:Destroy()
-    end)
+    set_group_alive:ForEachGroupAlive(
+            function(group_alive)
+                debug_msg(string.format("Group %s just removed", group_alive:GetName()))
+                if (map_marker[group_alive:GetName()]) then
+                    COORDINATE:RemoveMark(map_marker[group_alive:GetName()])
+                end
+                group_alive:Destroy()
+            end )
 end
 
 function deleteSubRangeUnits(param)
@@ -454,23 +443,23 @@ function deleteIADSUnits(param)
         local sitesList = nodeConfig.sites
         for index, ewrGroup in ipairs(ewrList) do
             local groupNameToDelete = string.format("%s", ewrGroup)
-            destroy_group(groupNameToDelete)
+            destroyGroup(groupNameToDelete)
         end
         for siteindex, site in ipairs(sitesList) do
             if (type(site) == "string") then
                 local groupNameToDelete = string.format("%s", site)
-                destroy_group(groupNameToDelete)
+                destroyGroup(groupNameToDelete)
             elseif (type(site) == "table") then
                 local groupNameToDelete = string.format("%s", site.sam)
-                destroy_group(groupNameToDelete)
+                destroyGroup(groupNameToDelete)
             end
             if (type(site.pointDefenses) == "string") then
                 local groupNameToDelete = string.format("%s", site.pointDefenses)
-                destroy_group(groupNameToDelete)
+                destroyGroup(groupNameToDelete)
             elseif (type(site.pointDefenses) == "table") then
                 for pdIndex, pdSamGroupName in ipairs(site.pointDefenses) do
                     local groupNameToDelete = string.format("%s", pdSamGroupName)
-                    destroy_group(groupNameToDelete)
+                    destroyGroup(groupNameToDelete)
                 end
             end
         end
@@ -1112,6 +1101,227 @@ end
 function AddIADSFunction(parentMenu, iadsconfig, skynetIADSObject)
     local RadioCommandAdd = MENU_COALITION_COMMAND:New(iadsconfig.benefit_coalition, "Spawn", parentMenu,
         SpawnIADS, { parentMenu, iadsconfig, skynetIADSObject})
+end
+
+function triggerOnDemandTanker(type, maxtime, coord)
+    if (OnDemandTankersConfig) then
+        for index, OnDemandTanker in ipairs(OnDemandTankersConfig) do
+            if ((OnDemandTanker.type == type) and (OnDemandTanker.enable)) then
+                debug_msg(string.format('OnDemandTanker : Found type %s Tanker : %s Group!', type, OnDemandTanker.groupName))
+                local set_group_tanker = SET_GROUP:New():FilterActive():FilterPrefixes(OnDemandTanker.groupName):FilterOnce()
+                local aliveTankersGroupList = set_group_tanker:GetSetObjects()
+                local TankerGroup = nil
+                --local RefuelTask = nil
+                --local OrbitTask = nil
+                local RTBAirbase = nil
+                local TankerRoute = {}
+                if (OnDemandTanker.baseUnit) then
+                    RTBAirbase = AIRBASE:FindByName(OnDemandTanker.baseUnit)
+                else
+                    RTBAirbase = coord:GetClosestAirbase2(Airbase.Category.AIRDROME, OnDemandTanker.benefit_coalition)
+                end
+                if ( #aliveTankersGroupList > 0) then
+                    debug_msg(string.format('OnDemandTanker already in air : rerouting %s', OnDemandTanker.groupName))
+                    TankerGroup = aliveTankersGroupList[1]
+                    TankerGroup:ClearTasks()
+                    --RefuelTask = TankerGroup:EnRouteTaskTanker()
+                    --OrbitTask = TankerGroup:TaskControlled(
+                    --        TankerGroup:TaskOrbitCircle(
+                    --                UTILS.FeetToMeters(OnDemandTanker.altitude),
+                    --                UTILS.KnotsToMps(OnDemandTanker.speed)
+                    --        ),
+                    --        TankerGroup:TaskCondition(
+                    --                nil,
+                    --                nil,
+                    --                nil,
+                    --                nil,
+                    --                maxtime * 60,
+                    --                nil
+                    --        )
+                    --)
+                    table.insert(
+                            TankerRoute,
+                            coord
+                                    :SetAltitude(UTILS.FeetToMeters(OnDemandTanker.altitude))
+                                    :WaypointAirTurningPoint(
+                                    nil,
+                                    UTILS.KnotsToKmph(OnDemandTanker.speed),
+                                    {
+                                        {
+                                            id = 'Tanker',
+                                            params = {
+                                            }
+                                        },
+                                        {
+                                            id = 'ControlledTask',
+                                            params = {
+                                                task =
+                                                {
+                                                    id = 'Orbit',
+                                                    params = {
+                                                        pattern = AI.Task.OrbitPattern.CIRCLE,
+                                                        speed = UTILS.KnotsToMps(OnDemandTanker.speed),
+                                                        altitude = UTILS.FeetToMeters(OnDemandTanker.altitude)
+                                                    }
+                                                },
+                                                stopCondition = {
+                                                    duration = maxtime * 60
+                                                }
+                                            },
+                                        },
+                                    },
+                                    "Refuel"
+                            )
+                    )
+                    table.insert(
+                            TankerRoute,
+                            RTBAirbase
+                                    :GetCoordinate()
+                                    :WaypointAirLanding(
+                                    UTILS.KnotsToKmph(OnDemandTanker.speed),
+                                    RTBAirbase
+                            )
+                    )
+                else
+                    debug_msg(string.format('OnDemandTanker Spawning %s', OnDemandTanker.groupName))
+                    local SpawnTanker = SPAWN:New(OnDemandTanker.groupName)
+                    if (OnDemandTanker.freq) then
+                        SpawnTanker:InitRadioFrequency(OnDemandTanker.freq)
+                        SpawnTanker:InitRadioModulation("AM")
+                    end
+                    if (OnDemandTanker.modex) then
+                        SpawnTanker:InitModex(OnDemandTanker.modex)
+                    end
+                    if (OnDemandTanker.baseUnit) then
+                        TankerGroup = SpawnTanker:SpawnAtAirbase(
+                                AIRBASE:FindByName(OnDemandTanker.baseUnit),
+                                SPAWN.Takeoff.Hot,
+                                nil,
+                                OnDemandTanker.terminalType
+                        )
+                        table.insert(TankerRoute,
+                                AIRBASE
+                                        :FindByName(OnDemandTanker.baseUnit)
+                                        :GetCoordinate()
+                                        :WaypointAirTakeOffParkingHot()
+                        )
+                    else
+                        TankerGroup = SpawnTanker:SpawnFromCoordinate(
+                                coord
+                                        :GetRandomCoordinateInRadius(
+                                        UTILS.NMToMeters(30),
+                                        UTILS.NMToMeters(20)
+                                )
+                                        :SetAltitude(
+                                        UTILS.FeetToMeters(OnDemandTanker.altitude)
+                                )
+                        )
+                    end
+                    --RefuelTask = TankerGroup:EnRouteTaskTanker()
+                    --OrbitTask = TankerGroup:TaskControlled(
+                    --        TankerGroup:TaskOrbitCircle(
+                    --                UTILS.FeetToMeters(OnDemandTanker.altitude),
+                    --                UTILS.KnotsToMps(OnDemandTanker.speed)
+                    --        ),
+                    --        TankerGroup:TaskCondition(
+                    --                nil,
+                    --                nil,
+                    --                nil,
+                    --                nil,
+                    --                (maxtime) * 60,
+                    --                nil
+                    --        )
+                    --)
+                    table.insert(TankerRoute,
+                            coord
+                                    :SetAltitude(UTILS.FeetToMeters(OnDemandTanker.altitude))
+                                    :WaypointAirTurningPoint(
+                                    nil,
+                                    UTILS.KnotsToKmph(OnDemandTanker.speed),
+                                    {
+                                        {
+                                            id = 'Tanker',
+                                            params = {
+                                            }
+                                        },
+                                        {
+                                            id = 'ControlledTask',
+                                            params = {
+                                                task =
+                                                {
+                                                    id = 'Orbit',
+                                                    params = {
+                                                        pattern = AI.Task.OrbitPattern.CIRCLE,
+                                                        speed = UTILS.KnotsToMps(OnDemandTanker.speed),
+                                                        altitude = UTILS.FeetToMeters(OnDemandTanker.altitude)
+                                                    }
+                                                },
+                                                stopCondition = {
+                                                    duration = maxtime * 60
+                                                }
+                                            },
+                                        },
+                                    },
+                                    "Refuel"
+                            )
+                    )
+                    table.insert(TankerRoute,
+                            RTBAirbase
+                                    :GetCoordinate()
+                                    :WaypointAirLanding(
+                                    UTILS.KnotsToKmph(OnDemandTanker.speed),
+                                    RTBAirbase,
+                                    {},
+                                    'RTB'
+                            )
+                    )
+                end
+                TankerGroup:Route(TankerRoute)
+                TankerGroup:CommandEPLRS(true, 4)
+                if (OnDemandTanker.tacan) then
+                    TankerGroup:CommandActivateBeacon(
+                            BEACON.Type.TACAN,
+                            BEACON.System.TACAN,
+                            UTILS.TACANToFrequency(OnDemandTanker.tacan.channel, "Y"),
+                            TankerGroup:GetUnits(1),
+                            OnDemandTanker.tacan.channel,
+                            "Y",
+                            true,
+                            OnDemandTanker.tacan.morse,
+                            true,
+                            5
+                    )
+                end
+                if (OnDemandTanker.callsign) then
+                    TankerGroup:CommandSetCallsign(OnDemandTanker.callsign.name, OnDemandTanker.callsign.number, 2)
+                end
+                if (map_marker[TankerGroup:GetName()]) then
+                    COORDINATE:RemoveMark(map_marker[TankerGroup:GetName()])
+                end
+                map_marker[TankerGroup:GetName()] = coord:MarkToCoalition(
+                        string.format(
+                                'OnDemand Tanker %s',
+                                OnDemandTanker.type
+                        ),
+                        OnDemandTanker.benefit_coalition,
+                        true,
+                        'OnDemand Tanker %s is Activated'
+                )
+                TankerGroup:HandleEvent(EVENTS.Land)
+                TankerGroup:HandleEvent(EVENTS.Crash)
+                TankerGroup:HandleEvent(EVENTS.Dead)
+                function TankerGroup:OnEventLand(EventData)
+                    COORDINATE:RemoveMark(map_marker[self:GetName()])
+                end
+                function TankerGroup:OnEventCrash(EventData)
+                    COORDINATE:RemoveMark(map_marker[self:GetName()])
+                end
+                function TankerGroup:OnEventDead(EventData)
+                    COORDINATE:RemoveMark(map_marker[self:GetName()])
+                end
+            end
+        end
+    end
 end
 
 env.info('JTFF-SHAREDLIB: shared library loaded succesfully')

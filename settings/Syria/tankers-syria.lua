@@ -150,3 +150,75 @@ TankersConfig = {
         }
     }
 }
+
+OnDemandTankersConfig = {
+    --Texaco 3 KC135MPRS
+    {
+        enable = true,
+        type = "mprs",
+        benefit_coalition = coalition.side.BLUE,
+        baseUnit = AIRBASE.Syria.Incirlik,
+        terminalType = AIRBASE.TerminalType.OpenBig,
+        groupName = 'TEXACO 3-1 #IFF:4275FR',
+        missionmaxduration = 135,
+        altitude = 26000,
+        speed = 420,
+        tacan = {
+            channel = 106,
+            morse = 'TX3',
+        },
+        freq = 317.5,
+        modex = 23,
+        callsign = {
+            alias = 'Texaco-3',
+            name = CALLSIGN.Tanker.Texaco,
+            number = 3
+        }
+    },
+    --Arco 7 KC135 Fast
+    {
+        enable = true,
+        type = "kc135",
+        benefit_coalition = coalition.side.BLUE,
+        baseUnit = AIRBASE.Syria.Incirlik,
+        terminalType = AIRBASE.TerminalType.OpenBig,
+        groupName = 'ARCO 7-1 #IFF:7542FR',
+        missionmaxduration = 135,
+        altitude = 23000,
+        speed = 420,
+        tacan = {
+            channel = 107,
+            morse = 'AR7',
+        },
+        freq = 276.2,
+        modex = 029,
+        callsign = {
+            alias = 'Arco-7',
+            name = CALLSIGN.Tanker.Arco,
+            number = 7
+        }
+    },
+    --Shell 4 KC130
+    {
+        enable = true,
+        type = "kc130",
+        benefit_coalition = coalition.side.BLUE,
+        baseUnit = AIRBASE.Syria.Incirlik,
+        terminalType = AIRBASE.TerminalType.OpenBig,
+        groupName = 'SHELL 4-1 #IFF:7377FR',
+        missionmaxduration = 105,
+        altitude = 15000,
+        speed = 230,
+        tacan = {
+            channel = 108,
+            morse = 'SH4',
+        },
+        freq = 276.2,
+        modex = 018,
+        callsign = {
+            alias = 'Shell',
+            name = CALLSIGN.Tanker.Shell,
+            number = 4
+        }
+    }
+}
