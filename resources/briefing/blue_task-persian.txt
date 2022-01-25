@@ -1,23 +1,25 @@
 --------------------
 OnDemand TANKER BLUE à placer avec un marker en vue F10 :
 avec xxx = le nombre de minutes ou le tanker doit orbiter sur zone
+avec yyy = le FL du tanker
+avec zzz = la vitesse en noeud du tanker
 
-TEXACO 3-1 : MPRS 107Y ; 26'000 feet ; 317.500 Mhz
-commande = -tanker-mprs-xxx
+TEXACO 3-1 : MPRS 107Y ; 317.500 Mhz
+commande = -tanker-tx3-xxx-yyy-zzz
 
-ARCO 7-1 : KC135 108Y : 23'000 feet : 276.200 Mhz
-commande = -tanker-kc135-xxx
+ARCO 7-1 : KC135 108Y ; 276.200 Mhz
+commande = -tanker-ar7-xxx-yyy-zzz
 
-SHEL 4-1 : KC130 109Y : 15'000 feet : 276.200 Mhz
+TEXACO 2-1 : MPRS 101Y ; 317.500 Mhz
+commande = -tanker-tx2-xxx-yyy-zzz
 
+ARCO 6-1 : KC135 102Y ; 276.200 Mhz
+commande = -tanker-ar6-xxx-yyy-zzz
+
+SHEL 3-1 : KC135 103Y ; 276.200 Mhz
+commande = -tanker-sh3-xxx-yyy-zzz
 --------------------
 TANKER Fixes  :
-
-TEXACO 2-1 : MPRS 101Y ; 25'000 feet ; 317.500 Mhz
-
-ARCO 6-1 : KC135 102Y : 23'000 feet : 276.200 Mhz
-
-SHEL 3-1 (A-10) : KC135 103Y : 15'000 feet : 276.200 Mhz
 
 SHELL 1-1: S-3 à proximité du CSG-1 ; 104Y ; 8000 feet ; 264.250 Mhz
 

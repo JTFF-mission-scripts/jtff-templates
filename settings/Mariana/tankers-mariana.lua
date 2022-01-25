@@ -59,16 +59,16 @@ TankersConfig = {
             number = 7
         }
     },
+}
+
+OnDemandTankersConfig = {
     {
         enable = true,
-        autorespawn = true,
-        patternUnit = 'sea-anchor-2-1',
+        type = "tx2",
         benefit_coalition = coalition.side.BLUE,
         baseUnit = AIRBASE.MarianaIslands.Andersen_AFB,
         terminalType = AIRBASE.TerminalType.OpenBig,
         groupName = 'TEXACO 2-1 #IFF:4274FR',
-        airboss_recovery = false,
-        --escortgroupname = 'jolly_hornet #IFF:7323FR',
         missionmaxduration = 135,
         altitude = 26000,
         speed = 420,
@@ -77,11 +77,6 @@ TankersConfig = {
             morse = 'TEX',
         },
         freq = 317.5,
-        fuelwarninglevel = 15,
-        racetrack = {
-            front = 40,
-            back = 0
-        },
         modex = 012,
         callsign = {
             alias = 'Texaco',
@@ -89,16 +84,14 @@ TankersConfig = {
             number = 2
         }
     },
+    -- ARCO 6 - KC135
     {
         enable = true,
-        autorespawn = true,
-        patternUnit = 'sea-anchor-3-1',
+        type = "ar6",
         benefit_coalition = coalition.side.BLUE,
         baseUnit = AIRBASE.MarianaIslands.Andersen_AFB,
         terminalType = AIRBASE.TerminalType.OpenBig,
         groupName = 'ARCO 6-1 #IFF:7541FR',
-        airboss_recovery = false,
-        --escortgroupname = 'jolly_hornet #IFF:7323FR',
         missionmaxduration = 135,
         altitude = 27000,
         speed = 420,
@@ -107,11 +100,6 @@ TankersConfig = {
             morse = 'ARC',
         },
         freq = 276.2,
-        fuelwarninglevel = 15,
-        racetrack = {
-            front = 55,
-            back = 0
-        },
         modex = 015,
         callsign = {
             alias = 'Arco',
@@ -119,16 +107,14 @@ TankersConfig = {
             number = 6
         }
     },
+    -- SHEL 3 - KC135
     {
         enable = true,
-        autorespawn = true,
-        patternUnit = 'sea-anchor-4-1',
+        type = "sh3",
         benefit_coalition = coalition.side.BLUE,
         baseUnit = AIRBASE.MarianaIslands.Andersen_AFB,
         terminalType = AIRBASE.TerminalType.OpenBig,
         groupName = 'SHELL 3-1 #IFF:7367FR',
-        airboss_recovery = false,
-        --escortgroupname = 'jolly_hornet #IFF:7323FR',
         missionmaxduration = 105,
         altitude = 15000,
         speed = 230,
@@ -137,11 +123,6 @@ TankersConfig = {
             morse = 'SHK',
         },
         freq = 276.2,
-        fuelwarninglevel = 15,
-        racetrack = {
-            front = 40,
-            back = 0
-        },
         modex = 016,
         callsign = {
             alias = 'Shell',
@@ -150,5 +131,3 @@ TankersConfig = {
         }
     }
 }
-
-OnDemandTankersConfig = {}

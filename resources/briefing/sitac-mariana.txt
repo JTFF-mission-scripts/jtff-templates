@@ -10,12 +10,6 @@ MEA 320 - 2631
 TNT 737 - 3242
 
 
-* Tankers :
-Texaco-2-1 - Basket - 101Y - FL260
-Arco-6-1 - Boom - 102Y - FL270
-Shell-3-1 - Boom - 103Y - FL150
-
-
 Naval Ops:
 * CVN71 - 71X - ICLS11
 * AIRBOSS Activé : https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Ops.Airboss.html
