@@ -15,22 +15,6 @@ Quantas 747 - 3212
 TNT 737 - 3242
 Virgin 747 - 7377
 
---------------------
-Tankers Fixes :
-Texaco - Basket - 101Y - FL260
-Arco - Boom - 102Y - FL270
-Arco2 - Boom - 103Y - FL150
---------------------
-OnDemand TANKER BLUE à placer avec un marker en vue F10 :
-avec xxx = le nombre de minutes ou le tanker doit orbiter sur zone
-
-* TEXACO 3-1 : MPRS 106Y ; 26'000 feet ; 317.500 Mhz
-commande = -tanker-mprs-xxx
-* ARCO 7-1 : KC135 107Y : 23'000 feet : 276.200 Mhz
-commande = -tanker-kc135-xxx
-* SHELL 4-1 : KC130 108Y : 15'000 feet : 276.200 Mhz
-
-
 Naval Ops:
 * CVN71 - 71X - ICLS11
 * AIRBOSS Activé : https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Ops.Airboss.html

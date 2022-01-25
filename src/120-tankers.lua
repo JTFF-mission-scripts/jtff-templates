@@ -185,12 +185,12 @@ function MarkHandler:onEvent(event)
                 cmd = full
             end
             if DebugMode == true then
-                trigger.action.outText("Voller Text = " .. full, 10)
-                trigger.action.outText("Befehl = " .. cmd, 10)
-                if param1 ~= nil then trigger.action.outText("Parameter1 = " .. param1, 10) end
-                if param2 ~= nil then trigger.action.outText("Parameter2 = " .. param2, 10) end
-                if param3 ~= nil then trigger.action.outText("Parameter3 = " .. param3, 10) end
-                if param4 ~= nil then trigger.action.outText("Parameter4 = " .. param4, 10) end
+                trigger.action.outText("Full Text = " .. full, 10)
+                trigger.action.outText("Command = " .. cmd, 10)
+                if param1 ~= nil then trigger.action.outText("type = " .. param1, 10) end
+                if param2 ~= nil then trigger.action.outText("Duration = " .. param2, 10) end
+                if param3 ~= nil then trigger.action.outText("FlightLevel = " .. param3, 10) end
+                if param4 ~= nil then trigger.action.outText("Speed = " .. param4, 10) end
                 if param5 ~= nil then trigger.action.outText("Parameter5 = " .. param5, 10) end
                 if param6 ~= nil then trigger.action.outText("Parameter6 = " .. param6, 10) end
             end
@@ -199,7 +199,7 @@ function MarkHandler:onEvent(event)
                 if DebugMode == true then
                     trigger.action.outText("DEBUG: On Demand Tanker Started!", 10)
                 end
-                triggerOnDemandTanker(param1, param2, mcoord)
+                triggerOnDemandTanker(param1, param2, param3, param4, mcoord)
             end
         --end
     end

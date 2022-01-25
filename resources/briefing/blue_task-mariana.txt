@@ -7,3 +7,16 @@ Champs dde tir sur l'ile de Medinilla
 
 **Zone d'entrainement A2A Navy **:
 MGRS = TC+TD+TE
+
+--------------------
+OnDemand TANKER BLUE à placer avec un marker en vue F10 :
+avec xxx = le nombre de minutes ou le tanker doit orbiter sur zone
+avec yyy = le FL du tanker
+avec zzz = la vitesse en noeud du tanker
+
+* TEXACO 2-1 : MPRS 101Y ; 317.500 Mhz
+commande = -tanker-tx2-xxx-yyy-zzz
+* ARCO 6-1 : KC135 102Y : 276.200 Mhz
+commande = -tanker-ar6-xxx-yyy-zzz
+* SHELL 3-1 : KC130 103Y : 276.200 Mhz
+commande = -tanker-sh3-xxx-yyy-zzz

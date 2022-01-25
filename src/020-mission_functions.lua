@@ -1103,11 +1103,17 @@ function AddIADSFunction(parentMenu, iadsconfig, skynetIADSObject)
         SpawnIADS, { parentMenu, iadsconfig, skynetIADSObject})
 end
 
-function triggerOnDemandTanker(type, maxtime, coord)
+function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
     if (OnDemandTankersConfig) then
         for index, OnDemandTanker in ipairs(OnDemandTankersConfig) do
             if ((OnDemandTanker.type == type) and (OnDemandTanker.enable)) then
                 debug_msg(string.format('OnDemandTanker : Found type %s Tanker : %s Group!', type, OnDemandTanker.groupName))
+                if (askedSpeed and askedSpeed > 0) then
+                    OnDemandTanker.speed = askedSpeed
+                end
+                if (askedFL and askedFL > 0) then
+                    OnDemandTanker.altitude = askedFL * 100
+                end
                 local set_group_tanker = SET_GROUP:New():FilterActive():FilterPrefixes(OnDemandTanker.groupName):FilterOnce()
                 local aliveTankersGroupList = set_group_tanker:GetSetObjects()
                 local TankerGroup = nil

@@ -59,103 +59,13 @@ TankersConfig = {
             number = 2
         }
     },
-    {
-        enable = true,
-        autorespawn = true,
-        patternUnit = 'sea-anchor-2-1',
-        benefit_coalition = coalition.side.BLUE,
-        baseUnit = AIRBASE.Syria.Incirlik,
-        terminalType = AIRBASE.TerminalType.OpenBig,
-        groupName = 'TEXACO 1-1 #IFF:4274FR',
-        airboss_recovery = false,
-        --escortgroupname = 'jolly_hornet #IFF:7323FR',
-        missionmaxduration = 135,
-        altitude = 26000,
-        speed = 420,
-        tacan = {
-            channel = 101,
-            morse = 'TEX',
-        },
-        freq = 317.5,
-        fuelwarninglevel = 15,
-        racetrack = {
-            front = 25,
-            back = 0
-        },
-        modex = 012,
-        callsign = {
-            alias = 'Texaco',
-            name = CALLSIGN.Tanker.Texaco,
-            number = 1
-        }
-    },
-    {
-        enable = true,
-        autorespawn = true,
-        patternUnit = 'ground-anchor-1-1',
-        benefit_coalition = coalition.side.BLUE,
-        baseUnit = AIRBASE.Syria.Incirlik,
-        terminalType = AIRBASE.TerminalType.OpenBig,
-        groupName = 'ARCO 1-1 #IFF:7541FR',
-        airboss_recovery = false,
-        --escortgroupname = 'jolly_hornet #IFF:7323FR',
-        missionmaxduration = 135,
-        altitude = 27000,
-        speed = 420,
-        tacan = {
-            channel = 102,
-            morse = 'ARC',
-        },
-        freq = 276.2,
-        fuelwarninglevel = 15,
-        racetrack = {
-            front = 55,
-            back = 0
-        },
-        modex = 012,
-        callsign = {
-            alias = 'Arco',
-            name = CALLSIGN.Tanker.Arco,
-            number = 1
-        }
-    },
-    {
-        enable = true,
-        autorespawn = true,
-        patternUnit = 'sea-anchor--3-1',
-        benefit_coalition = coalition.side.BLUE,
-        baseUnit = AIRBASE.Syria.Incirlik,
-        terminalType = AIRBASE.TerminalType.OpenBig,
-        groupName = 'ARCO 2-1 #IFF:7367FR',
-        airboss_recovery = false,
-        --escortgroupname = 'jolly_hornet #IFF:7323FR',
-        missionmaxduration = 105,
-        altitude = 15000,
-        speed = 230,
-        tacan = {
-            channel = 103,
-            morse = 'ARK',
-        },
-        freq = 276.2,
-        fuelwarninglevel = 15,
-        racetrack = {
-            front = 40,
-            back = 0
-        },
-        modex = 013,
-        callsign = {
-            alias = 'Arco',
-            name = CALLSIGN.Tanker.Arco,
-            number = 2
-        }
-    }
 }
 
 OnDemandTankersConfig = {
     --Texaco 3 KC135MPRS
     {
         enable = true,
-        type = "mprs",
+        type = "tx3",
         benefit_coalition = coalition.side.BLUE,
         baseUnit = AIRBASE.Syria.Incirlik,
         terminalType = AIRBASE.TerminalType.OpenBig,
@@ -175,10 +85,10 @@ OnDemandTankersConfig = {
             number = 3
         }
     },
-    --Arco 7 KC135 Fast
+    --Arco 7 KC135
     {
         enable = true,
-        type = "kc135",
+        type = "ar7",
         benefit_coalition = coalition.side.BLUE,
         baseUnit = AIRBASE.Syria.Incirlik,
         terminalType = AIRBASE.TerminalType.OpenBig,
@@ -198,10 +108,10 @@ OnDemandTankersConfig = {
             number = 7
         }
     },
-    --Shell 4 KC130
+    --Shell 4 KC135
     {
         enable = true,
-        type = "kc130",
+        type = "sh4",
         benefit_coalition = coalition.side.BLUE,
         baseUnit = AIRBASE.Syria.Incirlik,
         terminalType = AIRBASE.TerminalType.OpenBig,
@@ -219,6 +129,75 @@ OnDemandTankersConfig = {
             alias = 'Shell',
             name = CALLSIGN.Tanker.Shell,
             number = 4
+        }
+    },
+    --Texaco 1 MPRS
+    {
+        enable = true,
+        type = "tx1",
+        benefit_coalition = coalition.side.BLUE,
+        baseUnit = AIRBASE.Syria.Incirlik,
+        terminalType = AIRBASE.TerminalType.OpenBig,
+        groupName = 'TEXACO 1-1 #IFF:4274FR',
+        missionmaxduration = 135,
+        altitude = 26000,
+        speed = 420,
+        tacan = {
+            channel = 101,
+            morse = 'TEX',
+        },
+        freq = 317.5,
+        modex = 012,
+        callsign = {
+            alias = 'Texaco',
+            name = CALLSIGN.Tanker.Texaco,
+            number = 1
+        }
+    },
+    --ARCO 1 KC135
+    {
+        enable = true,
+        type = "ar1",
+        benefit_coalition = coalition.side.BLUE,
+        baseUnit = AIRBASE.Syria.Incirlik,
+        terminalType = AIRBASE.TerminalType.OpenBig,
+        groupName = 'ARCO 1-1 #IFF:7541FR',
+        missionmaxduration = 135,
+        altitude = 27000,
+        speed = 420,
+        tacan = {
+            channel = 102,
+            morse = 'ARC',
+        },
+        freq = 276.2,
+        modex = 012,
+        callsign = {
+            alias = 'Arco',
+            name = CALLSIGN.Tanker.Arco,
+            number = 1
+        }
+    },
+    --ARCO 2 KC135
+    {
+        enable = true,
+        type="ar2",
+        benefit_coalition = coalition.side.BLUE,
+        baseUnit = AIRBASE.Syria.Incirlik,
+        terminalType = AIRBASE.TerminalType.OpenBig,
+        groupName = 'ARCO 2-1 #IFF:7367FR',
+        missionmaxduration = 105,
+        altitude = 15000,
+        speed = 230,
+        tacan = {
+            channel = 103,
+            morse = 'AR2',
+        },
+        freq = 276.2,
+        modex = 013,
+        callsign = {
+            alias = 'Arco',
+            name = CALLSIGN.Tanker.Arco,
+            number = 2
         }
     }
 }

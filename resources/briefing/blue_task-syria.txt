@@ -13,3 +13,22 @@ MGRS = YE62
 
 ** SAM IADS On Syria Territory
 Documentation on https://drive.google.com/drive/folders/1WRh9TvolEpLJy-c-IrJGYQNO7qzPu5S9?usp=sharing
+
+--------------------
+OnDemand TANKER BLUE à placer avec un marker en vue F10 :
+avec xxx = le nombre de minutes ou le tanker doit orbiter sur zone
+avec yyy = le FL du tanker
+avec zzz = la vitesse en noeud du tanker
+
+* TEXACO 1-1 : MPRS 101Y ; 317.500 Mhz
+commande = -tanker-tx1-xxx-yyy-zzz
+* TEXACO 3-1 : MPRS 106Y ; 317.500 Mhz
+commande = -tanker-tx3-xxx-yyy-zzz
+* ARCO 1-1 : KC135 102Y : 276.200 Mhz
+commande = -tanker-ar1-xxx-yyy-zzz
+* ARCO 2-1 : KC135 103Y : 276.200 Mhz
+commande = -tanker-ar2-xxx-yyy-zzz
+* ARCO 7-1 : KC135 107Y : 276.200 Mhz
+commande = -tanker-ar7-xxx-yyy-zzz
+* SHELL 4-1 : KC130 108Y : 276.200 Mhz
+commande = -tanker-sh4-xxx-yyy-zzz
