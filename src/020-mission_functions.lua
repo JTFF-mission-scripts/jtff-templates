@@ -1114,6 +1114,9 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                 if (askedFL and askedFL > 0) then
                     OnDemandTanker.altitude = askedFL * 100
                 end
+                if ( maxtime == nil or maxtime == 0 ) then
+                    maxtime = 480
+                end
                 local set_group_tanker = SET_GROUP:New():FilterActive():FilterPrefixes(OnDemandTanker.groupName):FilterOnce()
                 local aliveTankersGroupList = set_group_tanker:GetSetObjects()
                 local TankerGroup = nil
@@ -1306,8 +1309,13 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                 end
                 map_marker[TankerGroup:GetName()] = coord:MarkToCoalition(
                         string.format(
-                                'OnDemand Tanker %s',
-                                OnDemandTanker.type
+                                'OnDemand Tanker %s - TCN %i\nFL %i at %i knots\nFreq %i MHz\nOn station for %i minutes',
+                                OnDemandTanker.type,
+                                OnDemandTanker.tacan.channel,
+                                UTILS.Round(OnDemandTanker.altitude / 100 , 0),
+                                OnDemandTanker.speed,
+                                OnDemandTanker.freq,
+                                maxtime
                         ),
                         OnDemandTanker.benefit_coalition,
                         true,

@@ -110,8 +110,6 @@ end
 --                     *********************************************************
 --local RestrToCoal = nil
 local MarkHandler = {}
-local DebugMode = false
-
 local CmdSymbol = "-"
 
 function MarkHandler:onEvent(event)
@@ -184,7 +182,7 @@ function MarkHandler:onEvent(event)
             else
                 cmd = full
             end
-            if DebugMode == true then
+            if DEBUG_MSG == true then
                 trigger.action.outText("Full Text = " .. full, 10)
                 trigger.action.outText("Command = " .. cmd, 10)
                 if param1 ~= nil then trigger.action.outText("type = " .. param1, 10) end
@@ -196,10 +194,10 @@ function MarkHandler:onEvent(event)
             end
 
             if string.find(cmd, "tanker") then
-                if DebugMode == true then
+                if DEBUG_MSG == true then
                     trigger.action.outText("DEBUG: On Demand Tanker Started!", 10)
                 end
-                triggerOnDemandTanker(param1, param2, param3, param4, mcoord)
+                triggerOnDemandTanker(param1, tonumber(param2), tonumber(param3), tonumber(param4), mcoord)
             end
         --end
     end
