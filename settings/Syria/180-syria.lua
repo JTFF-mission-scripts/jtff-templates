@@ -1,19 +1,19 @@
 triggerOnDemandTanker(
-        "tx2",
+        "tx3",
         nil,
         nil,
         nil,
         GROUP:FindByName("sea-anchor-2"):GetCoordinate()
 )
 triggerOnDemandTanker(
-        "ar6",
+        "ar7",
         nil,
         nil,
         nil,
         GROUP:FindByName("sea-anchor-3"):GetCoordinate()
 )
 triggerOnDemandTanker(
-        "sh3",
+        "sh4",
         nil,
         nil,
         nil,
