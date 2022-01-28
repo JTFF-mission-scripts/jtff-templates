@@ -70,6 +70,64 @@ function give_heading_speed(param)
     )
 end
 
+function tankerStatusMessage(tanker, PlayerUnit, PlayerGroup)
+    local client = CLIENT:Find(PlayerUnit:GetDCSObject())
+    local setting =  _DATABASE:GetPlayerSettings(client:GetPlayerName())
+
+    local tankerrefuelsystemName = "BOOM"
+    if playerrefuelsystem == 0 then
+        tankerrefuelsystemName = "PROBE"
+    end
+    local braa_message = give_bra_of_air_group({tanker:GetGroup(), PlayerGroup, setting})
+    local aspect_message = give_heading_speed({tanker:GetGroup(), setting})
+    local fuelState = string.format("%s Lbs", tanker:GetTemplateFuel() * 2.205)
+    if setting:IsMetric() then
+        fuelState = string.format("%s Kg", tanker:GetTemplateFuel())
+    end
+
+    local timeInTheAir = 0
+    local timeLeftInTheAir = 0
+    local timeLeftString = "Time left : "
+    local groupName = tanker:GetName()
+    for index, value in pairs(tankersArray) do
+        debug_msg(string.format("%s spawned at %i", value.tanker.GroupName, value.spawnAbsTime))
+        if (string.find(groupName, value.tanker.GroupName, 1, true) ~= nil) then
+            timeInTheAir = timer.getAbsTime() - value.spawnAbsTime
+            timeLeftInTheAir = value.customconfig.missionmaxduration * 60 - timeInTheAir
+            if (UTILS.SecondsToClock(timeLeftInTheAir, true) ~= nil) then
+                timeLeftString = timeLeftString .. UTILS.SecondsToClock(timeLeftInTheAir, true)
+            end
+            debug_msg(string.format("%s found in %s, time in the air : %i sec, time left %i sec",
+                value.tanker.GroupName, groupName, timeInTheAir, timeLeftInTheAir))
+        else
+            debug_msg(string.format("%s not found in %s", value.tanker.GroupName, groupName))
+        end
+    end
+
+    for index, value in pairs(tankersOnDemandArray) do
+        if( value ~= nil) then
+            debug_msg(string.format("%s spawned in tankersOnDemandArray", value:GetName()))
+            if (string.find(groupName, value:GetName(), 1, true) ~= nil) then
+                timeInTheAir = timer.getAbsTime() - value.spawnAbsTime
+                timeLeftInTheAir = value.missionmaxduration * 60 - timeInTheAir
+                if (UTILS.SecondsToClock(timeLeftInTheAir, true) ~= nil) then
+                    timeLeftString = timeLeftString .. UTILS.SecondsToClock(timeLeftInTheAir, true)
+                end
+                debug_msg(string.format("%s found in %s, time in the air : %i sec, time left %i sec",
+                value:GetName(), groupName, timeInTheAir, timeLeftInTheAir))
+            else
+                debug_msg(string.format("%s not found in %s", value:GetName(), groupName))
+            end
+        end
+    end
+
+    local message = string.format("%s %s [%s]\nFuel State %s (%.2f)\n%s\n%s\n%s", tanker:GetName(),
+        tanker:GetTypeName(), tankerrefuelsystemName, fuelState, tanker:GetFuel() * 100, aspect_message, braa_message,
+        timeLeftString)
+    MESSAGE:NewType(message, MESSAGE.Type.Overview):ToGroup(PlayerGroup)
+end
+
+
 function findNearestTanker(PlayerUnit, PlayerGroup, Radius)
 
     Radius=UTILS.NMToMeters(Radius or 50)
@@ -82,8 +140,6 @@ function findNearestTanker(PlayerUnit, PlayerGroup, Radius)
 
         local dmin = math.huge
         local tanker = nil --Wrapper.Unit#UNIT
-        local client = CLIENT:Find(PlayerUnit:GetDCSObject())
-        local setting =  _DATABASE:GetPlayerSettings(client:GetPlayerName())
         for _,_unit in pairs(units.Set) do
             local unit = _unit --Wrapper.Unit#UNIT
             local istanker, tankerrefuelsystem=unit:IsTanker()
@@ -101,43 +157,7 @@ function findNearestTanker(PlayerUnit, PlayerGroup, Radius)
             end
         end
 
-        local tankerrefuelsystemName = "BOOM"
-        if playerrefuelsystem == 0 then
-            tankerrefuelsystemName = "PROBE"
-        end
-        local braa_message = give_bra_of_air_group({
-            tanker:GetGroup(),
-            PlayerGroup,
-            setting
-        })
-        local aspect_message = give_heading_speed({
-            tanker:GetGroup(),
-            setting
-        })
-        local fuelState = string.format(
-                "%s Lbs",
-                tanker:GetTemplateFuel()*2.205
-        )
-        if setting:IsMetric() then
-            fuelState = string.format(
-                    "%s Kg",
-                    tanker:GetTemplateFuel()
-            )
-        end
-        local message = string.format(
-                "%s %s [%s]\nFuel State %s(%.2f)\n%s\n%s",
-                tanker:GetName(),
-                tanker:GetTypeName(),
-                tankerrefuelsystemName,
-                fuelState,
-                tanker:GetFuel()*100,
-                aspect_message,
-                braa_message
-        )
-        MESSAGE:NewType(
-                message,
-                MESSAGE.Type.Overview
-        ):ToGroup(PlayerGroup)
+        tankerStatusMessage(tanker, PlayerUnit, PlayerGroup)
     end
     return nil
 end
@@ -154,8 +174,6 @@ function findAllTanker(PlayerUnit, PlayerGroup, Radius)
         local coalition = PlayerUnit:GetCoalition()
 
         local tanker = nil --Wrapper.Unit#UNIT
-        local client = CLIENT:Find(PlayerUnit:GetDCSObject())
-        local setting =  _DATABASE:GetPlayerSettings(client:GetPlayerName())
         for _,_unit in pairs(units.Set) do
             local unit=_unit --Wrapper.Unit#UNIT
             local istanker, tankerrefuelsystem=unit:IsTanker()
@@ -164,43 +182,7 @@ function findAllTanker(PlayerUnit, PlayerGroup, Radius)
                     coalition == unit:GetCoalition() and
                     unit:IsAlive() then
                 tanker=unit
-                local tankerrefuelsystemName = "BOOM"
-                if playerrefuelsystem == 0 then
-                    tankerrefuelsystemName = "PROBE"
-                end
-                local braa_message = give_bra_of_air_group({
-                    tanker:GetGroup(),
-                    PlayerGroup,
-                    setting
-                })
-                local aspect_message = give_heading_speed({
-                    tanker:GetGroup(),
-                    setting
-                })
-                local fuelState = string.format(
-                        "%s Lbs",
-                        tanker:GetTemplateFuel()*2.205
-                )
-                if setting:IsMetric() then
-                    fuelState = string.format(
-                            "%s Kg",
-                            tanker:GetTemplateFuel()
-                    )
-                end
-                local message = string.format(
-                        "%s %s [%s]\nFuel State %s (%.2f)\n%s\n%s",
-                        tanker:GetName(),
-                        tanker:GetTypeName(),
-                        tankerrefuelsystemName,
-                        fuelState,
-                        tanker:GetFuel()*100,
-                        aspect_message,
-                        braa_message
-                )
-                MESSAGE:NewType(
-                        message,
-                        MESSAGE.Type.Overview
-                ):ToGroup(PlayerGroup)
+                tankerStatusMessage(tanker, PlayerUnit, PlayerGroup)
             end
         end
     end
@@ -1104,6 +1086,7 @@ function AddIADSFunction(parentMenu, iadsconfig, skynetIADSObject)
 end
 
 function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
+    local TankerGroup = nil
     if (OnDemandTankersConfig) then
         for index, OnDemandTanker in ipairs(OnDemandTankersConfig) do
             if ((OnDemandTanker.type == type) and (OnDemandTanker.enable)) then
@@ -1119,7 +1102,6 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                 end
                 local set_group_tanker = SET_GROUP:New():FilterActive():FilterPrefixes(OnDemandTanker.groupName):FilterOnce()
                 local aliveTankersGroupList = set_group_tanker:GetSetObjects()
-                local TankerGroup = nil
                 --local RefuelTask = nil
                 --local OrbitTask = nil
                 local RTBAirbase = nil
@@ -1226,6 +1208,8 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                                 )
                         )
                     end
+                    TankerGroup.spawnAbsTime = timer.getAbsTime()
+                    TankerGroup.missionmaxduration = maxtime
                     --RefuelTask = TankerGroup:EnRouteTaskTanker()
                     --OrbitTask = TankerGroup:TaskControlled(
                     --        TankerGroup:TaskOrbitCircle(
@@ -1336,6 +1320,7 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
             end
         end
     end
+    return TankerGroup;
 end
 
 env.info('JTFF-SHAREDLIB: shared library loaded succesfully')
