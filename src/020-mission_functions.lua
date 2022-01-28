@@ -5,7 +5,7 @@
 -- Generic Spawn object functions
 --
 env.info('JTFF-SHAREDLIB: shared library loading...')
-DEBUG_MSG = true
+DEBUG_MSG = false
 DEBUG_SQ_MSG = false
 DEBUG_DETECT_MSG = false
 map_marker = {}
