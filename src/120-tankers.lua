@@ -24,7 +24,8 @@ for index, tankerconfig in ipairs(TankersConfig) do
                                         :SetRacetrackDistances(tankerconfig.racetrack.front, tankerconfig.racetrack.back)
         objTanker.customconfig = tankerconfig
         function objTanker:OnAfterStart(from, event, to)
-            env.info('popup Tanker : '..self.tanker.GroupName)
+            objTanker.spawnAbsTime = timer.getAbsTime()
+            env.info('popup Tanker : '..self.tanker.GroupName..' at : '..objTanker.spawnAbsTime)
             if self.customconfig.escortgroupname then
                 self.escortSpawnObject = SPAWN:NewWithAlias(self.customconfig.escortgroupname,'escort-'.. self.customconfig.groupName)
                                               :InitRepeatOnEngineShutDown()
@@ -109,6 +110,7 @@ end
 --                     **                OnDemand Tankers                     **
 --                     *********************************************************
 --local RestrToCoal = nil
+tankersOnDemandArray = {}
 local MarkHandler = {}
 local CmdSymbol = "-"
 
@@ -197,7 +199,7 @@ function MarkHandler:onEvent(event)
                 if DEBUG_MSG == true then
                     trigger.action.outText("DEBUG: On Demand Tanker Started!", 10)
                 end
-                triggerOnDemandTanker(param1, tonumber(param2), tonumber(param3), tonumber(param4), mcoord)
+                tankersOnDemandArray[#tankersOnDemandArray+1] = triggerOnDemandTanker(param1, tonumber(param2), tonumber(param3), tonumber(param4), mcoord)
             end
         --end
     end
