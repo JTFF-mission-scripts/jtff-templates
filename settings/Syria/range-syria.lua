@@ -30,6 +30,11 @@ RangeConfig = {
                 name = "Mobile Convoy",
                 groupsToSpawn = {"Akamas Convoy Mobile"},
                 holdFire = true,
+            },
+            {
+                name = "Insurgent PickUp",
+                groupsToSpawn = {"Akamas Insurgent PickUp Blue", "Akamas Insurgent PickUp Desert", "Akamas Insurgent PickUp Green"},
+                holdFire = true,
             }
         }
     },
