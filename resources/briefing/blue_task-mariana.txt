@@ -7,6 +7,7 @@ Champs dde tir sur l'ile de Medinilla
 
 **Zone d'entrainement A2A Navy **:
 MGRS = TC+TD+TE
+MGRS = FP+FQ+FR
 
 --------------------
 OnDemand TANKER BLUE à placer avec un marker en vue F10 :
