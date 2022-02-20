@@ -1272,18 +1272,8 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                 TankerGroup:Route(TankerRoute)
                 TankerGroup:CommandEPLRS(true, 4)
                 if (OnDemandTanker.tacan) then
-                    TankerGroup:CommandActivateBeacon(
-                            BEACON.Type.TACAN,
-                            BEACON.System.TACAN,
-                            UTILS.TACANToFrequency(OnDemandTanker.tacan.channel, "Y"),
-                            TankerGroup:GetUnits(1),
-                            OnDemandTanker.tacan.channel,
-                            "Y",
-                            true,
-                            OnDemandTanker.tacan.morse,
-                            true,
-                            5
-                    )
+                    TankerGroup.beacon=BEACON:New(TankerGroup:GetUnit(1))
+                    TankerGroup.beacon:ActivateTACAN(OnDemandTanker.tacan.channel, "Y", OnDemandTanker.tacan.morse, true)
                 end
                 if (OnDemandTanker.callsign) then
                     TankerGroup:CommandSetCallsign(OnDemandTanker.callsign.name, OnDemandTanker.callsign.number, 2)
