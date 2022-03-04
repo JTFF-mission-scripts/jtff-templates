@@ -11,6 +11,7 @@
     "jtff-getmiz": "node src/nodejs/get-mizfiles.js",
     "jtff-publish": "node src/nodejs/publish.js",
     "jtff-template": "node src/nodejs/template-update.js",
+    "jtff-inject": "node src/nodejs/inject-scripts.js",
     "build": "node src/nodejs/build.js",
     "clean": "node src/nodejs/clean.js"
   },
@@ -28,7 +29,9 @@
     "fs": "^0.0.1-security",
     "googleapis": "^92.0.0",
     "jszip": "^3.7.1",
+    "lua-json": "^1.0.0",
     "path": "^0.12.7",
+    "prompt": "^1.2.2",
     "util": "^0.12.4"
   },
   "exports": [
