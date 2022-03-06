@@ -3,7 +3,7 @@
         "missionFolder": "dist",
         "missionPrefix": "Theatre",
         "missionSuffix": "JTFF",
-        "missionVersion": "5.2.4-snapshot"
+        "missionVersion": "5.2.5-snapshot"
     },
     "google": {
         "scopes": [
