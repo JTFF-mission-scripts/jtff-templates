@@ -7,6 +7,50 @@ const { promisify } = require('util');
 const lstat = promisify(fs.lstat);
 const config = require("../../../config.json");
 const {google} = require("googleapis");
+const {format, parse} = require("lua-json");
+
+function injectScripts(tObject, trObject, mrObject, strTitle, scriptFilesArray, timingInSeconds, hexColor) {
+    let nextIndex = Object.keys(trObject).length+1;
+    if (nextIndex === 1) {
+        tObject['actions'] = {};
+        tObject['func'] = {};
+        tObject['conditions'] = {};
+        tObject['flag'] = {};
+        trObject = {};
+    }
+    let actionSentence = "";
+    let actionsObject = {};
+    for (const [index, scriptFile] of scriptFilesArray.entries()) {
+        actionSentence += "a_do_script_file(getValueResourceByKey(\"" + scriptFile + "\")); "
+        actionsObject[index+1] = {
+            file: scriptFile,
+            predicate: 'a_do_script_file',
+        };
+        mrObject[scriptFile] = scriptFile;
+    }
+    actionSentence += "mission.trig.func[" + nextIndex + "]=nil;"
+    tObject['actions'][nextIndex] = actionSentence;
+    tObject['func'][nextIndex] = "if mission.trig.conditions[" + nextIndex + "]() then mission.trig.actions[" + nextIndex + "]() end";
+    tObject['conditions'][nextIndex] = "return(c_time_after(" + timingInSeconds + ") )";
+    tObject['flag'][nextIndex] = true;
+    trObject[nextIndex] = {
+        rules: {
+            1: {
+                coalitionlist: 'red',
+                seconds: timingInSeconds,
+                predicate: 'c_time_after',
+                zone: ''
+            }
+        },
+        eventlist: '',
+        comment: strTitle,
+        actions: actionsObject,
+        predicate: 'triggerOnce',
+        colorItem: hexColor
+    };
+    return {tObject: tObject,trObject: trObject, mrObject: mrObject};
+}
+
 
 function getVersion() {
     return getVersionObject(config.general.missionVersion);
@@ -48,13 +92,22 @@ function nextPatch(versionObject) {
     newVersionObject.patch = newVersionObject.patch + 1;
     return newVersionObject;
 }
-async function mizUpdate(mizPath, copyPath, strTheatreSettings) {
+
+async function mizOpen(mizPath) {
     var MizFile = new jszip();
     const mizData = fs.readFileSync(mizPath);
-    const zip = await MizFile.loadAsync(mizData);
+    return MizFile.loadAsync(mizData);
+}
+
+async function mizUpdate(mizPath, copyPath, strTheatreSettings) {
+    const zip = await mizOpen(mizPath);
     mizUpdateSrcLuaFiles(zip);
     mizUpdateLibLuaFiles(zip);
-    mizUpdateSettingsLuaFiles(zip, strTheatreSettings);
+    if (strTheatreSettings === null) {
+        console.log("no theatre specified ! TODO inject fake settings");
+    } else {
+        mizUpdateSettingsLuaFiles(zip, strTheatreSettings);
+    }
     await mizUpdateSoundFolders(zip);
     const inputZip = await zip.generateAsync({
         type:'nodebuffer',
@@ -67,6 +120,54 @@ async function mizUpdate(mizPath, copyPath, strTheatreSettings) {
     fs.writeFileSync(copyPath? copyPath: mizPath, inputZip);
 }
 
+async function mizInjectMissionDataFile(mizPath, missionObject) {
+    const zip = await mizOpen(mizPath);
+    mizUpdateMissionDataFile(zip, missionObject);
+    const inputZip = await zip.generateAsync({
+        type:'nodebuffer',
+        streamFiles:true,
+        compression: "DEFLATE",
+        compressionOptions: {
+            level: 9
+        }
+    });
+    fs.writeFileSync(mizPath, inputZip);
+}
+
+async function mizInjectSettingsFolder(mizPath, settingsFolder) {
+    const zip = await mizOpen(mizPath);
+    for (let file of fs.readdirSync(settingsFolder).filter( file => file.endsWith(".lua"))) {
+        mizUpdateLuaFile(zip,[
+            settingsFolder,
+            "/",
+            file].join(""));
+    }
+    const inputZip = await zip.generateAsync({
+        type:'nodebuffer',
+        streamFiles:true,
+        compression: "DEFLATE",
+        compressionOptions: {
+            level: 9
+        }
+    });
+    fs.writeFileSync(mizPath, inputZip);
+}
+
+async function mizInjectMapResourceFile(mizPath, mapResourceObject) {
+    const zip = await mizOpen(mizPath);
+    mizUpdateMapResourceFile(zip, mapResourceObject);
+    const inputZip = await zip.generateAsync({
+        type:'nodebuffer',
+        streamFiles:true,
+        compression: "DEFLATE",
+        compressionOptions: {
+            level: 9
+        }
+    });
+    fs.writeFileSync(mizPath, inputZip);
+}
+
+
 function mizUpdateLuaFile(zip, filePath) {
     zip.remove("l10n/DEFAULT/" + path.basename(filePath));
     var stream = fs.createReadStream(filePath);
@@ -78,6 +179,39 @@ function mizUpdateSrcLuaFiles(zip) {
         console.log('updating src/' + file + ' file in miz file');
         mizUpdateLuaFile(zip, "src/" + file);
     };
+}
+
+function mizUpdateMissionDataFile(zip, missionObject) {
+    zip.remove("mission");
+    let missionLuaT = format(missionObject, {singleQuote : false})
+    missionLuaT = missionLuaT
+        .split('\n')
+        .slice(1,-1)
+        .join('\n')
+        .slice(0,-1)
+        .replace(/\[\"(\d+)\"\] = /g,"[$1] = ");
+    zip.file("mission", missionLuaT);
+}
+
+function mizUpdateMapResourceFile(zip, mapResourceObject) {
+    zip.remove("l10n/DEFAULT/mapResource");
+    let mapResourceLuaT = format(mapResourceObject, {singleQuote : false})
+    mapResourceLuaT = mapResourceLuaT
+        .split('\n')
+        .slice(1,-1)
+        .join('\n')
+        .slice(0,-1)
+        .replace(/\[\"(\d+)\"\] = /g,"[$1] = ");
+    zip.file("l10n/DEFAULT/mapResource", mapResourceLuaT);
+}
+
+
+function mizOpenMissionData(zipStream) {
+    return zipStream.file("mission").async("string");
+}
+
+function mizOpenMapResource(zipStream) {
+    return zipStream.file("l10n/DEFAULT/mapResource").async("string");
 }
 
 function mizUpdateLibLuaFiles(zip) {
@@ -118,9 +252,18 @@ async function addFilesToZip (zip, directoryPath, filesToInclude) {
     })
     return Promise.all(promiseArr)
 }
-
 async function copyMiz(srcMizPath, dstMizPath) {
     await fs.createReadStream(srcMizPath).pipe(fs.createWriteStream(dstMizPath));
+}
+
+async function getMissionObjectFromMiz(MizPath) {
+    let luaTable = 'return { \n' + await mizOpenMissionData(await mizOpen(MizPath)) + ' }';
+    return parse(luaTable).mission;
+}
+
+async function getMapResourceObjectFromMiz(MizPath) {
+    let luaTable = 'return { \n' + await mizOpenMapResource(await mizOpen(MizPath)) + ' }';
+    return parse(luaTable).mapResource;
 }
 
 function getDestinationMizFilePaths() {
@@ -227,4 +370,15 @@ module.exports = {
     getDestinationMizFilePaths: getDestinationMizFilePaths,
     getGeneratedMizFilePaths: getGeneratedMizFilePaths,
     publishMizFiles: publishMizFiles,
+    getMissionObjectFromMiz: getMissionObjectFromMiz,
+    getMapResourceObjectFromMiz: getMapResourceObjectFromMiz,
+    mizInjectMissionDataFile: mizInjectMissionDataFile,
+    mizInjectMapResourceFile: mizInjectMapResourceFile,
+    injectScripts: injectScripts,
+    mizUpdateSrcLuaFiles: mizUpdateSrcLuaFiles,
+    mizUpdateLibLuaFiles: mizUpdateLibLuaFiles,
+    mizOpen: mizOpen,
+    addFilesToZip: addFilesToZip,
+    mizUpdateLuaFile: mizUpdateLuaFile,
+    mizInjectSettingsFolder: mizInjectSettingsFolder
 }
