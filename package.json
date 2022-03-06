@@ -1,6 +1,6 @@
 {
   "name": "jtff-templates",
-  "version": "1.0.0-snapshot",
+  "version": "2.0.1",
   "description": "build jtff-template missions",
   "main": "none",
   "scripts": {
