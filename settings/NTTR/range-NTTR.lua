@@ -6,7 +6,7 @@ RangeConfig = {
         subRange = {
             {
                 name = "61-B",
-                groupsToSpawn = {"61-01", "61-03"},
+                groupsToSpawn = {"61-01", "61-01 Heli", "61-03"},
                 holdFire = true,
                 AI = false
             }
@@ -152,16 +152,22 @@ RangeConfig = {
                 AI = false
             },
             {
-                name = "76-Blue Y",
-                groupsToSpawn = {"76-01", "76-01 #002", "76-03", "76-05", "76-07", "76-08", "76-09", "76-10", "76-11", "76-11 #001", "76-11 #002", "76-20", "76-21", "76-29", "76-30"},
-                holdFire = true,
-                AI = false
-            },
-            {
                 name = "75-13 Mobile PickUp",
                 groupsToSpawn = {"75-13"},
                 holdFire = true,
                 AI = true
+            },
+            {
+                name = "76-Blue Y",
+                groupsToSpawn = {"76-01", "76-01 #002", "76-01 Bunker",  "76-03", "76-05", "76-07", "76-07 Heli", "76-08", "76-09", "76-10", "76-20", "76-21", "76-29", "76-30"},
+                holdFire = true,
+                AI = false
+            },
+            {
+                name = "76-11 MILLERVILLE",
+                groupsToSpawn = {"76-11", "76-11 #001", "76-11 #002"},
+                holdFire = true,
+                AI = false
             },
         }
     },
