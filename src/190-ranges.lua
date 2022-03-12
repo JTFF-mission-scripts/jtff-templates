@@ -17,13 +17,27 @@ for index, rangeconfig in ipairs(RangeConfig) do
             local radioMenuForRange   =  MENU_COALITION:New( coalition.side.BLUE, rangeconfig.name , mainRadioMenuForRangesBlue)
             for index, subRangeConfig in ipairs(rangeconfig.subRange) do
                 local radioMenuSubRange     = MENU_COALITION:New(rangeconfig.benefit_coalition, subRangeConfig.name,   radioMenuForRange)
-                AddTargetsFunction(radioMenuSubRange, rangeconfig, subRangeConfig)
+                if (subRangeConfig.subsubRange ~= nil) then
+                    for index, subsubRangeConfig in ipairs(subRangeConfig.subsubRange) do
+                        local radioMenuSubSubRange     = MENU_COALITION:New(rangeconfig.benefit_coalition, subsubRangeConfig.name,   radioMenuSubRange)
+                        AddTargetsFunction(radioMenuSubSubRange, rangeconfig, subsubRangeConfig)
+                    end
+                else
+                    AddTargetsFunction(radioMenuSubRange, rangeconfig, subRangeConfig)
+                end
             end
         else
             local radioMenuForRange   =  MENU_COALITION:New( coalition.side.RED, rangeconfig.name , mainRadioMenuForRangesRed)
             for index, subRangeConfig in ipairs(rangeconfig.subRange) do
                 local radioMenuSubRange     = MENU_COALITION:New(rangeconfig.benefit_coalition, subRangeConfig.name,   radioMenuForRange)
-                AddTargetsFunction(radioMenuSubRange, rangeconfig, subRangeConfig)
+                if (subRangeConfig.subsubRange ~= nil) then
+                    for index, subsubRangeConfig in ipairs(subRangeConfig.subsubRange) do
+                        local radioMenuSubSubRange     = MENU_COALITION:New(rangeconfig.benefit_coalition, subsubRangeConfig.name,   radioMenuSubRange)
+                        AddTargetsFunction(radioMenuSubSubRange, rangeconfig, subsubRangeConfig)
+                    end
+                else
+                    AddTargetsFunction(radioMenuSubRange, rangeconfig, subRangeConfig)
+                end
             end
         end
     end
