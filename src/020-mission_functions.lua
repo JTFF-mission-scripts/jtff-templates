@@ -670,12 +670,12 @@ function SpawnRanges(param)
     local subRangeConfig = param[3]
     local subRangeName = subRangeConfig.name
     local groupsToSpawn = subRangeConfig.groupsToSpawn
-    local staticToSpawn = subRangeConfig.staticToSpawn
+    local staticsToSpawn = subRangeConfig.staticsToSpawn
     local holdFire = subRangeConfig.holdFire
     local engageAirWeapons = subRangeConfig.engageAirWeapons
     local activateAI = subRangeConfig.AI
 
-    debug_msg(string.format("SpawnRanges : %s-%s", rangeName, subRangeName))
+    debug_msg(string.format("SpawnRanges : Range %s - Targets %s", rangeName, subRangeName))
     for i = 1, #groupsToSpawn do
         local groupNameToSpawn = string.format("%s", groupsToSpawn[i])
         if (GROUP:FindByName(groupNameToSpawn) ~= nil) then
@@ -706,6 +706,18 @@ function SpawnRanges(param)
             debug_msg(string.format("GROUP to spawn %s not found in mission", groupNameToSpawn))
         end
     end
+
+    for index, staticToSpawn in ipairs(staticsToSpawn) do
+        local staticNameToSpawn = string.format("%s", staticToSpawn.name)
+        local spawnStatic = SPAWNSTATIC:NewFromStatic(staticNameToSpawn)
+        local x = staticToSpawn.x
+        local y = staticToSpawn.y
+        local heading = staticToSpawn.heading
+        local name = string.format("%s_%s_%i", subRangeName, staticNameToSpawn,index)
+        debug_msg(string.format("Static to spawn %s at %i,%i -> %s", staticNameToSpawn, x, y, name))
+        spawnStatic:SpawnFromPointVec2( POINT_VEC2:New( x, y ), heading, name )
+    end
+
 
     radioCommandSubRange:RemoveSubMenus()
     local CommandZoneDetroy = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Delete", radioCommandSubRange,
@@ -742,7 +754,7 @@ function SpawnFacRanges(param)
     local facSubRangeConfig = param[3]
     local facSubRangeName = facSubRangeConfig.name
     local groupsToSpawn = facSubRangeConfig.groupsToSpawn
-    local staticToSpawn = facSubRangeConfig.staticToSpawn
+    local staticsToSpawn = facSubRangeConfig.staticsToSpawn
 
     debug_msg(string.format("SpawnFacRanges : %s-%s", facRangeName, facSubRangeName))
     for i = 1, #groupsToSpawn do
