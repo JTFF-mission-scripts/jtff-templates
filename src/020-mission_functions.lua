@@ -707,16 +707,20 @@ function SpawnRanges(param)
         end
     end
 
-    for index, staticToSpawn in ipairs(staticsToSpawn) do
-        local staticNameToSpawn = string.format("%s", staticToSpawn.name)
-        local spawnStatic = SPAWNSTATIC:NewFromStatic(staticNameToSpawn)
-        local x = staticToSpawn.x
-        local y = staticToSpawn.y
-        local heading = staticToSpawn.heading
-        local name = string.format("%s_%s_%i", subRangeName, staticNameToSpawn,index)
-        debug_msg(string.format("Static to spawn %s at %i,%i -> %s", staticNameToSpawn, x, y, name))
-        spawnStatic:SpawnFromPointVec2( POINT_VEC2:New( x, y ), heading, name )
-    end
+    if (staticsToSpawn ~= nil)then
+        for index, staticToSpawn in ipairs(staticsToSpawn) do
+            local staticNameToSpawn = string.format("%s", staticToSpawn.name)
+            local spawnStatic = SPAWNSTATIC:NewFromStatic(staticNameToSpawn)
+            local x = staticToSpawn.x
+            local y = staticToSpawn.y
+            local heading = staticToSpawn.heading
+            local name = string.format("%s_%s_%i", subRangeName, staticNameToSpawn,index)
+            debug_msg(string.format("Static to spawn %s at %i,%i -> %s", staticNameToSpawn, x, y, name))
+            spawnStatic:SpawnFromPointVec2( POINT_VEC2:New( x, y ), heading, name )
+        end
+    else
+        debug_msg(string.format("No static in %s", subRangeName))  
+    end      
 
 
     radioCommandSubRange:RemoveSubMenus()
