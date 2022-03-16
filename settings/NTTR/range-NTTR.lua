@@ -6,7 +6,7 @@ RangeConfig = {
         subRange = {
             {
                 name = "61-01",
-                groupsToSpawn = {"61-01", "61-01 Heli"},
+                groupsToSpawn = {"61-01", "61-01-Heli"},
                 holdFire = true,
                 AI = false
             },
@@ -100,7 +100,7 @@ RangeConfig = {
                     },
                     {
                         name = "62-21",
-                        groupsToSpawn = {"62-21", "62-21 #001"},
+                        groupsToSpawn = {"62-21", "62-21-UAZ"},
                         holdFire = true,
                         AI = false
                     },
@@ -316,7 +316,7 @@ RangeConfig = {
         subRange = {
             {
                 name = "Strafe, Circle",
-                groupsToSpawn = {"63-B Class A Range", "63-B Class A Range #001", "63-B Class A Range #002", "63-Bstrafe"},
+                groupsToSpawn = {"63-B Class A Range Red", "63-B Class A Range Blue", "63-B Class A Range Line", "63-Bstrafe"},
                 holdFire = true,
                 AI = false
             },
@@ -346,7 +346,7 @@ RangeConfig = {
             },
             {
                 name = "63-10",
-                groupsToSpawn = {"63-10", "63-10 Run-In Markers"},
+                groupsToSpawn = {"63-10", "63-10-Run-In Markers"},
                 holdFire = true,
                 AI = false
             },
@@ -822,7 +822,7 @@ RangeConfig = {
                     },
                     {
                         name = "75-47",
-                        groupsToSpawn = {"75-47", "75-47 #001"},
+                        groupsToSpawn = {"75-47", "75-47-Sand"},
                         staticsToSpawn = {
                             { name = "Fuel Tank", x = -267685, y = -163559, heading = -326 },
                             { name = "Fuel Tank", x = -267678, y = -163539, heading = -326 }
@@ -912,7 +912,7 @@ RangeConfig = {
                 subsubRange = {
                     {
                         name = "76-01",
-                        groupsToSpawn = {"76-01", "76-01 #002", "76-01 Bunker"},
+                        groupsToSpawn = {"76-01", "76-01-Trucks", "76-01-Bunker"},
                         staticsToSpawn = {
                             { name = "Fuel Tank", x = -00270813, y = -00185176, heading = -22 },
                             { name = "Fuel Tank", x = -00270803, y = -00185170, heading = -22 },
@@ -968,7 +968,7 @@ RangeConfig = {
                     },
                     {
                         name = "76-07",
-                        groupsToSpawn = {"76-07", "76-07 Heli"},
+                        groupsToSpawn = {"76-07", "76-07-Heli"},
                         holdFire = true,
                         AI = false
                     },

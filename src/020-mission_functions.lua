@@ -585,7 +585,7 @@ function giveListOfUnitsAliveInGroup(param)
     local groupsToSpawn = param[1]
     local side = param[2]
     local number_to_display = param[3]
-    for i = 2, #groupsToSpawn do
+    for i = 1, #groupsToSpawn do
         local group_name = string.format("%s", groupsToSpawn[i])
         debug_msg(string.format("List of units of all groups with name prefix %s", group_name))
         local dcs_groups = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
@@ -603,6 +603,7 @@ function giveListOfUnitsAliveInGroup(param)
                 local unit_tmp = list_units[index]
                 if (unit_tmp:IsAlive() and unit_tmp:GetCoalition() ~= side) then
                     set_units:AddUnit(unit_tmp)
+                    debug_msg(string.format("Type : %s", unit_tmp:GetTypeName()))
                 end
             end
             local increment = 0;
