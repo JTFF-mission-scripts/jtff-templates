@@ -246,9 +246,8 @@ SkynetConfig = {
                     {
                         sam = "SAM-SA-19-Bassel",
                         goLiveRangePercent = 70,
-                    },
-                    "SAM-ShortRange-Bassel",
-                },
+                    }
+				},
             }
         }
     }

@@ -208,6 +208,36 @@ TankersConfig = {
             name = CALLSIGN.Tanker.Texaco,
             number = 2
         }
+    },
+    {
+        enable = true,
+        autorespawn = true,
+        patternUnit = 'anchor-tankers-west',
+        benefit_coalition = coalition.side.BLUE,
+        baseUnit = AIRBASE.Nevada.McCarran_International_Airport,
+        terminalType = AIRBASE.TerminalType.OpenBig,
+        groupName = 'ARCO4',
+        airboss_recovery = false,
+        --escortgroupname = 'jolly_hornet #IFF:7323FR',
+        missionmaxduration = 240,
+        altitude = 27000,
+        speed = 420,
+        tacan = {
+            channel = 118,
+            morse = 'AR4',
+        },
+        freq = 276.200,
+        fuelwarninglevel = 35,
+        racetrack = {
+            front = 40,
+            back = 0
+        },
+        modex = 516,
+        callsign = {
+            alias = 'Arco4',
+            name = CALLSIGN.Tanker.Arco,
+            number = 4
+        }
     }
 }
 
