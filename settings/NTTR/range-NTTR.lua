@@ -1133,61 +1133,21 @@ TrainingRangeConfig = {
         targets = {
             {
                 type = "Strafepit",
-                unit_name = "R64C Strafe Lane L1",
+                unit_name = "R64C Strafe Lane L",
                 foul_line = "R64C Foul Lane L1",
-                boxlength = 3000,
-                boxwidth = 40,
-                heading = 355,
+                boxlength = 2000,
+                boxwidth = 150,
+                heading = 7,
                 inverseheading = true,
                 goodpass = 20
             },
             {
                 type = "Strafepit",
-                unit_name = "R64C Strafe Lane L2",
-                foul_line = "R64C Foul Lane L1",
-                boxlength = 3000,
-                boxwidth = 40,
-                heading = 355,
-                inverseheading = true,
-                goodpass = 20
-            },
-            {
-                type = "Strafepit",
-                unit_name = "R64C Strafe Lane L3",
-                foul_line = "R64C Foul Lane L2",
-                boxlength = 3000,
-                boxwidth = 40,
-                heading = 355,
-                inverseheading = true,
-                goodpass = 20
-            },
-            {
-                type = "Strafepit",
-                unit_name = "R64C Strafe Lane R1",
+                unit_name = "R64C Strafe Lane R",
                 foul_line = "R64C Foul Lane R1",
-                boxlength = 3000,
-                boxwidth = 40,
-                heading = 355,
-                inverseheading = true,
-                goodpass = 20
-            },
-            {
-                type = "Strafepit",
-                unit_name = "R64C Strafe Lane R2",
-                foul_line = "R64C Foul Lane R1",
-                boxlength = 3000,
-                boxwidth = 40,
-                heading = 355,
-                inverseheading = true,
-                goodpass = 20
-            },
-            {
-                type = "Strafepit",
-                unit_name = "R64C Strafe Lane R3",
-                foul_line = "R64C Foul Lane R2",
-                boxlength = 3000,
-                boxwidth = 40,
-                heading = 355,
+                boxlength = 2000,
+                boxwidth = 150,
+                heading = 7,
                 inverseheading = true,
                 goodpass = 20
             },
@@ -1200,6 +1160,16 @@ TrainingRangeConfig = {
                 type = "BombCircle",
                 unit_name = "R64CEC",
                 precision = 25
+            },
+            {
+                type = "BombCircle",
+                unit_name = "R64CTS",
+                precision = 15
+            },
+            {
+                type = "BombCircle",
+                unit_name = "R64CM17",
+                precision = 15
             }
         }
     },
