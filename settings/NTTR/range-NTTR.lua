@@ -124,6 +124,11 @@ RangeConfig = {
                     {
                         name = "62-32",
                         groupsToSpawn = {"62-32"},
+                        staticsToSpawn = {
+                            { name = "Static F4", x = -00338983, y = -00055835, heading = 90 },
+                            { name = "Static F4", x = -00338739, y = -00055824, heading = 270 },
+                            { name = "Static F4", x = -00338788, y = -00055831, heading = 90 }
+                        },
                         holdFire = true,
                         AI = false
                     },
@@ -430,12 +435,6 @@ RangeConfig = {
             {
                 name = "64-C",
                 subsubRange = {
-                    {
-                        name = "Strafe, Circle",
-                        groupsToSpawn = {"64-C Class A Range", "64-Cstrafe"},
-                        holdFire = true,
-                        AI = false
-                    },
                     {
                         name = "64-05",
                         groupsToSpawn = {"64-05"},
@@ -1128,6 +1127,81 @@ RangeConfig = {
 }
 
 TrainingRangeConfig = {
+    {
+        name = "64C",
+        enable = true,
+        targets = {
+            {
+                type = "Strafepit",
+                unit_name = "R64C Strafe Lane L1",
+                foul_line = "R64C Foul Lane L1",
+                boxlength = 3000,
+                boxwidth = 40,
+                heading = 355,
+                inverseheading = true,
+                goodpass = 20
+            },
+            {
+                type = "Strafepit",
+                unit_name = "R64C Strafe Lane L2",
+                foul_line = "R64C Foul Lane L1",
+                boxlength = 3000,
+                boxwidth = 40,
+                heading = 355,
+                inverseheading = true,
+                goodpass = 20
+            },
+            {
+                type = "Strafepit",
+                unit_name = "R64C Strafe Lane L3",
+                foul_line = "R64C Foul Lane L2",
+                boxlength = 3000,
+                boxwidth = 40,
+                heading = 355,
+                inverseheading = true,
+                goodpass = 20
+            },
+            {
+                type = "Strafepit",
+                unit_name = "R64C Strafe Lane R1",
+                foul_line = "R64C Foul Lane R1",
+                boxlength = 3000,
+                boxwidth = 40,
+                heading = 355,
+                inverseheading = true,
+                goodpass = 20
+            },
+            {
+                type = "Strafepit",
+                unit_name = "R64C Strafe Lane R2",
+                foul_line = "R64C Foul Lane R1",
+                boxlength = 3000,
+                boxwidth = 40,
+                heading = 355,
+                inverseheading = true,
+                goodpass = 20
+            },
+            {
+                type = "Strafepit",
+                unit_name = "R64C Strafe Lane R3",
+                foul_line = "R64C Foul Lane R2",
+                boxlength = 3000,
+                boxwidth = 40,
+                heading = 355,
+                inverseheading = true,
+                goodpass = 20
+            },
+            {
+                type = "BombCircle",
+                unit_name = "R64CWC",
+                precision = 25
+            },
+            {
+                type = "BombCircle",
+                unit_name = "R64CEC",
+                precision = 25
+            }
+        }
+    },
 }
-
 

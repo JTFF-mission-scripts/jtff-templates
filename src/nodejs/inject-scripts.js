@@ -157,7 +157,7 @@ prompt.get(prompt_properties, async function (prompt_err, prompt_result) {
         missionObject['trigrules'],
         mapResourceObject,
         'Moose load',
-        ['Moose.lua'],
+        ['Moose_.lua'],
         10,
         '0x008000ff'
     );
