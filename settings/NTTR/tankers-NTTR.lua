@@ -152,7 +152,7 @@ TankersConfig = {
     {
         enable = true,
         autorespawn = true,
-        patternUnit = 'anchor-tankers-east',
+        patternUnit = 'anchor-tankers-west',
         benefit_coalition = coalition.side.RED,
         baseUnit = AIRBASE.Nevada.Tonopah_Test_Range_Airfield,
         terminalType = AIRBASE.TerminalType.OpenBig,
@@ -182,7 +182,7 @@ TankersConfig = {
     {
         enable = true,
         autorespawn = true,
-        patternUnit = 'anchor-tankers-east',
+        patternUnit = 'anchor-tankers-west',
         benefit_coalition = coalition.side.RED,
         baseUnit = AIRBASE.Nevada.Tonopah_Test_Range_Airfield,
         terminalType = AIRBASE.TerminalType.OpenBig,
@@ -238,7 +238,61 @@ TankersConfig = {
             name = CALLSIGN.Tanker.Arco,
             number = 4
         }
+    },
+    {
+        enable = true,
+        autorespawn = true,
+        patternUnit = 'anchor-tankers-west',
+        benefit_coalition = coalition.side.BLUE,
+        baseUnit = AIRBASE.Nevada.McCarran_International_Airport,
+        terminalType = AIRBASE.TerminalType.OpenBig,
+        groupName = 'TEXACO4',
+        airboss_recovery = false,
+        --escortgroupname = 'jolly_hornet #IFF:7323FR',
+        missionmaxduration = 240,
+        altitude = 25000,
+        speed = 420,
+        tacan = {
+            channel = 119,
+            morse = 'TX4',
+        },
+        freq = 317.500,
+        fuelwarninglevel = 35,
+        racetrack = {
+            front = 40,
+            back = 0
+        },
+        modex = 39,
+        callsign = {
+            alias = 'Texaco4',
+            name = CALLSIGN.Tanker.Texaco,
+            number = 4
+        }
     }
 }
 
-OnDemandTankersConfig = {}
+OnDemandTankersConfig = {
+    --Shell 2 KC130J
+    {
+        enable = true,
+        type = "sh2",
+        benefit_coalition = coalition.side.BLUE,
+        baseUnit = AIRBASE.Nevada.McCarran_International_Airport,
+        terminalType = AIRBASE.TerminalType.OpenBig,
+        groupName = 'SHELL2',
+        missionmaxduration = 135,
+        altitude = 8000,
+        speed = 140,
+        tacan = {
+            channel = 120,
+            morse = 'SH2',
+        },
+        freq = 276.200,
+        modex = 40,
+        callsign = {
+            alias = 'Shell-2',
+            name = CALLSIGN.Tanker.Shell,
+            number = 2
+        }
+    },
+}
