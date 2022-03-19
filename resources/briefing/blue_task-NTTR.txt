@@ -15,9 +15,11 @@ Focus - Groom Lake - 31.000ft - UHF 287.45
 
 --------------------
 OnDemand TANKER BLUE à placer avec un marker en vue F10 :
-avec xxx = le nombre de minutes ou le tanker doit orbiter sur zone
-avec yyy = le FL du tanker
-avec zzz = la vitesse en noeud du tanker
+avec vvv = le nombre de minutes ou le tanker doit orbiter sur zone
+avec www = le FL du tanker
+avec xxx = la vitesse en noeud du tanker
+avec yyy = le cap en degre de l hyppodrome
+avec zzz = la longueur en nautique de l hyppodrome
 
 SHELL 2-1 : KC130J 120Y ; 276.200 Mhz
-commande = -tanker-sh2-xxx-yyy-zzz
+commande = -tanker-sh2-vvv-www-xxx-yyy-zzz

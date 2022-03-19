@@ -287,6 +287,10 @@ OnDemandTankersConfig = {
             channel = 120,
             morse = 'SH2',
         },
+        orbit = {
+            heading = 0,
+            length = 20,
+        },
         freq = 276.200,
         modex = 40,
         callsign = {

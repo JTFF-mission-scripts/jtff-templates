@@ -1102,7 +1102,7 @@ function AddIADSFunction(parentMenu, iadsconfig, skynetIADSObject)
         SpawnIADS, { parentMenu, iadsconfig, skynetIADSObject})
 end
 
-function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
+function triggerOnDemandTanker(type, askedDuration, askedFL, askedSpeed, askedAnchorCoord, askedOrbitHeading, askedOrbitLeg)
     local TankerGroup = nil
     if (OnDemandTankersConfig) then
         for index, OnDemandTanker in ipairs(OnDemandTankersConfig) do
@@ -1114,8 +1114,54 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                 if (askedFL and askedFL > 0) then
                     OnDemandTanker.altitude = askedFL * 100
                 end
-                if ( maxtime == nil or maxtime == 0 ) then
-                    maxtime = 480
+                if ( askedDuration == nil or askedDuration == 0 ) then
+                    askedDuration = 480
+                end
+                if (askedOrbitHeading) then
+                    if (askedOrbitLeg and askedOrbitLeg > 10) then
+                        --heading et Leg demandés
+                        OnDemandTanker.orbit = {
+                            heading = askedOrbitHeading % 360,
+                            length = askedOrbitLeg,
+                        }
+                    else
+                        --heading demandé et leg non demandé
+                        if (OnDemandTanker.orbit ) then
+                            if (not(OnDemandTanker.orbit.length)) then
+                                OnDemandTanker.orbit = {
+                                    heading = askedOrbitHeading % 360,
+                                    length = 30,
+                                }
+                            else
+                                OnDemandTanker.orbit = {
+                                    heading = askedOrbitHeading % 360,
+                                    length = math.max(10, OnDemandTanker.orbit.length),
+                                }
+                            end
+                        else
+                            OnDemandTanker.orbit = {
+                                heading = askedOrbitHeading % 360,
+                                length = 30,
+                            }
+                        end
+                    end
+                else
+                    --pas de heading demandé
+                    if (OnDemandTanker.orbit ) then
+                        if (not(OnDemandTanker.orbit.heading)) then
+                            OnDemandTanker.orbit.heading = 90
+                        end
+                        if (not(OnDemandTanker.orbit.length)) then
+                            OnDemandTanker.orbit.length = 30
+                        else
+                            OnDemandTanker.orbit.length = math.max(10, OnDemandTanker.orbit.length)
+                        end
+                    else
+                        OnDemandTanker.orbit = {
+                            heading = 90,
+                            length = 30,
+                        }
+                    end
                 end
                 local set_group_tanker = SET_GROUP:New():FilterActive():FilterPrefixes(OnDemandTanker.groupName):FilterOnce()
                 local aliveTankersGroupList = set_group_tanker:GetSetObjects()
@@ -1126,7 +1172,7 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                 if (OnDemandTanker.baseUnit) then
                     RTBAirbase = AIRBASE:FindByName(OnDemandTanker.baseUnit)
                 else
-                    RTBAirbase = coord:GetClosestAirbase2(Airbase.Category.AIRDROME, OnDemandTanker.benefit_coalition)
+                    RTBAirbase = askedAnchorCoord:GetClosestAirbase2(Airbase.Category.AIRDROME, OnDemandTanker.benefit_coalition)
                 end
                 if ( #aliveTankersGroupList > 0) then
                     debug_msg(string.format('OnDemandTanker already in air : rerouting %s', OnDemandTanker.groupName))
@@ -1149,7 +1195,7 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                     --)
                     table.insert(
                             TankerRoute,
-                            coord
+                            askedAnchorCoord
                                     :SetAltitude(UTILS.FeetToMeters(OnDemandTanker.altitude))
                                     :WaypointAirTurningPoint(
                                     nil,
@@ -1167,18 +1213,36 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                                                 {
                                                     id = 'Orbit',
                                                     params = {
-                                                        pattern = AI.Task.OrbitPattern.CIRCLE,
+                                                        pattern = AI.Task.OrbitPattern.RACE_TRACK,
                                                         speed = UTILS.KnotsToMps(OnDemandTanker.speed),
                                                         altitude = UTILS.FeetToMeters(OnDemandTanker.altitude)
                                                     }
                                                 },
                                                 stopCondition = {
-                                                    duration = maxtime * 60
+                                                    duration = askedDuration * 60
                                                 }
                                             },
                                         },
                                     },
-                                    "Refuel"
+                                    "Refuel Start"
+                            )
+                    )
+                    table.insert(
+                            TankerRoute,
+                            askedAnchorCoord
+                                    :Translate(UTILS.NMToMeters(OnDemandTanker.orbit.length), OnDemandTanker.orbit.heading, true, false)
+                                    :SetAltitude(UTILS.FeetToMeters(OnDemandTanker.altitude))
+                                    :WaypointAirTurningPoint(
+                                    nil,
+                                    UTILS.KnotsToKmph(OnDemandTanker.speed),
+                                    {
+                                        {
+                                            id = 'Tanker',
+                                            params = {
+                                            }
+                                        },
+                                    },
+                                    "Orbit End"
                             )
                     )
                     table.insert(
@@ -1215,7 +1279,7 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                         )
                     else
                         TankerGroup = SpawnTanker:SpawnFromCoordinate(
-                                coord
+                                askedAnchorCoord
                                         :GetRandomCoordinateInRadius(
                                         UTILS.NMToMeters(30),
                                         UTILS.NMToMeters(20)
@@ -1226,7 +1290,7 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                         )
                     end
                     TankerGroup.spawnAbsTime = timer.getAbsTime()
-                    TankerGroup.missionmaxduration = maxtime
+                    TankerGroup.missionmaxduration = askedDuration
                     --RefuelTask = TankerGroup:EnRouteTaskTanker()
                     --OrbitTask = TankerGroup:TaskControlled(
                     --        TankerGroup:TaskOrbitCircle(
@@ -1243,7 +1307,7 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                     --        )
                     --)
                     table.insert(TankerRoute,
-                            coord
+                            askedAnchorCoord
                                     :SetAltitude(UTILS.FeetToMeters(OnDemandTanker.altitude))
                                     :WaypointAirTurningPoint(
                                     nil,
@@ -1261,18 +1325,35 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                                                 {
                                                     id = 'Orbit',
                                                     params = {
-                                                        pattern = AI.Task.OrbitPattern.CIRCLE,
+                                                        pattern = AI.Task.OrbitPattern.RACE_TRACK,
                                                         speed = UTILS.KnotsToMps(OnDemandTanker.speed),
                                                         altitude = UTILS.FeetToMeters(OnDemandTanker.altitude)
                                                     }
                                                 },
                                                 stopCondition = {
-                                                    duration = maxtime * 60
+                                                    duration = askedDuration * 60
                                                 }
                                             },
                                         },
                                     },
-                                    "Refuel"
+                                    "Refuel Start"
+                            )
+                    )
+                    table.insert(TankerRoute,
+                            askedAnchorCoord
+                                    :Translate(UTILS.NMToMeters(OnDemandTanker.orbit.length), OnDemandTanker.orbit.heading, true, false)
+                                    :SetAltitude(UTILS.FeetToMeters(OnDemandTanker.altitude))
+                                    :WaypointAirTurningPoint(
+                                    nil,
+                                    UTILS.KnotsToKmph(OnDemandTanker.speed),
+                                    {
+                                        {
+                                            id = 'Tanker',
+                                            params = {
+                                            }
+                                        }
+                                    },
+                                    "Orbit End"
                             )
                     )
                     table.insert(TankerRoute,
@@ -1298,15 +1379,17 @@ function triggerOnDemandTanker(type, maxtime, askedFL, askedSpeed, coord)
                 if (map_marker[TankerGroup:GetName()]) then
                     COORDINATE:RemoveMark(map_marker[TankerGroup:GetName()])
                 end
-                map_marker[TankerGroup:GetName()] = coord:MarkToCoalition(
+                map_marker[TankerGroup:GetName()] = askedAnchorCoord:MarkToCoalition(
                         string.format(
-                                'OnDemand Tanker %s - TCN %i\nFL %i at %i knots\nFreq %i MHz\nOn station for %i minutes',
+                                'OnDemand Tanker %s - TCN %i\nFL %i at %i knots\nFreq %i MHz\nOn station for %i minutes\nRacetrack : %i ° for %i nm',
                                 OnDemandTanker.type,
                                 OnDemandTanker.tacan.channel,
                                 UTILS.Round(OnDemandTanker.altitude / 100 , 0),
                                 OnDemandTanker.speed,
                                 OnDemandTanker.freq,
-                                maxtime
+                                askedDuration,
+                                OnDemandTanker.orbit.heading,
+                                OnDemandTanker.orbit.length
                         ),
                         OnDemandTanker.benefit_coalition,
                         true,

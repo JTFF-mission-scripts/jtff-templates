@@ -170,7 +170,7 @@ prompt.get(prompt_properties, async function (prompt_err, prompt_result) {
         missionObject['trigrules'],
         mapResourceObject,
         'Mist load',
-        ['mist_4_4_90.lua'],
+        ['mist_4_5_107.lua'],
         13,
         '0x008000ff'
     );
