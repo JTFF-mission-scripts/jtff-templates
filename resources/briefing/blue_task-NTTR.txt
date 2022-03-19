@@ -1,8 +1,25 @@
-Tankers
-KC-135----------ARCO 1--------276.200---112Y----FL260
-KC-135----------SHELL 1-------276.200---113Y----FL150
-KC-135MPRS------TEXACO 1------317.500---111Y----FL230
-KC-135---WEST---ARCO 4--------276.200---118Y----FL270
+TANKER
+
+AR-641A---KC-135----------ARCO 1--------276.200---112Y----FL260
+AR-641A---KC-135----------SHELL 1-------276.200---113Y----FL150
+AR-641A---KC-135MPRS---TEXACO 1----317.500---111Y----FL230
+
+AR-625-----KC-135----------ARCO 4--------276.200---118Y----FL270
+AR-625-----KC-135----------TEXACO 4-----317.500---119Y----FL250
+
+AR-641----- AAR CAL. A
+AR-625----- AAR WEST
 
 AWACS 
 Focus - Groom Lake - 31.000ft - UHF 287.45
+
+--------------------
+OnDemand TANKER BLUE à placer avec un marker en vue F10 :
+avec vvv = le nombre de minutes ou le tanker doit orbiter sur zone
+avec www = le FL du tanker
+avec xxx = la vitesse en noeud du tanker
+avec yyy = le cap en degre de l hyppodrome
+avec zzz = la longueur en nautique de l hyppodrome
+
+SHELL 2-1 : KC130J 120Y ; 276.200 Mhz
+commande = -tanker-sh2-vvv-www-xxx-yyy-zzz
