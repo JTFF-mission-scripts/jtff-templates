@@ -13,8 +13,8 @@ for index, traingingrangeconfig in ipairs(TrainingRangeConfig) do
         }
         trainingRange = RANGE:New(traingingrangeconfig.name)
         trainingRange:SetDefaultPlayerSmokeBomb(false)
-        trainingRange:SetRangeRadius(0.2) -- bomb impact at more than 500m is out of range
-        trainingRange:SetScoreBombDistance(100)-- bomb impact at more than 250m won't be taken into account
+        trainingRange:SetRangeRadius(0.2) -- bomb impact at more than 200m is out of range
+        trainingRange:SetScoreBombDistance(100)-- bomb impact at more than 100m won't be taken into account
         for index, subrangeTraining in ipairs(traingingrangeconfig.targets) do
             env.info('subrangeTraining type : ' .. subrangeTraining.type)
             if (subrangeTraining.type == "Strafepit") then
