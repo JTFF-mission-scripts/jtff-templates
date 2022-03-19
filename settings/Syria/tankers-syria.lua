@@ -77,6 +77,10 @@ OnDemandTankersConfig = {
             channel = 106,
             morse = 'TX3',
         },
+        orbit = {
+            heading = 300,
+            length = 20,
+        },
         freq = 317.5,
         modex = 23,
         callsign = {
@@ -99,6 +103,10 @@ OnDemandTankersConfig = {
         tacan = {
             channel = 107,
             morse = 'AR7',
+        },
+        orbit = {
+            heading = 192,
+            length = 40,
         },
         freq = 276.2,
         modex = 029,
@@ -123,6 +131,10 @@ OnDemandTankersConfig = {
             channel = 108,
             morse = 'SH4',
         },
+        orbit = {
+            heading = 087,
+            length = 30,
+        },
         freq = 276.2,
         modex = 018,
         callsign = {
@@ -145,6 +157,10 @@ OnDemandTankersConfig = {
         tacan = {
             channel = 101,
             morse = 'TEX',
+        },
+        orbit = {
+            heading = 090,
+            length = 30,
         },
         freq = 317.5,
         modex = 012,
@@ -169,6 +185,10 @@ OnDemandTankersConfig = {
             channel = 102,
             morse = 'ARC',
         },
+        orbit = {
+            heading = 090,
+            length = 30,
+        },
         freq = 276.2,
         modex = 012,
         callsign = {
@@ -191,6 +211,10 @@ OnDemandTankersConfig = {
         tacan = {
             channel = 103,
             morse = 'AR2',
+        },
+        orbit = {
+            heading = 090,
+            length = 30,
         },
         freq = 276.2,
         modex = 013,

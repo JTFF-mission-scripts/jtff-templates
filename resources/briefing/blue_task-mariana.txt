@@ -11,13 +11,15 @@ MGRS = FP+FQ+FR
 
 --------------------
 OnDemand TANKER BLUE à placer avec un marker en vue F10 :
-avec xxx = le nombre de minutes ou le tanker doit orbiter sur zone
-avec yyy = le FL du tanker
-avec zzz = la vitesse en noeud du tanker
+avec vvv = le nombre de minutes ou le tanker doit orbiter sur zone
+avec www = le FL du tanker
+avec xxx = la vitesse en noeud du tanker
+avec yyy = le cap en degre de l hyppodrome
+avec zzz = la longueur en nautique de l hyppodrome
 
 * TEXACO 2-1 : MPRS 101Y ; 317.500 Mhz
-commande = -tanker-tx2-xxx-yyy-zzz
+commande = -tanker-tx2-vvv-www-xxx-yyy-zzz
 * ARCO 6-1 : KC135 102Y : 276.200 Mhz
-commande = -tanker-ar6-xxx-yyy-zzz
+commande = -tanker-ar6-vvv-www-xxx-yyy-zzz
 * SHELL 3-1 : KC130 103Y : 276.200 Mhz
-commande = -tanker-sh3-xxx-yyy-zzz
+commande = -tanker-sh3-vvv-www-xxx-yyy-zzz

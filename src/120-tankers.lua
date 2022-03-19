@@ -191,15 +191,15 @@ function MarkHandler:onEvent(event)
                 if param2 ~= nil then trigger.action.outText("Duration = " .. param2, 10) end
                 if param3 ~= nil then trigger.action.outText("FlightLevel = " .. param3, 10) end
                 if param4 ~= nil then trigger.action.outText("Speed = " .. param4, 10) end
-                if param5 ~= nil then trigger.action.outText("Parameter5 = " .. param5, 10) end
-                if param6 ~= nil then trigger.action.outText("Parameter6 = " .. param6, 10) end
+                if param5 ~= nil then trigger.action.outText("OrbitHeading = " .. param5, 10) end
+                if param6 ~= nil then trigger.action.outText("OrbitLeg = " .. param6, 10) end
             end
 
             if string.find(cmd, "tanker") then
                 if DEBUG_MSG == true then
                     trigger.action.outText("DEBUG: On Demand Tanker Started!", 10)
                 end
-                tankersOnDemandArray[#tankersOnDemandArray+1] = triggerOnDemandTanker(param1, tonumber(param2), tonumber(param3), tonumber(param4), mcoord)
+                tankersOnDemandArray[#tankersOnDemandArray+1] = triggerOnDemandTanker(param1, tonumber(param2), tonumber(param3), tonumber(param4), mcoord, tonumber(param5), tonumber(param6))
             end
         --end
     end

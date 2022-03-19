@@ -16,6 +16,10 @@ OnDemandTankersConfig = {
         },
         freq = 317.5,
         modex = 23,
+        orbit = {
+            heading = 090,
+            length = 30,
+        },
         callsign = {
             alias = 'Texaco-3',
             name = CALLSIGN.Tanker.Texaco,
