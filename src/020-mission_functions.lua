@@ -469,6 +469,28 @@ function setROE(param)
     end
 end
 
+function setAlarmState(param)
+    local groupsToSpawn = param[1]
+    local AlarmStateValue = param[2]
+    for groupIndex = 1, #groupsToSpawn do
+        local group_name = string.format("%s", groupsToSpawn[groupIndex])
+        local dcs_groups = SET_GROUP:New():FilterPrefixes(group_name):FilterOnce()
+        dcs_groups:ForEachGroupAlive(function(group_alive)
+            group_alive:SetAIOn()
+            if AlarmStateValue == ENUMS.AlarmState.Auto then
+                debug_msg(string.format("SET Alarm State of group %s at AUTO", group_alive:GetName()))
+                group_alive:OptionAlarmStateAuto()
+            elseif AlarmStateValue == ENUMS.AlarmState.Green then
+                debug_msg(string.format("SET Alarm State of group %s at Green", group_alive:GetName()))
+                group_alive:OptionAlarmStateGreen()
+            elseif AlarmStateValue == ENUMS.AlarmState.Red then
+                debug_msg(string.format("SET Alarm State of group %s at Red", group_alive:GetName()))
+                group_alive:OptionAlarmStateRed()
+            end
+        end)
+    end
+end
+
 function setEngageAirWeapons(param)
     local groupsToSpawn = param[1]
     local value = param[2]
@@ -734,6 +756,13 @@ function SpawnRanges(param)
         {groupsToSpawn, ENUMS.ROE.ReturnFire})
     local ROEHoldFire = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Hold Fire", ROE, setROE,
         {groupsToSpawn, ENUMS.ROE.WeaponHold})
+    local AlarmState = MENU_COALITION:New(rangeConfig.benefit_coalition, "Alarm State", radioCommandSubRange)
+    local AlarmStateAuto = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Auto", AlarmState, setAlarmState,
+        {groupsToSpawn, ENUMS.AlarmState.Auto})
+    local AlarmStateGreen = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Green", AlarmState, setAlarmState,
+        {groupsToSpawn, ENUMS.AlarmState.Green})
+    local AlarmStateRed = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "Red", AlarmState, setAlarmState,
+        {groupsToSpawn, ENUMS.AlarmState.Red})
     local Engage_Air_Weapons = MENU_COALITION:New(rangeConfig.benefit_coalition, "Engage Air Weapons", radioCommandSubRange)
     local Engage_Air_Weapons_True = MENU_COALITION_COMMAND:New(rangeConfig.benefit_coalition, "True", Engage_Air_Weapons, setEngageAirWeapons,
         {groupsToSpawn, true})
