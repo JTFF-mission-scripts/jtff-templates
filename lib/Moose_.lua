@@ -44365,8 +44365,9 @@ else
 if target then
 local player=self:_GetPlayerFromUnit(target)
 if player and player.unit:IsAlive()then
-local text=string.format("Missile defeated. Well done, %s!",player.name)
-MESSAGE:New(text,10):ToClient(player.client)
+-- TODO: reactivate this line after RedFlag
+-- local text=string.format("Missile defeated. Well done, %s!",player.name)
+-- MESSAGE:New(text,10):ToClient(player.client)
 player.defeated=player.defeated+1
 end
 end
