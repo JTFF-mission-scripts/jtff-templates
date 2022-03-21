@@ -321,7 +321,7 @@ RangeConfig = {
         subRange = {
             {
                 name = "Strafe, Circle",
-                groupsToSpawn = {"63-B Class A Range Red", "63-B Class A Range Blue", "63-B Class A Range Line", "63-Bstrafe"},
+                groupsToSpawn = {"63-B Class A Range Red", "63-B Class A Range Line"},
                 holdFire = true,
                 AI = false
             },
@@ -1127,6 +1127,47 @@ RangeConfig = {
 }
 
 TrainingRangeConfig = {
+    {
+        name = "63B",
+        enable = true,
+        targets = {
+            {
+                type = "Strafepit",
+                unit_name = "R63B Strafe Pit L",
+                foul_line = "R63B Strafe Lane L",
+                boxlength = 2000,
+                boxwidth = 150,
+                heading = 32,
+                inverseheading = true,
+                goodpass = 20
+            },
+            {
+                type = "Strafepit",
+                unit_name = "R63B Strafe Pit R",
+                foul_line = "R63B Strafe Lane R",
+                boxlength = 2000,
+                boxwidth = 150,
+                heading = 32,
+                inverseheading = true,
+                goodpass = 20
+            },
+            {
+                type = "BombCircle",
+                unit_name = "R63BEC",
+                precision = 25
+            },
+            {
+                type = "BombCircle",
+                unit_name = "R63BWC",
+                precision = 25
+            },
+            {
+                type = "BombCircle",
+                unit_name = "R63B Hard Target",
+                precision = 15
+            }
+        }
+    },
     {
         name = "64C",
         enable = true,
