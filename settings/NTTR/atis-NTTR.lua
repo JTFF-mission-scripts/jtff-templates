@@ -1,6 +1,6 @@
 AtisConfig = {
     {
-        enable = true,
+        enable = false,
         airfield = AIRBASE.Nevada.Nellis_AFB,
         radio = {
             freq = 270.1,
@@ -27,7 +27,7 @@ AtisConfig = {
         }
     },
     {
-        enable = true,
+        enable = false,
         airfield = AIRBASE.Nevada.Tonopah_Test_Range_Airfield,
         radio = {
             freq = 113.0,

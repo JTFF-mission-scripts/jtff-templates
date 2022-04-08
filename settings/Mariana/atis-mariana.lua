@@ -1,6 +1,6 @@
 AtisConfig = {
     {
-        enable = true,
+        enable = false,
         airfield = AIRBASE.MarianaIslands.Andersen_AFB,
         radio = {
             freq = 270.1,
