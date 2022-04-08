@@ -1,6 +1,6 @@
 AtisConfig = {
     {
-        enable = true,
+        enable = false,
         airfield = AIRBASE.Syria.Incirlik,
         radio = {
             freq = 270.1,

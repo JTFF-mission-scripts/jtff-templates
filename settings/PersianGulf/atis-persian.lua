@@ -1,6 +1,6 @@
 AtisConfig = {
     {
-        enable = true,
+        enable = false,
         airfield = AIRBASE.PersianGulf.Al_Dhafra_AB,
         radio = {
             freq = 270.1,
