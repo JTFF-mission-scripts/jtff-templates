@@ -1122,6 +1122,13 @@ RangeConfig = {
                 holdFire = true,
                 AI = false
             },
+            {
+                name = "77-69 SA-23",
+                groupsToSpawn = {"77-69_5"},
+                engageAirWeapons = true,
+                holdFire = false,
+                AI = true
+            },
         }
     },
 }
