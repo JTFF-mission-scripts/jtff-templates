@@ -342,8 +342,8 @@ prompt.get(prompt_properties, async function (prompt_err, prompt_result) {
             "/",
             path.basename(process.env.npm_config_mission)
         ].join(""));
-        const airbossSoundFolder = zip.remove('ATIS').folder('ATIS');
-        await jtffci.addFilesToZip(airbossSoundFolder, 'resources/sounds/ATIS', fs.readdirSync('resources/sounds/ATIS'));
+        const atisSoundFolder = zip.remove('ATIS').folder('ATIS');
+        await jtffci.addFilesToZip(atisSoundFolder, 'resources/sounds/ATIS', fs.readdirSync('resources/sounds/ATIS'));
         const inputZip = await zip.generateAsync({
             type: 'nodebuffer',
             streamFiles: true,
@@ -469,8 +469,8 @@ prompt.get(prompt_properties, async function (prompt_err, prompt_result) {
             "/",
             path.basename(process.env.npm_config_mission)
         ].join(""));
-        const airbossSoundFolder = zip.remove('RANGE').folder('RANGE');
-        await jtffci.addFilesToZip(airbossSoundFolder, 'resources/sounds/RANGE', fs.readdirSync('resources/sounds/RANGE'));
+        const rangeSoundFolder = zip.remove('RANGE').folder('RANGE');
+        await jtffci.addFilesToZip(rangeSoundFolder, 'resources/sounds/RANGE', fs.readdirSync('resources/sounds/RANGE'));
         const inputZip = await zip.generateAsync({
             type: 'nodebuffer',
             streamFiles: true,
