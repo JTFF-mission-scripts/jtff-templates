@@ -1,4 +1,4 @@
-env.info('*** MOOSE GITHUB Commit Hash ID: 2022-03-18T08:48:50.0000000Z-b0e3f82d27095d0681013fff3eefb868a51e5f30 ***')
+env.info('*** MOOSE GITHUB Commit Hash ID: 2022-04-14T09:11:33.0000000Z-c56763b68fae5e8d8c83e03f1bf6c9b4ee605359 ***')
 env.info('*** MOOSE STATIC INCLUDE START *** ')
 ENUMS={}
 ENUMS.ROE={
@@ -1974,7 +1974,7 @@ Normandy="Normandy",
 PersianGulf="PersianGulf",
 TheChannel="TheChannel",
 Syria="Syria",
-MarianaIslands="MarianaIslands",
+MarianaIslands="MarianaIslands"
 }
 CALLSIGN={
 Aircraft={
@@ -2269,8 +2269,8 @@ else
 return 0
 end
 end
-UTILS.CelsiusToFahrenheit=function(Celsius)
-return Celsius*9/5+32
+UTILS.CelsiusToFahrenheit=function(Celcius)
+return Celcius*9/5+32
 end
 UTILS.hPa2inHg=function(hPa)
 return hPa*0.0295299830714
@@ -2325,7 +2325,8 @@ else
 local width=3+acc
 secFrmtStr='%0'..width..'.'..acc..'f'
 end
-return string.format('%03d°',latDeg)..string.format('%02d',latMin)..'\''..string.format(secFrmtStr,latSec)..'"'..latHemi..' '..string.format('%03d°',lonDeg)..string.format('%02d',lonMin)..'\''..string.format(secFrmtStr,lonSec)..'"'..lonHemi
+return string.format('%03d°',latDeg)..string.format('%02d',latMin)..'\''..string.format(secFrmtStr,latSec)..'"'..latHemi..' '
+..string.format('%03d°',lonDeg)..string.format('%02d',lonMin)..'\''..string.format(secFrmtStr,lonSec)..'"'..lonHemi
 else
 latMin=UTILS.Round(latMin,acc)
 lonMin=UTILS.Round(lonMin,acc)
@@ -2344,7 +2345,8 @@ else
 local width=3+acc
 minFrmtStr='%0'..width..'.'..acc..'f'
 end
-return string.format('%03d°',latDeg)..' '..string.format(minFrmtStr,latMin)..'\''..latHemi..'   '..string.format('%03d°',lonDeg)..' '..string.format(minFrmtStr,lonMin)..'\''..lonHemi
+return string.format('%03d°',latDeg)..' '..string.format(minFrmtStr,latMin)..'\''..latHemi..'   '
+..string.format('%03d°',lonDeg)..' '..string.format(minFrmtStr,lonMin)..'\''..lonHemi
 end
 end
 UTILS.tostringMGRS=function(MGRS,acc)
@@ -2355,12 +2357,8 @@ local Easting=tostring(MGRS.Easting)
 local Northing=tostring(MGRS.Northing)
 local nE=5-string.len(Easting)
 local nN=5-string.len(Northing)
-for i=1,nE do
-Easting="0"..Easting
-end
-for i=1,nN do
-Northing="0"..Northing
-end
+for i=1,nE do Easting="0"..Easting end
+for i=1,nN do Northing="0"..Northing end
 return string.format("%s %s %s %s",MGRS.UTMZone,MGRS.MGRSDigraph,string.sub(Easting,1,acc),string.sub(Northing,1,acc))
 end
 end
@@ -2378,13 +2376,9 @@ end
 end
 function UTILS.spairs(t,order)
 local keys={}
-for k in pairs(t)do
-keys[#keys+1]=k
-end
+for k in pairs(t)do keys[#keys+1]=k end
 if order then
-table.sort(keys,function(a,b)
-return order(t,a,b)
-end)
+table.sort(keys,function(a,b)return order(t,a,b)end)
 else
 table.sort(keys)
 end
@@ -2399,14 +2393,9 @@ end
 function UTILS.kpairs(t,getkey,order)
 local keys={}
 local keyso={}
-for k,o in pairs(t)do
-keys[#keys+1]=k
-keyso[#keyso+1]=getkey(o)
-end
+for k,o in pairs(t)do keys[#keys+1]=k keyso[#keyso+1]=getkey(o)end
 if order then
-table.sort(keys,function(a,b)
-return order(t,a,b)
-end)
+table.sort(keys,function(a,b)return order(t,a,b)end)
 else
 table.sort(keys)
 end
@@ -2420,9 +2409,7 @@ end
 end
 function UTILS.rpairs(t)
 local keys={}
-for k in pairs(t)do
-keys[#keys+1]=k
-end
+for k in pairs(t)do keys[#keys+1]=k end
 local random={}
 local j=#keys
 for i=1,j do
@@ -2649,8 +2636,14 @@ end
 function UTILS.VecSubstract(a,b)
 return{x=a.x-b.x,y=a.y-b.y,z=a.z-b.z}
 end
+function UTILS.Vec2Substract(a,b)
+return{x=a.x-b.x,y=a.y-b.y}
+end
 function UTILS.VecAdd(a,b)
 return{x=a.x+b.x,y=a.y+b.y,z=a.z+b.z}
+end
+function UTILS.Vec2Add(a,b)
+return{x=a.x+b.x,y=a.y+b.y}
 end
 function UTILS.VecAngle(a,b)
 local cosalpha=UTILS.VecDot(a,b)/(UTILS.VecNorm(a)*UTILS.VecNorm(b))
@@ -2764,13 +2757,6 @@ function UTILS.GetMissionDayOfYear(Time)
 local Date,Year,Month,Day=UTILS.GetDCSMissionDate()
 local d=UTILS.GetMissionDay(Time)
 return UTILS.GetDayOfYear(Year,Month,Day)+d
-end
-function UTILS.GetDate()
-local date,year,month,day=UTILS.GetDCSMissionDate()
-local time=timer.getAbsTime()
-local clock=UTILS.SecondsToClock(time,false)
-local x=tonumber(UTILS.Split(clock,"+")[2])
-local day=day+x
 end
 function UTILS.GetMagneticDeclination(map)
 map=map or UTILS.GetDCSMap()
@@ -2905,27 +2891,13 @@ Tlocal=Tlocal or 0
 local rad=math.rad
 local deg=math.deg
 local floor=math.floor
-local frac=function(n)
-return n-floor(n)
-end
-local cos=function(d)
-return math.cos(rad(d))
-end
-local acos=function(d)
-return deg(math.acos(d))
-end
-local sin=function(d)
-return math.sin(rad(d))
-end
-local asin=function(d)
-return deg(math.asin(d))
-end
-local tan=function(d)
-return math.tan(rad(d))
-end
-local atan=function(d)
-return deg(math.atan(d))
-end
+local frac=function(n)return n-floor(n)end
+local cos=function(d)return math.cos(rad(d))end
+local acos=function(d)return deg(math.acos(d))end
+local sin=function(d)return math.sin(rad(d))end
+local asin=function(d)return deg(math.asin(d))end
+local tan=function(d)return math.tan(rad(d))end
+local atan=function(d)return deg(math.atan(d))end
 local function fit_into_range(val,min,max)
 local range=max-min
 local count
@@ -3002,6 +2974,21 @@ table.remove(t,r)
 end
 return TempTable
 end
+function UTILS.GetRandomTableElement(t,replace)
+if t==nil or type(t)~="table"then
+BASE:I("Error in ShuffleTable: Missing or wrong type of Argument")
+return
+end
+math.random()
+math.random()
+math.random()
+local r=math.random(#t)
+local element=t[r]
+if not replace then
+table.remove(t,r)
+end
+return element
+end
 function UTILS.IsLoadingDoorOpen(unit_name)
 local ret_val=false
 local unit=Unit.getByName(unit_name)
@@ -3044,6 +3031,10 @@ BASE:T(unit_name.." cargo door is open")
 ret_val=true
 end
 if string.find(type_name,"UH-60L")and unit:getDrawArgumentValue(38)==1 or unit:getDrawArgumentValue(400)==1 then
+BASE:T(unit_name.." front door(s) are open")
+ret_val=true
+end
+if type_name=="AH-64D_BLK_II"then
 BASE:T(unit_name.." front door(s) are open")
 ret_val=true
 end
@@ -3155,7 +3146,9 @@ local _count=1
 while _code<1777 and _count<30 do
 while true do
 _code=_code+1
-if not ContainsDigit(_code,8)and not ContainsDigit(_code,9)and not ContainsDigit(_code,0)then
+if not ContainsDigit(_code,8)
+and not ContainsDigit(_code,9)
+and not ContainsDigit(_code,0)then
 table.insert(jtacGeneratedLaserCodes,_code)
 break
 end
@@ -3315,9 +3308,7 @@ return outcome
 end
 function UTILS.LoadStationaryListOfGroups(Path,Filename,Reduce)
 local reduce=true
-if Reduce==false then
-reduce=false
-end
+if Reduce==false then reduce=false end
 local filename=Filename or"StateListofGroups"
 local datatable={}
 if UTILS.CheckFileExists(Path,filename)then
@@ -3334,9 +3325,8 @@ local coordinate=COORDINATE:NewFromVec3({x=posx,y=posy,z=posz})
 local data={groupname=groupname,size=size,coordinate=coordinate,group=GROUP:FindByName(groupname)}
 if reduce then
 local actualgroup=GROUP:FindByName(groupname)
-local actualsize=actualgroup:CountAliveUnits()
-if actualsize>size then
-local reduction=actualsize-size
+if actualgroup and actualgroup:IsAlive()and actualgroup:CountAliveUnits()>size then
+local reduction=actualgroup:CountAliveUnits()-size
 BASE:I("Reducing groupsize by "..reduction.." units!")
 local units=actualgroup:GetUnits()
 local units2=UTILS.ShuffleTable(units)
@@ -3354,9 +3344,7 @@ return datatable
 end
 function UTILS.LoadSetOfGroups(Path,Filename,Spawn)
 local spawn=true
-if Spawn==false then
-spawn=false
-end
+if Spawn==false then spawn=false end
 BASE:I("Spawn = "..tostring(spawn))
 local filename=Filename or"SetOfGroups"
 local setdata=SET_GROUP:New()
@@ -3377,7 +3365,10 @@ local group=nil
 local data={groupname=groupname,size=size,coordinate=coordinate}
 table.insert(datatable,data)
 if spawn then
-local group=SPAWN:New(groupname):InitDelayOff():OnSpawnGroup(function(spwndgrp)
+local group=SPAWN:New(groupname)
+:InitDelayOff()
+:OnSpawnGroup(
+function(spwndgrp)
 setdata:AddObject(spwndgrp)
 local actualsize=spwndgrp:CountAliveUnits()
 if actualsize>size then
@@ -3388,7 +3379,9 @@ for i=1,reduction do
 units2[i]:Destroy(false)
 end
 end
-end):SpawnFromCoordinate(coordinate)
+end
+)
+:SpawnFromCoordinate(coordinate)
 end
 end
 else
@@ -3422,9 +3415,7 @@ return datatable
 end
 function UTILS.LoadStationaryListOfStatics(Path,Filename,Reduce)
 local reduce=true
-if Reduce==false then
-reduce=false
-end
+if Reduce==false then reduce=false end
 local filename=Filename or"StateListofStatics"
 local datatable={}
 if UTILS.CheckFileExists(Path,filename)then
@@ -3451,6 +3442,273 @@ else
 return nil
 end
 return datatable
+end
+do
+FIFO={
+ClassName="FIFO",
+lid="",
+version="0.0.1",
+counter=0,
+pointer=0,
+stackbypointer={},
+stackbyid={}
+}
+function FIFO:New()
+local self=BASE:Inherit(self,BASE:New())
+self.pointer=0
+self.counter=0
+self.stackbypointer={}
+self.stackbyid={}
+self.lid=string.format("%s (%s) | ","FiFo",self.version)
+self:I(self.lid.."Created.")
+return self
+end
+function FIFO:Push(Object,UniqueID)
+self:T(self.lid.."Push")
+self:T({Object,UniqueID})
+self.pointer=self.pointer+1
+self.counter=self.counter+1
+self.stackbypointer[self.pointer]={pointer=self.pointer,data=Object,uniqueID=UniqueID}
+if UniqueID then
+self.stackbyid[UniqueID]={pointer=self.pointer,data=Object,uniqueID=UniqueID}
+else
+self.stackbyid[self.pointer]={pointer=self.pointer,data=Object,uniqueID=UniqueID}
+end
+return self
+end
+function FIFO:Pull()
+self:T(self.lid.."Pull")
+if self.counter==0 then return nil end
+local object=self.stackbypointer[1].data
+self.stackbypointer[1]=nil
+self.counter=self.counter-1
+self:Flatten()
+return object
+end
+function FIFO:PullByPointer(Pointer)
+self:T(self.lid.."PullByPointer "..tostring(Pointer))
+if self.counter==0 then return nil end
+local object=self.stackbypointer[Pointer]
+self.stackbypointer[Pointer]=nil
+self.stackbyid[object.uniqueID]=nil
+self.counter=self.counter-1
+self:Flatten()
+return object.data
+end
+function FIFO:PullByID(UniqueID)
+self:T(self.lid.."PullByID "..tostring(UniqueID))
+if self.counter==0 then return nil end
+local object=self.stackbyid[UniqueID]
+return self:PullByPointer(object.pointer)
+end
+function FIFO:Flatten()
+self:T(self.lid.."Flatten")
+local pointerstack={}
+local idstack={}
+local counter=0
+for _ID,_entry in pairs(self.stackbypointer)do
+counter=counter+1
+pointerstack[counter]={pointer=counter,data=_entry.data,uniqueID=_entry.uniqueID}
+end
+for _ID,_entry in pairs(pointerstack)do
+idstack[_entry.uniqueID]={pointer=_entry.pointer,data=_entry.data,uniqueID=_entry.uniqueID}
+end
+self.stackbypointer=nil
+self.stackbypointer=pointerstack
+self.stackbyid=nil
+self.stackbyid=idstack
+self.counter=counter
+self.pointer=counter
+return self
+end
+function FIFO:IsEmpty()
+self:T(self.lid.."IsEmpty")
+return self.counter==0 and true or false
+end
+function FIFO:GetSize()
+self:T(self.lid.."GetSize")
+return self.counter
+end
+function FIFO:IsNotEmpty()
+self:T(self.lid.."IsNotEmpty")
+return not self:IsEmpty()
+end
+function FIFO:GetPointerStack()
+self:T(self.lid.."GetPointerStack")
+return self.stackbypointer
+end
+function FIFO:HasUniqueID(UniqueID)
+self:T(self.lid.."HasUniqueID")
+return self.stackbyid[UniqueID]and true or false
+end
+function FIFO:GetIDStack()
+self:T(self.lid.."GetIDStack")
+return self.stackbyid
+end
+function FIFO:GetIDStackSorted()
+self:T(self.lid.."GetIDStackSorted")
+local stack=self:GetIDStack()
+local idstack={}
+for _id,_entry in pairs(stack)do
+idstack[#idstack+1]=_id
+self:I({"pre",_id})
+end
+local function sortID(a,b)
+return a<b
+end
+table.sort(idstack)
+return idstack
+end
+function FIFO:Flush()
+self:T(self.lid.."FiFo Flush")
+self:I("FIFO Flushing Stack by Pointer")
+for _id,_data in pairs(self.stackbypointer)do
+local data=_data
+self:I(string.format("Pointer: %s | Entry: Number = %s Data = %s UniID = %s",tostring(_id),tostring(data.pointer),tostring(data.data),tostring(data.uniqueID)))
+end
+self:I("FIFO Flushing Stack by ID")
+for _id,_data in pairs(self.stackbyid)do
+local data=_data
+self:I(string.format("ID: %s | Entry: Number = %s Data = %s UniID = %s",tostring(_id),tostring(data.pointer),tostring(data.data),tostring(data.uniqueID)))
+end
+self:I("Counter = "..self.counter)
+self:I("Pointer = "..self.pointer)
+return self
+end
+end
+do
+LIFO={
+ClassName="LIFO",
+lid="",
+version="0.0.1",
+counter=0,
+pointer=0,
+stackbypointer={},
+stackbyid={}
+}
+function LIFO:New()
+local self=BASE:Inherit(self,BASE:New())
+self.pointer=0
+self.counter=0
+self.stackbypointer={}
+self.stackbyid={}
+self.lid=string.format("%s (%s) | ","LiFo",self.version)
+self:I(self.lid.."Created.")
+return self
+end
+function LIFO:Push(Object,UniqueID)
+self:T(self.lid.."Push")
+self:T({Object,UniqueID})
+self.pointer=self.pointer+1
+self.counter=self.counter+1
+self.stackbypointer[self.pointer]={pointer=self.pointer,data=Object,uniqueID=UniqueID}
+if UniqueID then
+self.stackbyid[UniqueID]={pointer=self.pointer,data=Object,uniqueID=UniqueID}
+else
+self.stackbyid[self.pointer]={pointer=self.pointer,data=Object,uniqueID=UniqueID}
+end
+return self
+end
+function LIFO:Pull()
+self:T(self.lid.."Pull")
+if self.counter==0 then return nil end
+local object=self.stackbypointer[self.pointer].data
+self.stackbypointer[self.pointer]=nil
+self.counter=self.counter-1
+self.pointer=self.pointer-1
+self:Flatten()
+return object
+end
+function LIFO:PullByPointer(Pointer)
+self:T(self.lid.."PullByPointer "..tostring(Pointer))
+if self.counter==0 then return nil end
+local object=self.stackbypointer[Pointer]
+self.stackbypointer[Pointer]=nil
+self.stackbyid[object.uniqueID]=nil
+self.counter=self.counter-1
+self:Flatten()
+return object.data
+end
+function LIFO:PullByID(UniqueID)
+self:T(self.lid.."PullByID "..tostring(UniqueID))
+if self.counter==0 then return nil end
+local object=self.stackbyid[UniqueID]
+return self:PullByPointer(object.pointer)
+end
+function LIFO:Flatten()
+self:T(self.lid.."Flatten")
+local pointerstack={}
+local idstack={}
+local counter=0
+for _ID,_entry in pairs(self.stackbypointer)do
+counter=counter+1
+pointerstack[counter]={pointer=counter,data=_entry.data,uniqueID=_entry.uniqueID}
+end
+for _ID,_entry in pairs(pointerstack)do
+idstack[_entry.uniqueID]={pointer=_entry.pointer,data=_entry.data,uniqueID=_entry.uniqueID}
+end
+self.stackbypointer=nil
+self.stackbypointer=pointerstack
+self.stackbyid=nil
+self.stackbyid=idstack
+self.counter=counter
+self.pointer=counter
+return self
+end
+function LIFO:IsEmpty()
+self:T(self.lid.."IsEmpty")
+return self.counter==0 and true or false
+end
+function LIFO:GetSize()
+self:T(self.lid.."GetSize")
+return self.counter
+end
+function LIFO:IsNotEmpty()
+self:T(self.lid.."IsNotEmpty")
+return not self:IsEmpty()
+end
+function LIFO:GetPointerStack()
+self:T(self.lid.."GetPointerStack")
+return self.stackbypointer
+end
+function LIFO:GetIDStack()
+self:T(self.lid.."GetIDStack")
+return self.stackbyid
+end
+function LIFO:GetIDStackSorted()
+self:T(self.lid.."GetIDStackSorted")
+local stack=self:GetIDStack()
+local idstack={}
+for _id,_entry in pairs(stack)do
+idstack[#idstack+1]=_id
+self:I({"pre",_id})
+end
+local function sortID(a,b)
+return a<b
+end
+table.sort(idstack)
+return idstack
+end
+function LIFO:HasUniqueID(UniqueID)
+self:T(self.lid.."HasUniqueID")
+return self.stackbyid[UniqueID]and true or false
+end
+function LIFO:Flush()
+self:T(self.lid.."FiFo Flush")
+self:I("LIFO Flushing Stack by Pointer")
+for _id,_data in pairs(self.stackbypointer)do
+local data=_data
+self:I(string.format("Pointer: %s | Entry: Number = %s Data = %s UniID = %s",tostring(_id),tostring(data.pointer),tostring(data.data),tostring(data.uniqueID)))
+end
+self:I("LIFO Flushing Stack by ID")
+for _id,_data in pairs(self.stackbyid)do
+local data=_data
+self:I(string.format("ID: %s | Entry: Number = %s Data = %s UniID = %s",tostring(_id),tostring(data.pointer),tostring(data.data),tostring(data.uniqueID)))
+end
+self:I("Counter = "..self.counter)
+self:I("Pointer = "..self.pointer)
+return self
+end
 end
 PROFILER={
 ClassName="PROFILER",
@@ -7188,7 +7446,7 @@ ClassName="ZONE_BASE",
 ZoneName="",
 ZoneProbability=1,
 DrawID=nil,
-Color={},
+Color={}
 }
 function ZONE_BASE:New(ZoneName)
 local self=BASE:Inherit(self,FSM:New())
@@ -7260,6 +7518,19 @@ else
 self.Coordinate=COORDINATE:NewFromVec3(Vec3)
 end
 return self.Coordinate
+end
+function ZONE_BASE:Get2DDistance(Coordinate)
+local a=self:GetVec2()
+local b={}
+if Coordinate.z then
+b.x=Coordinate.x
+b.y=Coordinate.z
+else
+b.x=Coordinate.x
+b.y=Coordinate.y
+end
+local dist=UTILS.VecDist2D(a,b)
+return dist
 end
 function ZONE_BASE:GetRandomVec2()
 return nil
@@ -7487,7 +7758,7 @@ id=world.VolumeType.SPHERE,
 params={
 point=ZoneCoord:GetVec3(),
 radius=ZoneRadius,
-},
+}
 }
 local function EvaluateZone(ZoneObject)
 if ZoneObject then
@@ -7625,7 +7896,7 @@ id=world.VolumeType.SPHERE,
 params={
 point=ZoneCoord:GetVec3(),
 radius=ZoneRadius/2,
-},
+}
 }
 local function EvaluateZone(ZoneDCSUnit)
 local ZoneUnit=UNIT:Find(ZoneDCSUnit)
@@ -7648,17 +7919,42 @@ self:F2(Vec3)
 local InZone=self:IsVec2InZone({x=Vec3.x,y=Vec3.z})
 return InZone
 end
-function ZONE_RADIUS:GetRandomVec2(inner,outer)
-self:F(self.ZoneName,inner,outer)
-local Point={}
+function ZONE_RADIUS:GetRandomVec2(inner,outer,surfacetypes)
 local Vec2=self:GetVec2()
 local _inner=inner or 0
 local _outer=outer or self:GetRadius()
-local angle=math.random()*math.pi*2;
-Point.x=Vec2.x+math.cos(angle)*math.random(_inner,_outer);
-Point.y=Vec2.y+math.sin(angle)*math.random(_inner,_outer);
-self:T({Point})
-return Point
+if surfacetypes and type(surfacetypes)~="table"then
+surfacetypes={surfacetypes}
+end
+local function _getpoint()
+local point={}
+local angle=math.random()*math.pi*2
+point.x=Vec2.x+math.cos(angle)*math.random(_inner,_outer)
+point.y=Vec2.y+math.sin(angle)*math.random(_inner,_outer)
+return point
+end
+local function _checkSurface(point)
+local stype=land.getSurfaceType(point)
+for _,sf in pairs(surfacetypes)do
+if sf==stype then
+return true
+end
+end
+return false
+end
+local point=_getpoint()
+if surfacetypes then
+local N=1;local Nmax=100;local gotit=false
+while gotit==false and N<=Nmax do
+gotit=_checkSurface(point)
+if gotit then
+else
+point=_getpoint()
+N=N+1
+end
+end
+end
+return point
 end
 function ZONE_RADIUS:GetRandomPointVec2(inner,outer)
 self:F(self.ZoneName,inner,outer)
@@ -7678,10 +7974,9 @@ local PointVec3=POINT_VEC3:NewFromVec2(self:GetRandomVec2(inner,outer))
 self:T3({PointVec3})
 return PointVec3
 end
-function ZONE_RADIUS:GetRandomCoordinate(inner,outer)
-self:F(self.ZoneName,inner,outer)
-local Coordinate=COORDINATE:NewFromVec2(self:GetRandomVec2(inner,outer))
-self:T3({Coordinate=Coordinate})
+function ZONE_RADIUS:GetRandomCoordinate(inner,outer,surfacetypes)
+local vec2=self:GetRandomVec2(inner,outer,surfacetypes)
+local Coordinate=COORDINATE:NewFromVec2(vec2)
 return Coordinate
 end
 ZONE={
@@ -7694,7 +7989,7 @@ return zone
 end
 local Zone=trigger.misc.getZone(ZoneName)
 if not Zone then
-error("Zone "..ZoneName.." does not exist.")
+env.error("ERROR: Zone "..ZoneName.." does not exist!")
 return nil
 end
 local self=BASE:Inherit(self,ZONE_RADIUS:New(ZoneName,{x=Zone.point.x,y=Zone.point.z},Zone.radius))
@@ -7997,7 +8292,8 @@ Prev=#self._.Polygon
 while Next<=#self._.Polygon do
 self:T({Next,Prev,self._.Polygon[Next],self._.Polygon[Prev]})
 if(((self._.Polygon[Next].y>Vec2.y)~=(self._.Polygon[Prev].y>Vec2.y))and
-(Vec2.x<(self._.Polygon[Prev].x-self._.Polygon[Next].x)*(Vec2.y-self._.Polygon[Next].y)/(self._.Polygon[Prev].y-self._.Polygon[Next].y)+self._.Polygon[Next].x))then
+(Vec2.x<(self._.Polygon[Prev].x-self._.Polygon[Next].x)*(Vec2.y-self._.Polygon[Next].y)/(self._.Polygon[Prev].y-self._.Polygon[Next].y)+self._.Polygon[Next].x)
+)then
 InPolygon=not InPolygon
 end
 self:T2({InPolygon=InPolygon})
@@ -8008,20 +8304,17 @@ self:T({InPolygon=InPolygon})
 return InPolygon
 end
 function ZONE_POLYGON_BASE:GetRandomVec2()
-self:F2()
-local Vec2Found=false
-local Vec2
 local BS=self:GetBoundingSquare()
-self:T2(BS)
-while Vec2Found==false do
-Vec2={x=math.random(BS.x1,BS.x2),y=math.random(BS.y1,BS.y2)}
-self:T2(Vec2)
+local Nmax=1000;local n=0
+while n<Nmax do
+local Vec2={x=math.random(BS.x1,BS.x2),y=math.random(BS.y1,BS.y2)}
 if self:IsVec2InZone(Vec2)then
-Vec2Found=true
-end
-end
-self:T2(Vec2)
 return Vec2
+end
+n=n+1
+end
+self:E("Could not find a random point in the polygon zone!")
+return nil
 end
 function ZONE_POLYGON_BASE:GetRandomPointVec2()
 self:F2()
@@ -8117,6 +8410,19 @@ local Airbase=AIRBASE:FindByName(AirbaseName)
 local self=BASE:Inherit(self,ZONE_RADIUS:New(AirbaseName,Airbase:GetVec2(),Radius))
 self._.ZoneAirbase=Airbase
 self._.ZoneVec2Cache=self._.ZoneAirbase:GetVec2()
+if Airbase:IsShip()then
+self.isShip=true
+self.isHelipad=false
+self.isAirdrome=false
+elseif Airbase:IsHelipad()then
+self.isShip=false
+self.isHelipad=true
+self.isAirdrome=false
+elseif Airbase:IsAirdrome()then
+self.isShip=false
+self.isHelipad=false
+self.isAirdrome=true
+end
 _EVENTDISPATCHER:CreateEventNewZone(self)
 return self
 end
@@ -8134,16 +8440,6 @@ ZoneVec2=self._.ZoneVec2Cache
 end
 self:T({ZoneVec2})
 return ZoneVec2
-end
-function ZONE_AIRBASE:GetRandomVec2()
-self:F(self.ZoneName)
-local Point={}
-local Vec2=self._.ZoneAirbase:GetVec2()
-local angle=math.random()*math.pi*2;
-Point.x=Vec2.x+math.cos(angle)*math.random()*self:GetRadius();
-Point.y=Vec2.y+math.sin(angle)*math.random()*self:GetRadius();
-self:T({Point})
-return Point
 end
 function ZONE_AIRBASE:GetRandomPointVec2(inner,outer)
 self:F(self.ZoneName,inner,outer)
@@ -8614,12 +8910,13 @@ return GroupTemplate
 end
 function DATABASE:_RegisterStaticTemplate(StaticTemplate,CoalitionID,CategoryID,CountryID)
 local StaticTemplate=UTILS.DeepCopy(StaticTemplate)
-local StaticTemplateName=env.getValueDictByKey(StaticTemplate.name)
+local StaticTemplateGroupName=env.getValueDictByKey(StaticTemplate.name)
+local StaticTemplateName=StaticTemplate.units[1].name
 self.Templates.Statics[StaticTemplateName]=self.Templates.Statics[StaticTemplateName]or{}
 StaticTemplate.CategoryID=CategoryID
 StaticTemplate.CoalitionID=CoalitionID
 StaticTemplate.CountryID=CountryID
-self.Templates.Statics[StaticTemplateName].StaticName=StaticTemplateName
+self.Templates.Statics[StaticTemplateName].StaticName=StaticTemplateGroupName
 self.Templates.Statics[StaticTemplateName].GroupTemplate=StaticTemplate
 self.Templates.Statics[StaticTemplateName].UnitTemplate=StaticTemplate.units[1]
 self.Templates.Statics[StaticTemplateName].CategoryID=CategoryID
@@ -9151,7 +9448,7 @@ end
 function SET_BASE:Remove(ObjectName,NoTriggerEvent)
 self:F2({ObjectName=ObjectName})
 local TriggerEvent=true
-if NoTriggerEvent==false then
+if NoTriggerEvent then
 TriggerEvent=false
 end
 local Object=self.Set[ObjectName]
@@ -12786,7 +13083,7 @@ if DegreesCelcius then
 if Settings:IsMetric()then
 return string.format(" %-2.2f °C",DegreesCelcius)
 else
-return string.format(" %-2.2f °F",UTILS.CelciusToFarenheit(DegreesCelcius))
+return string.format(" %-2.2f °F",UTILS.CelsiusToFahrenheit(DegreesCelcius))
 end
 else
 return" no temperature"
@@ -16388,11 +16685,15 @@ self.InitFarpModu=Modulation or 0
 return self
 end
 function SPAWNSTATIC:InitCargoMass(Mass)
-self.InitCargoMass=Mass
+self.InitStaticCargoMass=Mass
 return self
 end
 function SPAWNSTATIC:InitCargo(IsCargo)
-self.InitCargo=IsCargo
+self.InitStaticCargo=IsCargo
+return self
+end
+function SPAWNSTATIC:InitDead(IsDead)
+self.InitStaticDead=IsDead
 return self
 end
 function SPAWNSTATIC:InitCountry(CountryID)
@@ -16461,14 +16762,14 @@ end
 if self.InitStaticLivery then
 Template.livery_id=self.InitStaticLivery
 end
-if self.InitDead~=nil then
-Template.dead=self.InitDead
+if self.InitStaticDead~=nil then
+Template.dead=self.InitStaticDead
 end
-if self.InitCargo~=nil then
-Template.canCargo=self.InitCargo
+if self.InitStaticCargo~=nil then
+Template.canCargo=self.InitStaticCargo
 end
-if self.InitCargoMass~=nil then
-Template.mass=self.InitCargoMass
+if self.InitStaticCargoMass~=nil then
+Template.mass=self.InitStaticCargoMass
 end
 if self.InitLinkUnit then
 Template.linkUnit=self.InitLinkUnit:GetID()
@@ -16503,6 +16804,8 @@ self:T({Template=Template})
 self:T({TemplateGroup=TemplateGroup})
 Static=coalition.addGroup(CountryID,-1,TemplateGroup)
 else
+self:T("Spawning Static")
+self:T2({Template=Template})
 Static=coalition.addStaticObject(CountryID,Template)
 end
 return mystatic
@@ -22236,6 +22539,9 @@ AIRBASE.TheChannel={
 ["Lympne"]="Lympne",
 ["Detling"]="Detling",
 ["High_Halden"]="High Halden",
+["Biggin_Hill"]="Biggin Hill",
+["Eastchurch"]="Eastchurch",
+["Headcorn"]="Headcorn",
 }
 AIRBASE.Syria={
 ["Kuweires"]="Kuweires",
@@ -22252,7 +22558,6 @@ AIRBASE.Syria={
 ["Wujah_Al_Hajar"]="Wujah Al Hajar",
 ["Al_Dumayr"]="Al-Dumayr",
 ["Gazipasa"]="Gazipasa",
-["Ru_Convoy_4"]="Ru Convoy-4",
 ["Hatay"]="Hatay",
 ["Nicosia"]="Nicosia",
 ["Pinarbashi"]="Pinarbashi",
@@ -22300,6 +22605,7 @@ AIRBASE.Syria={
 ["Ruwayshid"]="Ruwayshid",
 ["Sanliurfa"]="Sanliurfa",
 ["Tal_Siman"]="Tal Siman",
+["Deir_ez-Zor"]="Deir ez-Zor",
 }
 AIRBASE.MarianaIslands={
 ["Rota_Intl"]="Rota Intl",
@@ -44365,9 +44671,8 @@ else
 if target then
 local player=self:_GetPlayerFromUnit(target)
 if player and player.unit:IsAlive()then
--- TODO: reactivate this line after RedFlag
--- local text=string.format("Missile defeated. Well done, %s!",player.name)
--- MESSAGE:New(text,10):ToClient(player.client)
+local text=string.format("Missile defeated. Well done, %s!",player.name)
+MESSAGE:New(text,10):ToClient(player.client)
 player.defeated=player.defeated+1
 end
 end
@@ -45910,6 +46215,7 @@ TRUMAN="CVN_75",
 STENNIS="Stennis",
 FORRESTAL="Forrestal",
 VINSON="VINSON",
+HERMES="HERMES81",
 TARAWA="LHA_Tarawa",
 AMERICA="USS America LHA-6",
 JCARLOS="L61",
@@ -46041,6 +46347,8 @@ elseif self.carriertype==AIRBOSS.CarrierType.FORRESTAL then
 self:_InitForrestal()
 elseif self.carriertype==AIRBOSS.CarrierType.VINSON then
 self:_InitStennis()
+elseif self.carriertype==AIRBOSS.CarrierType.HERMES then
+self:_InitHermes()
 elseif self.carriertype==AIRBOSS.CarrierType.TARAWA then
 self:_InitTarawa()
 elseif self.carriertype==AIRBOSS.CarrierType.AMERICA then
@@ -46096,7 +46404,7 @@ local r2=stern:Translate(self.carrierparam.rwywidth*0.5,FB-90,true)
 rwy:FlareRed()
 local cR=stern:Translate(self.carrierparam.totwidthstarboard,hdg+90,true)
 local cL=stern:Translate(self.carrierparam.totwidthport,hdg-90,true)
-if self.carrier:GetTypeName()~=AIRBOSS.CarrierType.TARAWA or self.carrier:GetTypeName()~=AIRBOSS.CarrierType.AMERICA or self.carrier:GetTypeName()~=AIRBOSS.CarrierType.JCARLOS or self.carrier:GetTypeName()~=AIRBOSS.CarrierType.CANBERRA then
+if self.carrier:GetTypeName()~=AIRBOSS.CarrierType.HERMES or self.carrier:GetTypeName()~=AIRBOSS.CarrierType.TARAWA or self.carrier:GetTypeName()~=AIRBOSS.CarrierType.AMERICA or self.carrier:GetTypeName()~=AIRBOSS.CarrierType.JCARLOS or self.carrier:GetTypeName()~=AIRBOSS.CarrierType.CANBERRA then
 local w1=stern:Translate(self.carrierparam.wire1,FB,true)
 local w2=stern:Translate(self.carrierparam.wire2,FB,true)
 local w3=stern:Translate(self.carrierparam.wire3,FB,true)
@@ -46355,15 +46663,34 @@ self.Tmessage=Duration or 10
 return self
 end
 function AIRBOSS:SetGlideslopeErrorThresholds(_max,_min,High,HIGH,Low,LOW)
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+self.gle._max=_max or 0.7
+self.gle.High=High or 1.4
+self.gle.HIGH=HIGH or 1.9
+self.gle._min=_min or-0.5
+self.gle.Low=Low or-1.2
+self.gle.LOW=LOW or-1.5
+else
 self.gle._max=_max or 0.4
 self.gle.High=High or 0.8
 self.gle.HIGH=HIGH or 1.5
 self.gle._min=_min or-0.3
 self.gle.Low=Low or-0.6
 self.gle.LOW=LOW or-0.9
+end
 return self
 end
 function AIRBOSS:SetLineupErrorThresholds(_max,_min,Left,LeftMed,LEFT,Right,RightMed,RIGHT)
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+self.lue._max=_max or 1.8
+self.lue._min=_min or-1.8
+self.lue.Left=Left or-2.8
+self.lue.LeftMed=LeftMed or-3.8
+self.lue.LEFT=LEFT or-4.5
+self.lue.Right=Right or 2.8
+self.lue.RightMed=RightMed or 3.8
+self.lue.RIGHT=RIGHT or 4.5
+else
 self.lue._max=_max or 0.5
 self.lue._min=_min or-0.5
 self.lue.Left=Left or-1.0
@@ -46372,6 +46699,7 @@ self.lue.LEFT=LEFT or-3.0
 self.lue.Right=Right or 1.0
 self.lue.RightMed=RightMed or 2.0
 self.lue.RIGHT=RIGHT or 3.0
+end
 return self
 end
 function AIRBOSS:SetMarshalRadius(Radius)
@@ -47150,6 +47478,30 @@ self.carrierparam.wire2=54
 self.carrierparam.wire3=64
 self.carrierparam.wire4=74
 end
+function AIRBOSS:_InitHermes()
+self:_InitStennis()
+self.carrierparam.sterndist=-105
+self.carrierparam.deckheight=12
+self.carrierparam.totlength=228.19
+self.carrierparam.totwidthport=20.5
+self.carrierparam.totwidthstarboard=24.5
+self.carrierparam.rwyangle=0
+self.carrierparam.rwylength=215
+self.carrierparam.rwywidth=13
+self.carrierparam.wire1=nil
+self.carrierparam.wire2=nil
+self.carrierparam.wire3=nil
+self.carrierparam.wire4=nil
+self.BreakLate.name="Late Break"
+self.BreakLate.Xmin=-UTILS.NMToMeters(1)
+self.BreakLate.Xmax=UTILS.NMToMeters(5)
+self.BreakLate.Zmin=-UTILS.NMToMeters(0.25)
+self.BreakLate.Zmax=UTILS.NMToMeters(0.5)
+self.BreakLate.LimitXmin=0
+self.BreakLate.LimitXmax=nil
+self.BreakLate.LimitZmin=-UTILS.NMToMeters(0.5)
+self.BreakLate.LimitZmax=nil
+end
 function AIRBOSS:_InitTarawa()
 self:_InitStennis()
 self.carrierparam.sterndist=-125
@@ -47623,11 +47975,11 @@ aoa.OnSpeedMin=8.50
 aoa.Fast=8.25
 aoa.FAST=8.00
 elseif harrier then
-aoa.SLOW=14.0
-aoa.Slow=13.0
-aoa.OnSpeedMax=12.0
-aoa.OnSpeed=11.0
-aoa.OnSpeedMin=10.0
+aoa.SLOW=16.0
+aoa.Slow=13.5
+aoa.OnSpeedMax=12.5
+aoa.OnSpeed=10.0
+aoa.OnSpeedMin=9.5
 aoa.Fast=8.0
 aoa.FAST=7.5
 end
@@ -47764,7 +48116,7 @@ alt=UTILS.FeetToMeters(360)
 elseif skyhawk then
 alt=UTILS.FeetToMeters(300)
 elseif harrier then
-alt=UTILS.FeetToMeters(300)
+alt=UTILS.FeetToMeters(312)
 end
 aoa=aoaac.OnSpeed
 end
@@ -48166,7 +48518,7 @@ angels0=2
 local hdg=self.carrier:GetHeading()
 p1=Carrier
 p2=Carrier:Translate(UTILS.NMToMeters(1.5),hdg)
-if self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
 p1=Carrier:Translate(UTILS.NMToMeters(1.0),hdg+90)
 p2=p1:Translate(2.5,hdg)
 end
@@ -49083,7 +49435,7 @@ self:_SetTimeInGroove(playerData)
 local text=string.format("Player %s AC type %s landed at dist=%.1f m. Tgroove=%.1f sec.",playerData.name,playerData.actype,dist,self:_GetTimeInGroove(playerData))
 text=text..string.format(" X=%.1f m, Z=%.1f m, rho=%.1f m.",X,Z,rho)
 self:T(self.lid..text)
-if self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
 self:RadioTransmission(self.LSORadio,self.LSOCall.IDLE,false,1,nil,true)
 self:_SetPlayerStep(playerData,AIRBOSS.PatternStep.DEBRIEF)
 else
@@ -49097,7 +49449,7 @@ self:E(self.lid..string.format("Player %s did not land in carrier box zone. Mayb
 end
 end
 else
-if self.carriertype~=AIRBOSS.CarrierType.TARAWA or self.carriertype~=AIRBOSS.CarrierType.AMERICA or self.carriertype~=AIRBOSS.CarrierType.JCARLOS or self.carriertype~=AIRBOSS.CarrierType.CANBERRA then
+if self.carriertype~=AIRBOSS.CarrierType.HERMES or self.carriertype~=AIRBOSS.CarrierType.TARAWA or self.carriertype~=AIRBOSS.CarrierType.AMERICA or self.carriertype~=AIRBOSS.CarrierType.JCARLOS or self.carriertype~=AIRBOSS.CarrierType.CANBERRA then
 local coord=EventData.IniUnit:GetCoordinate()
 local dist=coord:Get2DDistance(self:GetCoordinate())
 local wire=self:_GetWire(coord,0)
@@ -49632,7 +49984,7 @@ end
 function AIRBOSS:_CheckForLongDownwind(playerData)
 local X,Z=self:_GetDistances(playerData.unit)
 local limit=UTILS.NMToMeters(-1.6)
-if self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
 limit=UTILS.NMToMeters(-2.0)
 end
 if X<limit then
@@ -49672,7 +50024,7 @@ end
 local relheading=self:_GetRelativeHeading(playerData.unit,false)
 if relheading<=90 then
 self:_PlayerHint(playerData)
-if self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
 self:_SetPlayerStep(playerData,AIRBOSS.PatternStep.FINAL)
 else
 self:_SetPlayerStep(playerData,AIRBOSS.PatternStep.WAKE)
@@ -49793,7 +50145,7 @@ local ZoneALS=self:_GetZoneAbeamLandingSpot()
 local vplayer=playerData.unit:GetVelocityKMH()
 local vcarrier=self.carrier:GetVelocityKMH()
 local dv=math.abs(vplayer-vcarrier)
-local stable=dv<20
+local stable=dv<30
 if playerData.unit:IsInZone(ZoneALS)and stable then
 self:RadioTransmission(self.LSORadio,self.LSOCall.CLEAREDTOLAND,nil,nil,nil,true)
 self:_SetPlayerStep(playerData,AIRBOSS.PatternStep.GROOVE_LC)
@@ -49806,7 +50158,7 @@ local ZoneLS=self:_GetZoneLandingSpot()
 local vplayer=playerData.unit:GetVelocityKMH()
 local vcarrier=self.carrier:GetVelocityKMH()
 local dv=math.abs(vplayer-vcarrier)
-local stable=dv<10
+local stable=dv<15
 if playerData.unit:IsInZone(ZoneLS)and stable and playerData.stable==true then
 self:RadioTransmission(self.LSORadio,self.LSOCall.STABILIZED,nil,nil,nil,false)
 playerData.stable=false
@@ -49904,7 +50256,7 @@ local glMin=-1.2
 local luAbs=3.0
 if playerData.actype==AIRBOSS.AircraftCarrier.AV8B then
 glMax=2.6
-glMin=-2.0
+glMin=-2.2
 luAbs=4.1
 end
 if glideslopeError>glMax then
@@ -50004,9 +50356,14 @@ end
 function AIRBOSS:_GetSternCoord()
 local hdg=self.carrier:GetHeading()
 local FB=self:GetFinalBearing()
+local case=self.case
 self.sterncoord:UpdateFromCoordinate(self:GetCoordinate())
-if self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if case==3 then
 self.sterncoord:Translate(self.carrierparam.sterndist,hdg,true,true):Translate(8,FB-90,true,true)
+elseif case==2 or case==1 then
+self.sterncoord:Translate(self.carrierparam.sterndist,hdg,true,true):Translate(8,FB-90,true,true)
+end
 elseif self.carriertype==AIRBOSS.CarrierType.STENNIS then
 self.sterncoord:Translate(self.carrierparam.sterndist,hdg,true,true):Translate(7,FB+90,true,true)
 elseif self.carriertype==AIRBOSS.CarrierType.FORRESTAL then
@@ -50325,7 +50682,7 @@ local hdg=self:GetHeading()
 local D=UTILS.NMToMeters(2.5)
 local Post=self:GetCoordinate():Translate(D,hdg+270)
 self.zoneHolding=ZONE_RADIUS:New("CASE I Holding Zone",Post:GetVec2(),self.marshalradius)
-if self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
 self.zoneHolding=ZONE_RADIUS:New("CASE I Holding Zone",self.carrier:GetVec2(),UTILS.NMToMeters(5))
 end
 else
@@ -50347,7 +50704,7 @@ local hdg=self:GetHeading()
 local D=UTILS.NMToMeters(4.75)
 local R=UTILS.NMToMeters(1)
 local Three=self:GetCoordinate():Translate(D,hdg+275)
-if self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
 local Dx=UTILS.NMToMeters(2.25)
 local Dz=UTILS.NMToMeters(2.25)
 R=UTILS.NMToMeters(1)
@@ -50499,18 +50856,15 @@ end
 function AIRBOSS:_GetOptLandingCoordinate()
 self.landingcoord:UpdateFromCoordinate(self:_GetSternCoord())
 local FB=self:GetFinalBearing(false)
-if self.carriertype==AIRBOSS.CarrierType.TARAWA then
+local case=self.case
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if case==3 then
+self.landingcoord:UpdateFromCoordinate(self:_GetLandingSpotCoordinate())
+self.landingcoord:SetAltitude(UTILS.FeetToMeters(120))
+elseif case==2 or case==1 then
 self.landingcoord:UpdateFromCoordinate(self:_GetLandingSpotCoordinate()):Translate(35,FB-90,true,true)
 self.landingcoord:SetAltitude(UTILS.FeetToMeters(120))
-elseif self.carriertype==AIRBOSS.CarrierType.AMERICA then
-self.landingcoord:UpdateFromCoordinate(self:_GetLandingSpotCoordinate()):Translate(35,FB-90,true,true)
-self.landingcoord:SetAltitude(UTILS.FeetToMeters(120))
-elseif self.carriertype==AIRBOSS.CarrierType.JCARLOS then
-self.landingcoord:UpdateFromCoordinate(self:_GetLandingSpotCoordinate()):Translate(35,FB-90,true,true)
-self.landingcoord:SetAltitude(UTILS.FeetToMeters(120))
-elseif self.carriertype==AIRBOSS.CarrierType.CANBERRA then
-self.landingcoord:UpdateFromCoordinate(self:_GetLandingSpotCoordinate()):Translate(35,FB-90,true,true)
-self.landingcoord:SetAltitude(UTILS.FeetToMeters(120))
+end
 else
 if self.carrierparam.wire3 then
 local w3=self.carrierparam.wire3
@@ -50522,7 +50876,10 @@ return self.landingcoord
 end
 function AIRBOSS:_GetLandingSpotCoordinate()
 self.landingspotcoord:UpdateFromCoordinate(self:_GetSternCoord())
-if self.carriertype==AIRBOSS.CarrierType.TARAWA then
+if self.carriertype==AIRBOSS.CarrierType.HERMES then
+local hdg=self:GetHeading()
+self.landingspotcoord:Translate(69,hdg,true,true):SetAltitude(self.carrierparam.deckheight)
+elseif self.carriertype==AIRBOSS.CarrierType.TARAWA then
 local hdg=self:GetHeading()
 self.landingspotcoord:Translate(57,hdg,true,true):SetAltitude(self.carrierparam.deckheight)
 elseif self.carriertype==AIRBOSS.CarrierType.AMERICA then
@@ -50773,9 +51130,11 @@ local GIC,nIC=self:_Flightdata2Text(playerData,AIRBOSS.GroovePos.IC)
 local GAR,nAR=self:_Flightdata2Text(playerData,AIRBOSS.GroovePos.AR)
 local G=GXX.." "..GIM.." ".." "..GIC.." "..GAR
 local N=nXX+nIM+nIC+nAR
+local Nv=nXX+nIM
 local nL=count(G,'_')/2
 local nS=count(G,'%(')
 local nN=N-nS-nL
+local nNv=Nv-nS-nL
 local Tgroove=playerData.Tgroove
 local TgrooveUnicorn=Tgroove and(Tgroove>=15.0 and Tgroove<=18.99)or false
 local TgrooveVstolUnicorn=Tgroove and(Tgroove>=60.0 and Tgroove<=65.0)and playerData.actype==AIRBOSS.AircraftCarrier.AV8B or false
@@ -50786,12 +51145,15 @@ grade="_OK_"
 points=5.0
 G="Unicorn"
 else
-if nL>3 and playerData.actype==AIRBOSS.AircraftCarrier.AV8B then
+if nL>1 and playerData.actype==AIRBOSS.AircraftCarrier.AV8B then
 grade="--"
 points=2.0
-elseif nN>2 and playerData.actype==AIRBOSS.AircraftCarrier.AV8B then
+elseif nNv>=1 and playerData.actype==AIRBOSS.AircraftCarrier.AV8B then
 grade="(OK)"
 points=3.0
+elseif nNv<1 and playerData.actype==AIRBOSS.AircraftCarrier.AV8B then
+grade="OK"
+points=4.0
 elseif nL>0 then
 grade="--"
 points=2.0
@@ -51026,7 +51388,7 @@ gp=AIRBOSS.GroovePos.AR
 if n==-1 then
 gp=AIRBOSS.GroovePos.IC
 elseif n==1 then
-if self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
 gp=AIRBOSS.GroovePos.AL
 else
 gp=AIRBOSS.GroovePos.IW
@@ -51923,13 +52285,13 @@ end
 function AIRBOSS:_IsCarrierAircraft(unit)
 local aircrafttype=unit:GetTypeName()
 if aircrafttype==AIRBOSS.AircraftCarrier.AV8B then
-if self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
 return true
 else
 return false
 end
 end
-if self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
 if aircrafttype~=AIRBOSS.AircraftCarrier.AV8B then
 return false
 end
@@ -53626,7 +53988,7 @@ if case==3 then
 text=text.."\n* bullseye with GREEN flares"
 self:_GetZoneBullseye(case):FlareZone(FLARECOLOR.Green,45)
 end
-if self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
+if self.carriertype==AIRBOSS.CarrierType.HERMES or self.carriertype==AIRBOSS.CarrierType.TARAWA or self.carriertype==AIRBOSS.CarrierType.AMERICA or self.carriertype==AIRBOSS.CarrierType.JCARLOS or self.carriertype==AIRBOSS.CarrierType.CANBERRA then
 text=text.."\n* abeam landing stop with RED flares"
 local ALSPT=self:_GetZoneAbeamLandingSpot()
 ALSPT:FlareZone(FLARECOLOR.Red,5,nil,UTILS.FeetToMeters(110))
@@ -56585,7 +56947,6 @@ FreeVHFFrequencies={},
 FreeUHFFrequencies={},
 FreeFMFrequencies={},
 CargoCounter=0,
-wpZones={},
 Cargo_Troops={},
 Cargo_Crates={},
 Loaded_Cargo={},
@@ -56617,6 +56978,7 @@ CTLD.UnitTypes={
 ["Mi-24V"]={type="Mi-24V",crates=true,troops=true,cratelimit=2,trooplimit=8,length=18,cargoweightlimit=700},
 ["Hercules"]={type="Hercules",crates=true,troops=true,cratelimit=7,trooplimit=64,length=25,cargoweightlimit=19000},
 ["UH-60L"]={type="UH-60L",crates=true,troops=true,cratelimit=2,trooplimit=20,length=16,cargoweightlimit=3500},
+["AH-64D_BLK_II"]={type="AH-64D_BLK_II",crates=false,troops=true,cratelimit=0,trooplimit=2,length=17,cargoweightlimit=200},
 }
 CTLD.version="1.0.10"
 function CTLD:New(Coalition,Prefixes,Alias)
@@ -57085,6 +57447,8 @@ local inzone=false
 local drop=drop or false
 local ship=nil
 local width=20
+local distance=nil
+local zone=nil
 if not drop then
 inzone=self:IsUnitInZone(Unit,CTLD.CargoZoneType.LOAD)
 if not inzone then
@@ -57795,6 +58159,7 @@ local name=Crate:GetName()
 local required=Crate:GetCratesNeeded()
 local template=Crate:GetTemplates()
 local ctype=Crate:GetType()
+local ccoord=Crate:GetPositionable():GetCoordinate()
 if not buildables[name]then
 local object={}
 object.Name=name
@@ -57803,6 +58168,7 @@ object.Found=1
 object.Template=template
 object.CanBuild=false
 object.Type=ctype
+object.Coord=ccoord:GetVec2()
 buildables[name]=object
 foundbuilds=true
 else
@@ -57940,7 +58306,7 @@ if type(temptable)=="string"then
 temptable={temptable}
 end
 local zone=ZONE_GROUP:New(string.format("Unload zone-%s",unitname),Group,100)
-local randomcoord=zone:GetRandomCoordinate(35):GetVec2()
+local randomcoord=Build.Coord or zone:GetRandomCoordinate(35):GetVec2()
 if Repair then
 randomcoord=RepairLocation:GetVec2()
 end
@@ -57949,7 +58315,6 @@ self.TroopCounter=self.TroopCounter+1
 local alias=string.format("%s-%d",_template,math.random(1,100000))
 if canmove then
 self.DroppedTroops[self.TroopCounter]=SPAWN:NewWithAlias(_template,alias)
-:InitRandomizeUnits(true,20,2)
 :InitDelayOff()
 :SpawnFromVec2(randomcoord)
 else
@@ -58624,8 +58989,8 @@ local uheight=Unit:GetHeight()
 local ucoord=Unit:GetCoordinate()
 local gheight=ucoord:GetLandHeight()
 local aheight=uheight-gheight
-local maxh=self.HercMinAngels
-local minh=self.HercMaxAngels
+local minh=self.HercMinAngels
+local maxh=self.HercMaxAngels
 local maxspeed=self.HercMaxSpeed
 local kmspeed=uspeed*3.6
 local knspeed=kmspeed/1.86
@@ -58646,7 +59011,7 @@ text=string.format("Hover parameters (autoload/drop):\n - Min height %dm \n - Ma
 else
 local minheight=UTILS.MetersToFeet(self.minimumHoverHeight)
 local maxheight=UTILS.MetersToFeet(self.maximumHoverHeight)
-text=string.format("Hover parameters (autoload/drop):\n - Min height %dm \n - Max height %dm \n - Max speed 6fts \n - In parameter: %s",minheight,maxheight,htxt)
+text=string.format("Hover parameters (autoload/drop):\n - Min height %dft \n - Max height %dft \n - Max speed 6ftps \n - In parameter: %s",minheight,maxheight,htxt)
 end
 self:_SendMessage(text,10,false,Group)
 return self
@@ -59463,7 +59828,7 @@ self:Soldier_SpawnGroup(Cargo_Drop_initiator,Cargo_Content_position,Cargo_Type_n
 self:Soldier_SpawnGroup(Cargo_Drop_initiator,Cargo_Content_position,Cargo_Type_name,CargoHeading,Cargo_Country,5)
 self:Soldier_SpawnGroup(Cargo_Drop_initiator,Cargo_Content_position,Cargo_Type_name,CargoHeading,Cargo_Country,10)
 else
-self:Cargo_SpawnGroup(Cargo_Drop_initiator,Cargo_Content_position,Cargo_Type_name,CargoHeading,Cargo_Country,0)
+self:Cargo_SpawnGroup(Cargo_Drop_initiator,Cargo_Content_position,Cargo_Type_name,CargoHeading,Cargo_Country)
 end
 else
 if all_cargo_gets_destroyed==true or Cargo_over_water==true then
@@ -59713,7 +60078,8 @@ CSAR.AircraftType["Mi-24P"]=8
 CSAR.AircraftType["Mi-24V"]=8
 CSAR.AircraftType["Bell-47"]=2
 CSAR.AircraftType["UH-60L"]=10
-CSAR.version="1.0.4c"
+CSAR.AircraftType["AH-64D_BLK_II"]=2
+CSAR.version="1.0.4e"
 function CSAR:New(Coalition,Template,Alias)
 local self=BASE:Inherit(self,FSM:New())
 if Coalition and type(Coalition)=="string"then
@@ -59816,6 +60182,7 @@ self.useSRS=false
 self.SRSPath="E:\\Progra~1\\DCS-SimpleRadio-Standalone\\"
 self.SRSchannel=300
 self.SRSModulation=radio.modulation.AM
+self.SRSport=5002
 return self
 end
 function CSAR:_CreateDownedPilotTrack(Group,Groupname,Side,OriginalUnit,Description,Typename,Frequency,Playername,Wetfeet)
@@ -60489,6 +60856,7 @@ local path=self.SRSPath
 local modulation=self.SRSModulation
 local channel=self.SRSchannel
 local msrs=MSRS:New(path,channel,modulation)
+msrs:SetPort(self.SRSport)
 msrs:PlaySoundText(srstext,2)
 end
 return self
@@ -62557,7 +62925,14 @@ local AttackerCount=AttackerSet:Count()
 local DefenderFriendlies=self:GetAIFriendliesNearBy(AttackerDetection)
 for FriendlyDistance,AIFriendly in UTILS.spairs(DefenderFriendlies or{})do
 if AttackerCount>DefenderCount then
-local Friendly=AIFriendly:GetGroup()
+if AIFriendly then
+local classname=AIFriendly.ClassName or"No Class Name"
+local unitname=AIFriendly.IdentifiableName or"No Unit Name"
+end
+local Friendly=nil
+if AIFriendly and AIFriendly:IsAlive()then
+Friendly=AIFriendly:GetGroup()
+end
 if Friendly and Friendly:IsAlive()then
 local DefenderTask=self:GetDefenderTask(Friendly)
 if DefenderTask then
@@ -69471,6 +69846,9 @@ return self
 end
 function SOUNDFILE:SetPath(Path)
 self.path=Path or"l10n/DEFAULT/"
+if not Path and self.useSRS then
+self.path=os.getenv('TMP').."\\DCS\\Mission\\l10n\\DEFAULT"
+end
 local nmax=1000;local n=1
 while(self.path:sub(-1)=="/"or self.path:sub(-1)==[[\]])and n<=nmax do
 self.path=self.path:sub(1,#self.path-1)
@@ -70314,12 +70692,14 @@ return self.path
 end
 function MSRS:SetPort(Port)
 self.port=Port or 5002
+return self
 end
 function MSRS:GetPort()
 return self.port
 end
 function MSRS:SetCoalition(Coalition)
 self.coalition=Coalition or 0
+return self
 end
 function MSRS:GetCoalition()
 return self.coalition
@@ -70387,7 +70767,7 @@ self:ScheduleOnce(Delay,MSRS.PlaySoundFile,self,Soundfile,0)
 else
 local soundfile=Soundfile:GetName()
 local command=self:_GetCommand()
-command=command.." --file="..tostring(soundfile)
+command=command..' --file="'..tostring(soundfile)..'"'
 self:_ExecCommand(command)
 end
 return self
@@ -70475,13 +70855,12 @@ speed=speed or self.speed
 port=port or self.port
 modus=modus:gsub("0","AM")
 modus=modus:gsub("1","FM")
-local command=string.format("start /min \"\" /d \"%s\" /b \"%s\" -f %s -m %s -c %s -p %s -n \"%s\" -h",path,exe,freqs,modus,coal,port,"ROBOT")
-local command=string.format('%s/%s -f %s -m %s -c %s -p %s -n "%s"',path,exe,freqs,modus,coal,port,"ROBOT")
+local command=string.format('"%s\\%s" -f %s -m %s -c %s -p %s -n "%s"',path,exe,freqs,modus,coal,port,"ROBOT")
 if voice then
 command=command..string.format(" --voice=\"%s\"",tostring(voice))
 else
 if gender and gender~="female"then
-command=command..string.format(" --gender=%s",tostring(gender))
+command=command..string.format(" -g %s",tostring(gender))
 end
 if culture and culture~="en-GB"then
 command=command..string.format(" -l %s",tostring(culture))

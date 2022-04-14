@@ -40,11 +40,3 @@ R4808Scheduler, R4808_ID = SCHEDULER:New(nil,
         end
       end)
   end,{},7,10)
-
-atisScheduler, atisSchedulerId = SCHEDULER:New(nil,
-        function()
-            debug_squeduler_msg("Changement piste en service Nellis")
-            ATISArray[1]:SetActiveRunway("21R")
-            --ATISArray[2]:SetActiveRunway("21R")
-        end,{},4200
-)

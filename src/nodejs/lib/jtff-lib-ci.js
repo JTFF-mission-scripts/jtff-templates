@@ -228,9 +228,20 @@ function mizUpdateSettingsLuaFiles(zip, strTheatre) {
     };
 }
 async function mizUpdateSoundFolders(zip) {
-    console.log('adding sound files from resources/sounds folder...');
-    await addFilesToZip(zip, 'resources/sounds', fs.readdirSync('resources/sounds'));
+    const folderArray = fs.readdirSync('resources/sounds');
+    for (const folder of folderArray) {
+        if(zip.folder(new RegExp(folder)).length > 0 ) {
+            await mizUpdateSingleSoundFolder(zip, folder);
+        }
+    }
 }
+
+async function mizUpdateSingleSoundFolder(zip, folder) {
+    console.log('adding sound files from resources/sounds/' + folder + ' folder...');
+    zip = zip.remove(folder).folder(folder);
+    await addFilesToZip(zip, 'resources/sounds/' + folder, fs.readdirSync('resources/sounds/' + folder));
+}
+
 async function addFilesToZip (zip, directoryPath, filesToInclude) {
     const promiseArr = await filesToInclude.map(async file => {
         const filePath = path.join(directoryPath, file)
