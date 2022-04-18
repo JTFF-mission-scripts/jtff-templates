@@ -197,7 +197,7 @@ prompt.get(prompt_properties, async function (prompt_err, prompt_result) {
         mapResourceObject,
         'Load Libraries',
         ['010-root_menus.lua', '020-mission_functions.lua', 'hypeman.lua'],
-        15,
+        16,
         '0xffff00ff'
     );
     missionObject['trig'] = tuple.tObject;
@@ -205,6 +205,11 @@ prompt.get(prompt_properties, async function (prompt_err, prompt_result) {
     mapResourceObject = tuple.mrObject;
 
     let settingsArray = [];
+    settingsArray.push(
+        {
+            file: "settings-hypeman.lua",
+        },
+    );
     // injection de la gestion des Set_Clients
     tuple = jtffci.injectScripts(
         missionObject['trig'],
