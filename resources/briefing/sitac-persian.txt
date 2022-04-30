@@ -14,8 +14,8 @@ N 25° 51' 37'' E 056° 13' 17'' 1188 ft
 
 ATTENTION TRAFFIC CIVIL
 
-CSG 1 : CVN71 dans le Golfe d'OMAN : 71X - ICLS 11
+CSG 1 : CVN71 dans le Golfe d'OMAN : 71X - ICLS 11 - DL4=336.10Mhz
 
-CSG 2 : CVN73 dans le détroit d'Hormuz : 73X - ICLS : 13
+CSG 2 : CVN73 dans le détroit d'Hormuz : 73X - ICLS : 13 - DL4=336.30Mhz
 
 TARAWA LHA-1 : 51X ICLS 20

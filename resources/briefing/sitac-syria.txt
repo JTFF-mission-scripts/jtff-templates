@@ -16,10 +16,10 @@ TNT 737 - 3242
 Virgin 747 - 7377
 
 Naval Ops:
-* CVN71 - 71X - ICLS11
+* CVN71 - 71X - ICLS11 - DL4=336.10Mhz
 * AIRBOSS Activé : https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Ops.Airboss.html
 * Shell-1 - Basket - 104Y - FL80
 
-* CVN73 - 73X - ICLS13
+* CVN73 - 73X - ICLS13 - DL4=336.30Mhz
 * AIRBOSS Activé : https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Ops.Airboss.html
 * Shell-2 - Basket - 105Y - FL80
