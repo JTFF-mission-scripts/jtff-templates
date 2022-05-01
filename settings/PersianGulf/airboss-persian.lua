@@ -12,8 +12,8 @@ AirBossConfig = {
         recoveryops = {
             mode = 'cyclic',
             cyclic = {
-                event_duration_minutes = 75,
-                event_ia_reserved_minutes = 45,
+                event_duration_minutes = 60,
+                event_ia_reserved_minutes = 15,
             }
         },
         tacan = {
@@ -70,28 +70,28 @@ AirBossConfig = {
             alpha = {
                 recoveries = {
                     {
-                        recovery_start_minutes = 15,
-                        recovery_duration_minutes = 60,
+                        recovery_start_minutes = 45,
+                        recovery_duration_minutes = 30,
                         recovery_case = 1
                     },
                     {
-                        recovery_start_minutes = 105,
-                        recovery_duration_minutes = 60,
+                        recovery_start_minutes = 125,
+                        recovery_duration_minutes = 30,
                         recovery_case = 1
                     },
                     {
-                        recovery_start_minutes = 195,
-                        recovery_duration_minutes = 60,
+                        recovery_start_minutes = 205,
+                        recovery_duration_minutes = 30,
                         recovery_case = 1
                     },
                     {
-                        recovery_start_minutes = 195+90,
-                        recovery_duration_minutes = 60,
+                        recovery_start_minutes = 285,
+                        recovery_duration_minutes = 30,
                         recovery_case = 1
                     },
                     {
-                        recovery_start_minutes = 195+180,
-                        recovery_duration_minutes = 60,
+                        recovery_start_minutes = 365,
+                        recovery_duration_minutes = 30,
                         recovery_case = 1
                     }
                 }
