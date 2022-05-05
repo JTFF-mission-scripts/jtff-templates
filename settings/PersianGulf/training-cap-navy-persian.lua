@@ -1,19 +1,15 @@
 TrainingCAPConfig = {
     {
-        enable = false,
+        enable = true,
         coalitionCAP = coalition.side.RED,
-        name = 'North-West',
-        patrolZoneGroupName = 'CAP zone Red',
-        engageZoneGroupName = 'engage zone Red',
+        name = 'West',
+        patrolZoneGroupName = 'PatrolZoneWest',
+        engageZoneGroupName = 'EngageZoneWest',
         CAPGoups = {
-            'REDNavyCAP-1',
-            'REDNavyCAP-2',
-            'REDNavyCAP-3',
-            'REDNavyCAP-4',
-            'REDNavyCAP-5',
-            'REDNavyCAP-6',
-            'REDNavyCAP-7',
-            'REDNavyCAP-8'
+            'CAPZone-Tomcats',
+            'CAPZone-Phantom',
+            'CAPZone-Fulcrum',
+            'CAPZone-Viper'
         },
         skill = 'Excellent',
         capParameters = {
