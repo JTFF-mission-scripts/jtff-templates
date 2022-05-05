@@ -3,8 +3,8 @@ TrainingCAPConfig = {
         enable = true,
         coalitionCAP = coalition.side.RED,
         name = 'West',
-        patrolZoneGroupName = 'PatrolZoneWest',
-        engageZoneGroupName = 'EngageZoneWest',
+        patrolZoneName = 'PatrolZoneWest',
+        engageZoneName = 'EngageZoneWest',
         CAPGoups = {
             'CAPZone-Tomcats',
             'CAPZone-Phantom',

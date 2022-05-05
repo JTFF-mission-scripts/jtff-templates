@@ -11,7 +11,7 @@ tankersOnDemandArray[#tankersOnDemandArray+1] = triggerOnDemandTanker(
         "ar6",
         nil,
         nil,
-        nil
+        nil,
         GROUP:FindByName("sea-anchor-2"):GetCoordinate(),
         nil,
         nil
