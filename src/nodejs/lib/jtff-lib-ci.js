@@ -299,6 +299,7 @@ function getGeneratedMizFilePaths() {
 
 function uploadMizFiles(credentials) {
     const jtffFtpServer = new ftpClient();
+
     jtffFtpServer.connect({
         host: credentials.host,
         secure: false,
@@ -308,20 +309,27 @@ function uploadMizFiles(credentials) {
     jtffFtpServer.on('ready', function() {
         jtffFtpServer.cwd(credentials.folder, function(err, curDir) {
             if (err) throw err;
-                fs.readdirSync(config.general.missionFolder)
-                    .filter(file => file.endsWith('.pub.json'))
-                    .map(file => {
-                        // console.log(config.general.missionFolder+'/'+file);
-                        fs.readFile(config.general.missionFolder+'/'+file, function(err, data) {
-                            if (err) throw err;
-                            data = JSON.parse(data.toString());
-                            // console.log(data);
-                            jtffFtpServer.put(data.mizFiles, path.basename(data.mizFiles), false, function (err) {
-                                if (err) throw err;
-                            });
-                        });
-                    });
-                // jtffFtpServer.end();
+                Promise.all(
+                    fs.readdirSync(config.general.missionFolder)
+                        .filter(file => file.endsWith('.pub.json'))
+                        .map(file => {
+                            return new Promise((resolve, reject) => {
+                                // console.log(config.general.missionFolder+'/'+file);
+                                fs.readFile(config.general.missionFolder+'/'+file, function(err, data) {
+                                    if (err) reject(err);
+                                    data = JSON.parse(data.toString());
+                                    // console.log(data);
+                                    jtffFtpServer.put(data.mizFiles, path.basename(data.mizFiles), false, function (err) {
+                                        if (err) reject(err);
+                                        console.log('file '+path.basename(data.mizFiles)+' uploaded on DCS Server');
+                                        resolve(path.basename(data.mizFiles));
+                                    });
+                                });
+                            })
+                        })
+                ).then(() => {
+                    jtffFtpServer.end();
+                });
         });
     });
 }
