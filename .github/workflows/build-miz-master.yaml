@@ -38,6 +38,11 @@ jobs:
           GDRIVE_TOKEN_CACHE_JSON: ${{ secrets.GDRIVE_TOKEN_CACHE_JSON }}
         run: |
           npm run jtff-publish
+      - name: 'upload generated files to DCS Server'
+        env:
+          JTFF_FTP_SECRET_JSON: ${{ secrets.JTFF_FTP_SECRET_JSON }}
+        run: |
+          npm run jtff-upload
       - name: 'Merge master -> develop'
         uses: devmasx/merge-branch@master
         with:

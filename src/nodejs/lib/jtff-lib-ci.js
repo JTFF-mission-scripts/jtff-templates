@@ -8,6 +8,7 @@ const lstat = promisify(fs.lstat);
 const config = require("../../../config.json");
 const {google} = require("googleapis");
 const {format, parse} = require("lua-json");
+const ftpClient = require('ftp');
 
 function injectScripts(tObject, trObject, mrObject, strTitle, scriptFilesArray, timingInSeconds, hexColor) {
     let nextIndex = Object.keys(trObject).length+1;
@@ -296,6 +297,35 @@ function getGeneratedMizFilePaths() {
         });
 }
 
+function uploadMizFiles(credentials) {
+    const jtffFtpServer = new ftpClient();
+    jtffFtpServer.connect({
+        host: credentials.host,
+        secure: false,
+        user: credentials.user,
+        password: credentials.password
+    });
+    jtffFtpServer.on('ready', function() {
+        jtffFtpServer.cwd(credentials.folder, function(err, curDir) {
+            if (err) throw err;
+                fs.readdirSync(config.general.missionFolder)
+                    .filter(file => file.endsWith('.pub.json'))
+                    .map(file => {
+                        // console.log(config.general.missionFolder+'/'+file);
+                        fs.readFile(config.general.missionFolder+'/'+file, function(err, data) {
+                            if (err) throw err;
+                            data = JSON.parse(data.toString());
+                            // console.log(data);
+                            jtffFtpServer.put(data.mizFiles, path.basename(data.mizFiles), false, function (err) {
+                                if (err) throw err;
+                            });
+                        });
+                    });
+                // jtffFtpServer.end();
+        });
+    });
+}
+
 function publishMizFiles(credentials) {
     const jwtClient = new google.auth.JWT(
         credentials.client_email,
@@ -381,6 +411,7 @@ module.exports = {
     getDestinationMizFilePaths: getDestinationMizFilePaths,
     getGeneratedMizFilePaths: getGeneratedMizFilePaths,
     publishMizFiles: publishMizFiles,
+    uploadMizFiles: uploadMizFiles,
     getMissionObjectFromMiz: getMissionObjectFromMiz,
     getMapResourceObjectFromMiz: getMapResourceObjectFromMiz,
     mizInjectMissionDataFile: mizInjectMissionDataFile,

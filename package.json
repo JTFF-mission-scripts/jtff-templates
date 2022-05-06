@@ -10,6 +10,7 @@
     "jtff-nextversion": "node src/nodejs/prepare-nextversion.js",
     "jtff-getmiz": "node src/nodejs/get-mizfiles.js",
     "jtff-publish": "node src/nodejs/publish.js",
+    "jtff-upload": "node src/nodejs/ftpupload.js",
     "jtff-template": "node src/nodejs/template-update.js",
     "jtff-inject": "node src/nodejs/inject-scripts.js",
     "build": "node src/nodejs/build.js",
@@ -27,11 +28,12 @@
   "homepage": "https://github.com/JTFF-mission-scripts/jtff-templates#readme",
   "dependencies": {
     "fs": "^0.0.1-security",
+    "ftp": "^0.3.10",
     "googleapis": "^92.0.0",
     "jszip": "^3.7.1",
     "lua-json": "^1.0.0",
     "path": "^0.12.7",
-    "prompt": "^1.2.2",
+    "prompt": "^1.3.0",
     "util": "^0.12.4"
   },
   "exports": [
