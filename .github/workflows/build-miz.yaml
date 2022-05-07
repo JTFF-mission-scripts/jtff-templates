@@ -30,8 +30,13 @@ jobs:
           GDRIVE_TOKEN_CACHE_JSON: ${{ secrets.GDRIVE_TOKEN_CACHE_JSON }}
         run: |
           npm run jtff-publish
-      - name: 'upload generated files to DCS Server'
+      - name: 'upload generated files to JTFF DCS Server'
         env:
           JTFF_FTP_SECRET_JSON: ${{ secrets.JTFF_FTP_SECRET_JSON }}
+        run: |
+          npm run jtff-upload
+      - name: 'upload generated files to VF84 DCS Server'
+        env:
+          JTFF_FTP_SECRET_JSON: ${{ secrets.VF84_FTP_SECRET_JSON }}
         run: |
           npm run jtff-upload
