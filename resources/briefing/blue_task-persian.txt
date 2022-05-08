@@ -28,3 +28,15 @@ SHELL 1-1: S-3 à proximité du CSG-1 ; 104Y ; 8000 feet ; 264.250 Mhz
 Shell 2-1 : S-3 à proximité du CSG-2 ; 105Y ; 8000 feet ; 264.250 Mhz
 
 Shell 7-1 : S-3 à proximité du LHA-1 ; 106Y ; 8000 feet ; 264.350 Mhz
+
+--------------------
+AWACS / EWR :
+
+Darkstar 1-1 - Silver 1 - 265.800 Mhz
+
+Wizard 1-1 - Black 4 - 377.800 Mhz
+
+Focus 1-1 - Black 4 - 377.800 Mhz
+
+Jiroft EWR - Firefly 1-1 - Silver 1 - 265.800 Mhz
+Jiroft TACAN - JIR 76X - 31/13
