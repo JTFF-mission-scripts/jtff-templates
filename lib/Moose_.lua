@@ -1,4 +1,4 @@
-env.info('*** MOOSE GITHUB Commit Hash ID: 2022-04-29T16:48:41.0000000Z-6e8edd95ec3bb802740c5868d1d94df64ee2b940 ***')
+env.info('*** MOOSE GITHUB Commit Hash ID: 2022-05-14T11:11:30.0000000Z-d5fb75fe432614f8811805e1e355b3fa3dd0cc18 ***')
 env.info('*** MOOSE STATIC INCLUDE START *** ')
 ENUMS={}
 ENUMS.ROE={
@@ -4592,7 +4592,11 @@ return self.stackbypointer
 end
 function FIFO:HasUniqueID(UniqueID)
 self:T(self.lid.."HasUniqueID")
-return self.stackbyid[UniqueID]and true or false
+if self.stackbyid[UniqueID]~=nil then
+return true
+else
+return false
+end
 end
 function FIFO:GetIDStack()
 self:T(self.lid.."GetIDStack")
@@ -5050,12 +5054,13 @@ subplace=subplace,
 }
 world.onEvent(Event)
 end
-function BASE:CreateEventCrash(EventTime,Initiator)
+function BASE:CreateEventCrash(EventTime,Initiator,IniObjectCategory)
 self:F({EventTime,Initiator})
 local Event={
 id=world.event.S_EVENT_CRASH,
 time=EventTime,
 initiator=Initiator,
+IniObjectCategory=IniObjectCategory,
 }
 world.onEvent(Event)
 end
@@ -6368,7 +6373,7 @@ self:F({PlayerUnit})
 local Event={
 id=EVENTS.PlayerEnterUnit,
 time=timer.getTime(),
-initiator=PlayerUnit:GetDCSObject(),
+initiator=PlayerUnit:GetDCSObject()
 }
 world.onEvent(Event)
 end
@@ -6377,7 +6382,7 @@ self:F({PlayerUnit})
 local Event={
 id=EVENTS.PlayerEnterAircraft,
 time=timer.getTime(),
-initiator=PlayerUnit:GetDCSObject(),
+initiator=PlayerUnit:GetDCSObject()
 }
 world.onEvent(Event)
 end
@@ -6398,26 +6403,6 @@ self.MissionEnd=true
 end
 if Event.initiator then
 Event.IniObjectCategory=Event.initiator:getCategory()
-if Event.IniObjectCategory==Object.Category.UNIT then
-Event.IniDCSUnit=Event.initiator
-Event.IniDCSUnitName=Event.IniDCSUnit:getName()
-Event.IniUnitName=Event.IniDCSUnitName
-Event.IniDCSGroup=Event.IniDCSUnit:getGroup()
-Event.IniUnit=UNIT:FindByName(Event.IniDCSUnitName)
-if not Event.IniUnit then
-Event.IniUnit=CLIENT:FindByName(Event.IniDCSUnitName,'',true)
-end
-Event.IniDCSGroupName=""
-if Event.IniDCSGroup and Event.IniDCSGroup:isExist()then
-Event.IniDCSGroupName=Event.IniDCSGroup:getName()
-Event.IniGroup=GROUP:FindByName(Event.IniDCSGroupName)
-Event.IniGroupName=Event.IniDCSGroupName
-end
-Event.IniPlayerName=Event.IniDCSUnit:getPlayerName()
-Event.IniCoalition=Event.IniDCSUnit:getCoalition()
-Event.IniTypeName=Event.IniDCSUnit:getTypeName()
-Event.IniCategory=Event.IniDCSUnit:getDesc().category
-end
 if Event.IniObjectCategory==Object.Category.STATIC then
 if Event.id==31 then
 Event.IniDCSUnit=Event.initiator
@@ -6444,6 +6429,30 @@ Event.IniCoalition=Event.IniDCSUnit:getCoalition()
 Event.IniCategory=Event.IniDCSUnit:getDesc().category
 Event.IniTypeName=Event.IniDCSUnit:getTypeName()
 end
+local Unit=UNIT:FindByName(Event.IniDCSUnitName)
+if Unit then
+Event.IniObjectCategory=Object.Category.UNIT
+end
+end
+if Event.IniObjectCategory==Object.Category.UNIT then
+Event.IniDCSUnit=Event.initiator
+Event.IniDCSUnitName=Event.IniDCSUnit:getName()
+Event.IniUnitName=Event.IniDCSUnitName
+Event.IniDCSGroup=Event.IniDCSUnit:getGroup()
+Event.IniUnit=UNIT:FindByName(Event.IniDCSUnitName)
+if not Event.IniUnit then
+Event.IniUnit=CLIENT:FindByName(Event.IniDCSUnitName,'',true)
+end
+Event.IniDCSGroupName=Event.IniUnit and Event.IniUnit.GroupName or""
+if Event.IniDCSGroup and Event.IniDCSGroup:isExist()then
+Event.IniDCSGroupName=Event.IniDCSGroup:getName()
+Event.IniGroup=GROUP:FindByName(Event.IniDCSGroupName)
+Event.IniGroupName=Event.IniDCSGroupName
+end
+Event.IniPlayerName=Event.IniDCSUnit:getPlayerName()
+Event.IniCoalition=Event.IniDCSUnit:getCoalition()
+Event.IniTypeName=Event.IniDCSUnit:getTypeName()
+Event.IniCategory=Event.IniDCSUnit:getDesc().category
 end
 if Event.IniObjectCategory==Object.Category.CARGO then
 Event.IniDCSUnit=Event.initiator
@@ -6563,37 +6572,31 @@ end
 local PriorityOrder=EventMeta.Order
 local PriorityBegin=PriorityOrder==-1 and 5 or 1
 local PriorityEnd=PriorityOrder==-1 and 1 or 5
-if Event.IniObjectCategory~=Object.Category.STATIC then
-self:F({EventMeta.Text,Event,Event.IniDCSUnitName,Event.TgtDCSUnitName,PriorityOrder})
-end
 for EventPriority=PriorityBegin,PriorityEnd,PriorityOrder do
 if self.Events[Event.id][EventPriority]then
 for EventClass,EventData in pairs(self.Events[Event.id][EventPriority])do
-Event.IniGroup=GROUP:FindByName(Event.IniDCSGroupName)
-Event.TgtGroup=GROUP:FindByName(Event.TgtDCSGroupName)
+Event.IniGroup=Event.IniGroup or GROUP:FindByName(Event.IniDCSGroupName)
+Event.TgtGroup=Event.TgtGroup or GROUP:FindByName(Event.TgtDCSGroupName)
 if EventData.EventUnit then
 if EventClass:IsAlive()or
 Event.id==EVENTS.PlayerEnterUnit or
 Event.id==EVENTS.Crash or
 Event.id==EVENTS.Dead or
-Event.id==EVENTS.RemoveUnit then
+Event.id==EVENTS.RemoveUnit or
+Event.id==EVENTS.UnitLost then
 local UnitName=EventClass:GetName()
 if(EventMeta.Side=="I"and UnitName==Event.IniDCSUnitName)or
 (EventMeta.Side=="T"and UnitName==Event.TgtDCSUnitName)then
 if EventData.EventFunction then
-if Event.IniObjectCategory~=3 then
-self:F({"Calling EventFunction for UNIT ",EventClass:GetClassNameAndID(),", Unit ",Event.IniUnitName,EventPriority})
-end
-local Result,Value=xpcall(function()
+local Result,Value=xpcall(
+function()
 return EventData.EventFunction(EventClass,Event)
 end,ErrorHandler)
 else
 local EventFunction=EventClass[EventMeta.Event]
 if EventFunction and type(EventFunction)=="function"then
-if Event.IniObjectCategory~=3 then
-self:F({"Calling "..EventMeta.Event.." for Class ",EventClass:GetClassNameAndID(),EventPriority})
-end
-local Result,Value=xpcall(function()
+local Result,Value=xpcall(
+function()
 return EventFunction(EventClass,Event)
 end,ErrorHandler)
 end
@@ -6608,24 +6611,21 @@ if EventClass:IsAlive()or
 Event.id==EVENTS.PlayerEnterUnit or
 Event.id==EVENTS.Crash or
 Event.id==EVENTS.Dead or
-Event.id==EVENTS.RemoveUnit then
+Event.id==EVENTS.RemoveUnit or
+Event.id==EVENTS.UnitLost then
 local GroupName=EventClass:GetName()
 if(EventMeta.Side=="I"and GroupName==Event.IniDCSGroupName)or
 (EventMeta.Side=="T"and GroupName==Event.TgtDCSGroupName)then
 if EventData.EventFunction then
-if Event.IniObjectCategory~=3 then
-self:F({"Calling EventFunction for GROUP ",EventClass:GetClassNameAndID(),", Unit ",Event.IniUnitName,EventPriority})
-end
-local Result,Value=xpcall(function()
+local Result,Value=xpcall(
+function()
 return EventData.EventFunction(EventClass,Event,unpack(EventData.Params))
 end,ErrorHandler)
 else
 local EventFunction=EventClass[EventMeta.Event]
 if EventFunction and type(EventFunction)=="function"then
-if Event.IniObjectCategory~=3 then
-self:F({"Calling "..EventMeta.Event.." for GROUP ",EventClass:GetClassNameAndID(),EventPriority})
-end
-local Result,Value=xpcall(function()
+local Result,Value=xpcall(
+function()
 return EventFunction(EventClass,Event,unpack(EventData.Params))
 end,ErrorHandler)
 end
@@ -6636,19 +6636,15 @@ end
 else
 if not EventData.EventUnit then
 if EventData.EventFunction then
-if Event.IniObjectCategory~=3 then
-self:F2({"Calling EventFunction for Class ",EventClass:GetClassNameAndID(),EventPriority})
-end
-local Result,Value=xpcall(function()
+local Result,Value=xpcall(
+function()
 return EventData.EventFunction(EventClass,Event)
 end,ErrorHandler)
 else
 local EventFunction=EventClass[EventMeta.Event]
 if EventFunction and type(EventFunction)=="function"then
-if Event.IniObjectCategory~=3 then
-self:F2({"Calling "..EventMeta.Event.." for Class ",EventClass:GetClassNameAndID(),EventPriority})
-end
-local Result,Value=xpcall(function()
+local Result,Value=xpcall(
+function()
 local Result,Value=EventFunction(EventClass,Event)
 return Result,Value
 end,ErrorHandler)
@@ -7915,6 +7911,7 @@ self:F2(Vec2)
 return false
 end
 function ZONE_BASE:IsVec3InZone(Vec3)
+if not Vec3 then return false end
 local InZone=self:IsVec2InZone({x=Vec3.x,y=Vec3.z})
 return InZone
 end
@@ -8354,6 +8351,7 @@ world.searchObjects(Object.Category.UNIT,SphereSearch,EvaluateZone)
 end
 function ZONE_RADIUS:IsVec2InZone(Vec2)
 self:F2(Vec2)
+if not Vec2 then return false end
 local ZoneVec2=self:GetVec2()
 if ZoneVec2 then
 if((Vec2.x-ZoneVec2.x)^2+(Vec2.y-ZoneVec2.y)^2)^0.5<=self:GetRadius()then
@@ -8364,6 +8362,7 @@ return false
 end
 function ZONE_RADIUS:IsVec3InZone(Vec3)
 self:F2(Vec3)
+if not Vec3 then return false end
 local InZone=self:IsVec2InZone({x=Vec3.x,y=Vec3.z})
 return InZone
 end
@@ -8732,6 +8731,7 @@ return self
 end
 function ZONE_POLYGON_BASE:IsVec2InZone(Vec2)
 self:F2(Vec2)
+if not Vec2 then return false end
 local Next
 local Prev
 local InPolygon=false
@@ -8753,6 +8753,7 @@ return InPolygon
 end
 function ZONE_POLYGON_BASE:IsVec3InZone(Vec3)
 self:F2(Vec3)
+if not Vec3 then return false end
 local InZone=self:IsVec2InZone({x=Vec3.x,y=Vec3.z})
 return InZone
 end
@@ -10260,8 +10261,12 @@ return ReportUnitTypes
 end
 function SET_GROUP:AddGroup(group)
 self:Add(group:GetName(),group)
+if not DontSetCargoBayLimit then
 for UnitID,UnitData in pairs(group:GetUnits())do
+if UnitData and UnitData:IsAlive()then
 UnitData:SetCargoBayWeightLimit()
+end
+end
 end
 return self
 end
@@ -10408,7 +10413,11 @@ self:F({Event})
 if Event.IniDCSUnit then
 local ObjectName,Object=self:FindInDatabase(Event)
 if ObjectName then
-if Event.IniDCSGroup:getSize()==1 then
+local size=1
+if Event.IniDCSGroup then
+size=Event.IniDCSGroup:getSize()
+end
+if size==1 then
 self:Remove(ObjectName)
 end
 end
@@ -13518,6 +13527,7 @@ local coord=COORDINATE:New(vec.x,vec.y,vec.z)
 return coord
 end
 function COORDINATE:Get2DDistance(TargetCoordinate)
+if not TargetCoordinate then return 1000000 end
 local a={x=TargetCoordinate.x-self.x,y=0,z=TargetCoordinate.z-self.z}
 local norm=UTILS.VecNorm(a)
 return norm
@@ -14408,7 +14418,7 @@ local Distance=FromCoordinate:Get2DDistance(self)
 local Altitude=self:GetAltitudeText()
 return"BRA, "..self:GetBRAText(AngleRadians,Distance,Settings,Language)
 end
-function COORDINATE:ToStringBRAANATO(FromCoordinate,Bogey,Spades)
+function COORDINATE:ToStringBRAANATO(FromCoordinate,Bogey,Spades,SSML)
 local BRAANATO="Merged."
 local currentCoord=FromCoordinate
 local DirectionVec3=FromCoordinate:GetDirectionVec3(self)
@@ -14420,10 +14430,11 @@ local aspect=self:ToStringAspect(currentCoord)
 local alt=UTILS.Round(UTILS.MetersToFeet(self.y)/1000,0)
 local track=UTILS.BearingToCardinal(bearing)or"North"
 if rangeNM>3 then
+if SSML then
 if aspect==""then
-BRAANATO=string.format("BRA, %03d, %d miles, Angels %d, Track %s",bearing,rangeNM,alt,track)
+BRAANATO=string.format("brah <say-as interpret-as='characters'>%03d</say-as>, %d miles, Angels %d, Track %s",bearing,rangeNM,alt,track)
 else
-BRAANATO=string.format("BRAA, %03d, %d miles, Angels %d, %s, Track %s",bearing,rangeNM,alt,aspect,track)
+BRAANATO=string.format("brah <say-as interpret-as='characters'>%03d</say-as>, %d miles, Angels %d, %s, Track %s",bearing,rangeNM,alt,aspect,track)
 end
 if Bogey and Spades then
 BRAANATO=BRAANATO..", Bogey, Spades."
@@ -14433,6 +14444,22 @@ elseif Spades then
 BRAANATO=BRAANATO..", Spades."
 else
 BRAANATO=BRAANATO.."."
+end
+else
+if aspect==""then
+BRAANATO=string.format("BRA %03d, %d miles, Angels %d, Track %s",bearing,rangeNM,alt,track)
+else
+BRAANATO=string.format("BRAA %03d, %d miles, Angels %d, %s, Track %s",bearing,rangeNM,alt,aspect,track)
+end
+if Bogey and Spades then
+BRAANATO=BRAANATO..", Bogey, Spades."
+elseif Bogey then
+BRAANATO=BRAANATO..", Bogey."
+elseif Spades then
+BRAANATO=BRAANATO..", Spades."
+else
+BRAANATO=BRAANATO.."."
+end
 end
 end
 return BRAANATO
@@ -16735,10 +16762,16 @@ return nil
 end
 end
 function SPAWN:_GetPrefixFromGroup(SpawnGroup)
-self:F3({self.SpawnTemplatePrefix,self.SpawnAliasPrefix,SpawnGroup})
 local GroupName=SpawnGroup:GetName()
 if GroupName then
-local SpawnPrefix=string.match(GroupName,".*#")
+local SpawnPrefix=self:_GetPrefixFromGroupName(GroupName)
+return SpawnPrefix
+end
+return nil
+end
+function SPAWN:_GetPrefixFromGroupName(SpawnGroupName)
+if SpawnGroupName then
+local SpawnPrefix=string.match(SpawnGroupName,".*#")
 if SpawnPrefix then
 SpawnPrefix=SpawnPrefix:sub(1,-2)
 end
@@ -17005,9 +17038,9 @@ end
 end
 function SPAWN:_OnDeadOrCrash(EventData)
 self:F(self.SpawnTemplatePrefix)
-local SpawnGroup=EventData.IniGroup
-if SpawnGroup then
-local EventPrefix=self:_GetPrefixFromGroup(SpawnGroup)
+local unit=UNIT:FindByName(EventData.IniUnitName)
+if unit then
+local EventPrefix=self:_GetPrefixFromGroupName(unit.GroupName)
 if EventPrefix then
 self:T({"Dead event: "..EventPrefix})
 if EventPrefix==self.SpawnTemplatePrefix or(self.SpawnAliasPrefix and EventPrefix==self.SpawnAliasPrefix)then
@@ -18477,7 +18510,11 @@ local Weights={
 ["Ural-4320 APA-5D"]=10,
 ["Ural-4320T"]=14,
 ["ZBD04A"]=7,
-["VAB_Mephisto"]=8
+["VAB_Mephisto"]=8,
+["tt_KORD"]=6,
+["tt_DSHK"]=6,
+["HL_KORD"]=6,
+["HL_DSHK"]=6,
 }
 local CargoBayWeightLimit=(Weights[Desc.typeName]or 0)*95
 self.__.CargoBayWeightLimit=CargoBayWeightLimit
@@ -20773,7 +20810,7 @@ function GROUP:GetUnits()
 self:F2({self.GroupName})
 local DCSGroup=self:GetDCSObject()
 if DCSGroup then
-local DCSUnits=DCSGroup:getUnits()
+local DCSUnits=DCSGroup:getUnits()or{}
 local Units={}
 for Index,UnitData in pairs(DCSUnits)do
 Units[#Units+1]=UNIT:Find(UnitData)
@@ -20809,11 +20846,26 @@ return UnitFound
 end
 return nil
 end
+function GROUP:IsPlayer()
+local units=self:GetTemplate().units
+for _,unit in pairs(units)do
+if unit.name==self:GetName()and(unit.skill=="Client"or unit.skill=="Player")then
+return true
+end
+end
+return false
+end
 function GROUP:GetDCSUnit(UnitNumber)
 local DCSGroup=self:GetDCSObject()
 if DCSGroup then
-local DCSUnitFound=DCSGroup:getUnit(UnitNumber)
-return DCSUnitFound
+local UnitFound=nil
+local units=DCSGroup:getUnits()or{}
+for _,_unit in pairs(units)do
+local UnitFound=UNIT:Find(_unit)
+if UnitFound then
+return UnitFound
+end
+end
 end
 return nil
 end
@@ -21002,7 +21054,7 @@ BASE:E({"Cannot GetPointVec2",Group=self,Alive=self:IsAlive()})
 return nil
 end
 function GROUP:GetCoordinate()
-local Units=self:GetUnits()
+local Units=self:GetUnits()or{}
 for _,_unit in pairs(Units)do
 local FirstUnit=_unit
 if FirstUnit then
@@ -21029,12 +21081,13 @@ return nil
 end
 function GROUP:GetHeading()
 self:F2(self.GroupName)
+self:F2(self.GroupName)
 local GroupSize=self:GetSize()
 local HeadingAccumulator=0
 local n=0
+local Units=self:GetUnits()
 if GroupSize then
-for i=1,GroupSize do
-local unit=self:GetUnit(i)
+for _,unit in pairs(Units)do
 if unit and unit:IsAlive()then
 HeadingAccumulator=HeadingAccumulator+unit:GetHeading()
 n=n+1
@@ -21073,7 +21126,7 @@ local GroupSize=self:GetSize()
 local TotalFuel=0
 for UnitID,UnitData in pairs(self:GetUnits())do
 local Unit=UnitData
-local UnitFuel=Unit:GetFuel()
+local UnitFuel=Unit:GetFuel()or 0
 self:F({Fuel=UnitFuel})
 TotalFuel=TotalFuel+UnitFuel
 end
@@ -21112,10 +21165,12 @@ function GROUP:IsInZone(Zone)
 if self:IsAlive()then
 for UnitID,UnitData in pairs(self:GetUnits())do
 local Unit=UnitData
-local vec2=Unit:GetVec2()
-if Zone:IsVec2InZone(vec2)then
+local vec2=nil
+if Unit then
+vec2=Unit:GetVec2()
+end
+if vec2 and Zone:IsVec2InZone(vec2)then
 return true
-else
 end
 end
 return false
@@ -21912,10 +21967,18 @@ end
 UNIT={
 ClassName="UNIT",
 UnitName=nil,
+GroupName=nil,
 }
 function UNIT:Register(UnitName)
 local self=BASE:Inherit(self,CONTROLLABLE:New(UnitName))
 self.UnitName=UnitName
+local unit=Unit.getByName(self.UnitName)
+if unit then
+local group=unit:getGroup()
+if group then
+self.GroupName=group:getName()
+end
+end
 self:SetEventPriority(3)
 return self
 end
@@ -23183,7 +23246,7 @@ AIRBASE.Syria={
 ["Ruwayshid"]="Ruwayshid",
 ["Sanliurfa"]="Sanliurfa",
 ["Tal_Siman"]="Tal Siman",
-["Deir_ez-Zor"]="Deir ez-Zor",
+["Deir_ez_Zor"]="Deir ez-Zor",
 }
 AIRBASE.MarianaIslands={
 ["Rota_Intl"]="Rota Intl",
@@ -29943,7 +30006,7 @@ local DetectedObjectName=DetectedObject:getName()
 local DetectedObjectType=DetectedObject:getTypeName()
 local DetectedObjectVec3=DetectedObject:getPoint()
 local DetectedObjectVec2={x=DetectedObjectVec3.x,y=DetectedObjectVec3.z}
-local DetectionGroupVec3=Detection:GetVec3()
+local DetectionGroupVec3=Detection:GetVec3()or{x=0,y=0,z=0}
 local DetectionGroupVec2={x=DetectionGroupVec3.x,y=DetectionGroupVec3.z}
 local Distance=((DetectedObjectVec3.x-DetectionGroupVec3.x)^2+
 (DetectedObjectVec3.y-DetectionGroupVec3.y)^2+
@@ -35435,12 +35498,6 @@ UNIT="Unit",
 STATIC="Static",
 COORD="Coordinate"
 }
-hypemanStrafeRollIn="nil"
-StrafeAircraftType="strafeAircraftTypeNotSet"
-Straferesult={}
-clientRollingIn=false
-clientStrafed=false
-invalidStrafe=false
 RANGE.Sound={
 RC0={filename="RC-0.ogg",duration=0.60},
 RC1={filename="RC-1.ogg",duration=0.47},
@@ -35490,7 +35547,7 @@ IRExitRange={filename="IR-ExitRange.ogg",duration=3.10},
 RANGE.Names={}
 RANGE.MenuF10={}
 RANGE.MenuF10Root=nil
-RANGE.version="2.3.0"
+RANGE.version="2.4.0"
 function RANGE:New(rangename)
 BASE:F({rangename=rangename})
 local self=BASE:Inherit(self,FSM:New())
@@ -35503,6 +35560,8 @@ self:SetStartState("Stopped")
 self:AddTransition("Stopped","Start","Running")
 self:AddTransition("*","Status","*")
 self:AddTransition("*","Impact","*")
+self:AddTransition("*","RollingIn","*")
+self:AddTransition("*","StrafeResult","*")
 self:AddTransition("*","EnterRange","*")
 self:AddTransition("*","ExitRange","*")
 self:AddTransition("*","Save","*")
@@ -36193,55 +36252,6 @@ self:T(self.id..string.format("Range %s, player %s: Tracking of weapon starts in
 timer.scheduleFunction(trackBomb,EventData.weapon,timer.getTime()+0.1)
 end
 end
-function RANGE:_SaveTargetSheet(_playername,result)
-local function _savefile(filename,data)
-local f=io.open(filename,"wb")
-if f then
-f:write(data)
-f:close()
-else
-env.info("RANGEBOSS EDIT - could not save target sheet to file")
-end
-end
-local path=self.targetpath
-if lfs then
-path=path or lfs.writedir()..[[Logs\]]
-end
-local filename=nil
-for i=1,9999 do
-if self.targetprefix then
-filename=string.format("%s_%s-%04d.csv",self.targetprefix,playerData.actype,i)
-else
-local name=UTILS.ReplaceIllegalCharacters(_playername,"_")
-filename=string.format("RANGERESULTS-%s_Targetsheet-%s-%04d.csv",self.rangename,name,i)
-end
-if path~=nil then
-filename=path.."\\"..filename
-end
-local _exists=UTILS.FileExists(filename)
-if not _exists then
-break
-end
-end
-local data="Name,Target,Distance,Radial,Quality,Rounds Fired,Rounds Hit,Rounds Quality,Attack Heading,Weapon,Airframe,Mission Time,OS Time\n"
-local distance=result.distance
-local weapon=result.weapon
-local target=result.name
-local radial=result.radial
-local quality=result.quality
-local time=UTILS.SecondsToClock(result.time)
-local airframe=result.airframe
-local date="n/a"
-local roundsFired=result.roundsFired
-local roundsHit=result.roundsHit
-local strafeResult=result.roundsQuality
-local attackHeading=result.heading
-if os then
-date=os.date()
-end
-data=data..string.format("%s,%s,%.2f,%03d,%s,%03d,%03d,%s,%03d,%s,%s,%s,%s",_playername,target,distance,radial,quality,roundsFired,roundsHit,strafeResult,attackHeading,weapon,airframe,time,date)
-_savefile(filename,data)
-end
 function RANGE:onafterStatus(From,Event,To)
 if self.verbose>0 then
 local fsmstate=self:GetState()
@@ -36412,6 +36422,50 @@ table.insert(self.bombPlayerResults[playername],result)
 end
 end
 end
+function RANGE:_SaveTargetSheet(_playername,result)
+local function _savefile(filename,data)
+local f=io.open(filename,"wb")
+if f then
+f:write(data)
+f:close()
+else
+env.info("RANGEBOSS EDIT - could not save target sheet to file")
+end
+end
+local path=self.targetpath
+if lfs then
+path=path or lfs.writedir()..[[Logs\]]
+end
+local filename=nil
+for i=1,9999 do
+if self.targetprefix then
+filename=string.format("%s_%s-%04d.csv",self.targetprefix,result.airframe,i)
+else
+local name=UTILS.ReplaceIllegalCharacters(_playername,"_")
+filename=string.format("RANGERESULTS-%s_Targetsheet-%s-%04d.csv",self.rangename,name,i)
+end
+if path~=nil then
+filename=path.."\\"..filename
+end
+local _exists=UTILS.FileExists(filename)
+if not _exists then
+break
+end
+end
+local data="Name,Target,Rounds Fired,Rounds Hit,Rounds Quality,Airframe,Mission Time,OS Time\n"
+local target=result.name
+local airframe=result.airframe
+local roundsFired=result.roundsFired
+local roundsHit=result.roundsHit
+local strafeResult=result.roundsQuality
+local time=UTILS.SecondsToClock(result.time)
+local date="n/a"
+if os then
+date=os.date()
+end
+data=data..string.format("%s,%s,%d,%d,%s,%s,%s,%s",_playername,target,roundsFired,roundsHit,strafeResult,airframe,time,date)
+_savefile(filename,data)
+end
 function RANGE._DelayedSmoke(_args)
 trigger.action.smoke(_args.coord:GetVec3(),_args.color)
 end
@@ -36431,7 +36485,8 @@ table.sort(_results,_sort)
 local _bestMsg=""
 local _count=1
 for _,_result in pairs(_results)do
-_message=_message..string.format("\n[%d] Hits %d - %s - %s",_count,_result.hits,_result.zone.name,_result.text)
+local result=_result
+_message=_message..string.format("\n[%d] Hits %d - %s - %s",_count,result.roundsHit,result.name,result.roundsQuality)
 if _bestMsg==""then
 _bestMsg=string.format("Hits %d - %s - %s",_result.hits,_result.zone.name,_result.text)
 end
@@ -36704,10 +36759,10 @@ self:F2(_unitName)
 local _unit,_playername=self:_GetPlayerUnitAndName(_unitName)
 local unitheading=0
 if _unit and _playername then
+local playerData=self.PlayerSettings[_playername]
 local function checkme(targetheading,_zone)
 local zone=_zone
 local unitheading=_unit:GetHeading()
-unitheadingStrafe=_unit:GetHeading()
 local pitheading=targetheading-180
 local deltaheading=unitheading-pitheading
 local towardspit=math.abs(deltaheading)<=90 or math.abs(deltaheading-360)<=90
@@ -36729,7 +36784,6 @@ if _currentStrafeRun then
 local zone=_currentStrafeRun.zone.polygon
 local unitinzone=checkme(_currentStrafeRun.zone.heading,zone)
 if unitinzone then
-StrafeAircraftType=_unit:GetTypeName()
 _currentStrafeRun.time=_currentStrafeRun.time+1
 else
 _currentStrafeRun.time=_currentStrafeRun.time+1
@@ -36752,28 +36806,28 @@ if accur>100 then
 accur=100
 end
 end
-if invalidStrafe==true then
-_result.text="* INVALID - PASSED FOUL LINE *"
+local resulttext=""
+if _result.pastfoulline==true then
+resulttext="* INVALID - PASSED FOUL LINE *"
 _sound=RANGE.Sound.RCPoorPass
 else
 if accur>=90 then
-_result.text="DEADEYE PASS"
+resulttext="DEADEYE PASS"
 _sound=RANGE.Sound.RCExcellentPass
 elseif accur>=75 then
-_result.text="EXCELLENT PASS"
+resulttext="EXCELLENT PASS"
 _sound=RANGE.Sound.RCExcellentPass
 elseif accur>=50 then
-_result.text="GOOD PASS"
+resulttext="GOOD PASS"
 _sound=RANGE.Sound.RCGoodPass
 elseif accur>=25 then
-_result.text="INEFFECTIVE PASS"
+resulttext="INEFFECTIVE PASS"
 _sound=RANGE.Sound.RCIneffectivePass
 else
-_result.text="POOR PASS"
+resulttext="POOR PASS"
 _sound=RANGE.Sound.RCPoorPass
 end
 end
-clientStrafed=true
 local _text=string.format("%s, hits on target %s: %d",self:_myname(_unitName),_result.zone.name,_result.hits)
 if shots and accur then
 _text=_text..string.format("\nTotal rounds fired %d. Accuracy %.1f %%.",shots,accur)
@@ -36781,32 +36835,17 @@ end
 _text=_text..string.format("\n%s",_result.text)
 self:_DisplayMessageToGroup(_unit,_text)
 local result={}
+result.player=_playername
 result.name=_result.zone.name or"unknown"
-result.distance=0
-result.radial=0
-result.weapon="N/A"
-result.quality="N/A"
-result.player=_playernamee
 result.time=timer.getAbsTime()
-result.airframe=StrafeAircraftType
 result.roundsFired=shots
 result.roundsHit=_result.hits
-result.roundsQuality=_result.text
+result.roundsQuality=resulttext
 result.strafeAccuracy=accur
-result.heading=unitheadingStrafe
-Straferesult.name=_result.zone.name or"unknown"
-Straferesult.distance=0
-Straferesult.radial=0
-Straferesult.weapon="N/A"
-Straferesult.quality="N/A"
-Straferesult.player=_playername
-Straferesult.time=timer.getAbsTime()
-Straferesult.airframe=StrafeAircraftType
-Straferesult.roundsFired=shots
-Straferesult.roundsHit=_result.hits
-Straferesult.roundsQuality=_result.text
-Straferesult.strafeAccuracy=accur
-Straferesult.rangename=self.rangename
+result.rangename=self.rangename
+result.airframe=playerData.airframe
+result.invalid=_result.pastfoulline
+self:StrafeResult(playerData,result)
 if playerData and playerData.targeton and self.targetsheet then
 self:_SaveTargetSheet(_playername,result)
 end
@@ -36824,24 +36863,24 @@ self.rangecontrol:NewTransmission(_sound.filename,_sound.duration,self.soundpath
 end
 self.strafeStatus[_unitID]=nil
 local _stats=self.strafePlayerResults[_playername]or{}
-table.insert(_stats,_result)
+table.insert(_stats,result)
 self.strafePlayerResults[_playername]=_stats
 end
 end
 else
 for _,_targetZone in pairs(self.strafeTargets)do
-local zone=_targetZone.polygon
-local unitinzone=checkme(_targetZone.heading,zone)
+local target=_targetZone
+local zone=target.polygon
+local unitinzone=checkme(target.heading,zone)
 if unitinzone then
 local _ammo=self:_GetAmmo(_unitName)
-self.strafeStatus[_unitID]={hits=0,zone=_targetZone,time=1,ammo=_ammo,pastfoulline=false}
-local _msg=string.format("%s, rolling in on strafe pit %s.",self:_myname(_unitName),_targetZone.name)
+self.strafeStatus[_unitID]={hits=0,zone=target,time=1,ammo=_ammo,pastfoulline=false}
+local _msg=string.format("%s, rolling in on strafe pit %s.",self:_myname(_unitName),target.name)
 if self.rangecontrol then
 self.rangecontrol:NewTransmission(RANGE.Sound.RCRollingInOnStrafeTarget.filename,RANGE.Sound.RCRollingInOnStrafeTarget.duration,self.soundpath)
 end
-clientRollingIn=true
 self:_DisplayMessageToGroup(_unit,_msg,10,true)
-hypemanStrafeRollIn=_msg
+self:RollingIn(playerData,target)
 break
 end
 end
@@ -62083,6 +62122,8 @@ self:AddTransition("*","Eject","*")
 self:AddTransition("*","Crash","Crashed")
 self:AddTransition("*","PilotDead","*")
 self.IdleCount=0
+self.RTBSpeedMaxFactor=0.6
+self.RTBSpeedMinFactor=0.5
 return self
 end
 function GROUP:OnEventTakeoff(EventData,Fsm)
@@ -62244,20 +62285,28 @@ local Task=AIGroup:TaskOrbitCircle(4000,400)
 AIGroup:SetTask(Task)
 end
 end
+function AI_AIR:SetRTBSpeedFactors(MinFactor,MaxFactor)
+self.RTBSpeedMaxFactor=MaxFactor or 0.6
+self.RTBSpeedMinFactor=MinFactor or 0.5
+return self
+end
 function AI_AIR:onafterRTB(AIGroup,From,Event,To)
 self:F({AIGroup,From,Event,To})
 if AIGroup and AIGroup:IsAlive()then
 self:T("Group "..AIGroup:GetName().." ... RTB! ( "..self:GetState().." )")
 self:ClearTargetDistance()
+AIGroup:OptionProhibitAfterburner(true)
 local EngageRoute={}
 local FromCoord=AIGroup:GetCoordinate()
 local ToTargetCoord=self.HomeAirbase:GetCoordinate()
 local ToTargetVec3=ToTargetCoord:GetVec3()
-ToTargetVec3.y=ToTargetCoord:GetLandHeight()+1000
+ToTargetVec3.y=ToTargetCoord:GetLandHeight()+3000
 local ToTargetCoord2=COORDINATE:NewFromVec3(ToTargetVec3)
 if not self.RTBMinSpeed or not self.RTBMaxSpeed then
 local RTBSpeedMax=AIGroup:GetSpeedMax()
-self:SetRTBSpeed(RTBSpeedMax*0.5,RTBSpeedMax*0.6)
+local RTBSpeedMaxFactor=self.RTBSpeedMaxFactor or 0.6
+local RTBSpeedMinFactor=self.RTBSpeedMinFactor or 0.5
+self:SetRTBSpeed(RTBSpeedMax*RTBSpeedMinFactor,RTBSpeedMax*RTBSpeedMaxFactor)
 end
 local RTBSpeed=math.random(self.RTBMinSpeed,self.RTBMaxSpeed)
 local Distance=FromCoord:Get2DDistance(ToTargetCoord2)
@@ -62603,6 +62652,10 @@ local EngageSpeed=math.random(self.EngageMinSpeed,self.EngageMaxSpeed)
 local DefenderCoord=DefenderGroup:GetPointVec3()
 DefenderCoord:SetY(EngageAltitude)
 local TargetCoord=AttackSetUnit:GetFirst():GetPointVec3()
+if not TargetCoord then
+self:Return()
+return
+end
 TargetCoord:SetY(EngageAltitude)
 local TargetDistance=DefenderCoord:Get2DDistance(TargetCoord)
 local EngageDistance=(DefenderGroup:IsHelicopter()and 5000)or(DefenderGroup:IsAirPlane()and 10000)
@@ -66095,12 +66148,14 @@ self:F2()
 if From=="RTB"then
 return
 end
-if self.Controllable:IsAlive()then
+local life=self.Controllable:GetLife()or 0
+if self.Controllable:IsAlive()and life>1 then
 local PatrolRoute={}
 if self.Controllable:InAir()==false then
 self:T("Not in the air, finding route path within PatrolZone")
 local CurrentVec2=self.Controllable:GetVec2()
-local CurrentAltitude=self.Controllable:GetUnit(1):GetAltitude()
+if not CurrentVec2 then return end
+local CurrentAltitude=self.Controllable:GetAltitude()
 local CurrentPointVec3=POINT_VEC3:New(CurrentVec2.x,CurrentAltitude,CurrentVec2.y)
 local ToPatrolZoneSpeed=self.PatrolMaxSpeed
 local CurrentRoutePoint=CurrentPointVec3:WaypointAir(
@@ -66114,7 +66169,8 @@ PatrolRoute[#PatrolRoute+1]=CurrentRoutePoint
 else
 self:T("In the air, finding route path within PatrolZone")
 local CurrentVec2=self.Controllable:GetVec2()
-local CurrentAltitude=self.Controllable:GetUnit(1):GetAltitude()
+if not CurrentVec2 then return end
+local CurrentAltitude=self.Controllable:GetAltitude()
 local CurrentPointVec3=POINT_VEC3:New(CurrentVec2.x,CurrentAltitude,CurrentVec2.y)
 local ToPatrolZoneSpeed=self.PatrolMaxSpeed
 local CurrentRoutePoint=CurrentPointVec3:WaypointAir(
@@ -66182,7 +66238,8 @@ self:SetDetectionOff()
 self.CheckStatus=false
 local PatrolRoute={}
 local CurrentVec2=self.Controllable:GetVec2()
-local CurrentAltitude=self.Controllable:GetUnit(1):GetAltitude()
+if not CurrentVec2 then return end
+local CurrentAltitude=self.Controllable:GetAltitude()
 local CurrentPointVec3=POINT_VEC3:New(CurrentVec2.x,CurrentAltitude,CurrentVec2.y)
 local ToPatrolZoneSpeed=self.PatrolMaxSpeed
 local CurrentRoutePoint=CurrentPointVec3:WaypointAir(
@@ -66288,7 +66345,10 @@ function AI_CAP_ZONE:onafterEngage(Controllable,From,Event,To)
 if Controllable and Controllable:IsAlive()then
 local EngageRoute={}
 local CurrentVec2=self.Controllable:GetVec2()
-local CurrentAltitude=self.Controllable:GetUnit(1):GetAltitude()
+if not CurrentVec2 then
+return self
+end
+local CurrentAltitude=self.Controllable:GetAltitude()
 local CurrentPointVec3=POINT_VEC3:New(CurrentVec2.x,CurrentAltitude,CurrentVec2.y)
 local ToEngageZoneSpeed=self.PatrolMaxSpeed
 local CurrentRoutePoint=CurrentPointVec3:WaypointAir(
@@ -66451,7 +66511,7 @@ Controllable:OptionROEOpenFire()
 Controllable:OptionROTVertical()
 local EngageRoute={}
 local CurrentVec2=self.Controllable:GetVec2()
-local CurrentAltitude=self.Controllable:GetUnit(1):GetAltitude()
+local CurrentAltitude=self.Controllable:GetAltitude()
 local CurrentPointVec3=POINT_VEC3:New(CurrentVec2.x,CurrentAltitude,CurrentVec2.y)
 local ToEngageZoneSpeed=self.PatrolMaxSpeed
 local CurrentRoutePoint=CurrentPointVec3:WaypointAir(
@@ -66622,7 +66682,7 @@ self.EngageDirection=EngageDirection
 if Controllable:IsAlive()then
 local EngageRoute={}
 local CurrentVec2=self.Controllable:GetVec2()
-local CurrentAltitude=self.Controllable:GetUnit(1):GetAltitude()
+local CurrentAltitude=self.Controllable:GetAltitude()
 local CurrentPointVec3=POINT_VEC3:New(CurrentVec2.x,CurrentAltitude,CurrentVec2.y)
 local ToEngageZoneSpeed=self.PatrolMaxSpeed
 local CurrentRoutePoint=CurrentPointVec3:WaypointAir(
@@ -71248,8 +71308,8 @@ speed=1,
 coordinate=nil,
 Label="ROBOT",
 }
-MSRS.version="0.0.4"
-function MSRS:New(PathToSRS,Frequency,Modulation)
+MSRS.version="0.0.6"
+function MSRS:New(PathToSRS,Frequency,Modulation,Volume)
 Frequency=Frequency or 143
 Modulation=Modulation or radio.modulation.AM
 local self=BASE:Inherit(self,BASE:New())
@@ -71260,6 +71320,11 @@ self:SetModulations(Modulation)
 self:SetGender()
 self:SetCoalition()
 self:SetLabel()
+self:SetVolume()
+self.lid=string.format("%s-%s | ",self.name,self.version)
+if not io or not os then
+self:E(self.lid.."***** ERROR - io or os NOT desanitized! MSRS will not work!")
+end
 return self
 end
 function MSRS:SetPath(Path)
@@ -71278,6 +71343,15 @@ return self
 end
 function MSRS:GetPath()
 return self.path
+end
+function MSRS:SetVolume(Volume)
+local volume=Volume or 1
+if volume>1 then volume=1 elseif volume<0 then volume=0 end
+self.volume=volume
+return self
+end
+function MSRS:GetVolume()
+return self.volume
 end
 function MSRS:SetLabel(Label)
 self.Label=Label or"ROBOT"
@@ -71452,7 +71526,7 @@ port=port or self.port
 label=label or self.Label
 modus=modus:gsub("0","AM")
 modus=modus:gsub("1","FM")
-local command=string.format('"%s\\%s" -f %s -m %s -c %s -p %s -n "%s"',path,exe,freqs,modus,coal,port,label)
+local command=string.format('"%s\\%s" -f %s -m %s -c %s -p %s -n "%s" -v "%.1f"',path,exe,freqs,modus,coal,port,label,volume)
 if voice then
 command=command..string.format(" --voice=\"%s\"",tostring(voice))
 else
