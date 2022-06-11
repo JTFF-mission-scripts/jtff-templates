@@ -1,7 +1,7 @@
 RangeConfig = {
     {
         name = "Bandar-e-Jask",
-        enable = false,
+        enable = true,
         benefit_coalition = coalition.side.BLUE,
         subRange = {
             {
