@@ -1,4 +1,4 @@
-env.info('*** MOOSE GITHUB Commit Hash ID: 2022-05-14T11:11:30.0000000Z-d5fb75fe432614f8811805e1e355b3fa3dd0cc18 ***')
+env.info('*** MOOSE GITHUB Commit Hash ID: 2022-07-07T06:41:56.0000000Z-f6e673c2bbe80951c0eb1c83546da7e169120e1a ***')
 env.info('*** MOOSE STATIC INCLUDE START *** ')
 ENUMS={}
 ENUMS.ROE={
@@ -2135,7 +2135,8 @@ Normandy="Normandy",
 PersianGulf="PersianGulf",
 TheChannel="TheChannel",
 Syria="Syria",
-MarianaIslands="MarianaIslands"
+MarianaIslands="MarianaIslands",
+Falklands="Falklands",
 }
 CALLSIGN={
 Aircraft={
@@ -2936,6 +2937,8 @@ elseif map==DCSMAP.Syria then
 declination=5
 elseif map==DCSMAP.MarianaIslands then
 declination=2
+elseif map==DCSMAP.Falklands then
+declination=12
 else
 declination=0
 end
@@ -3196,58 +3199,55 @@ end
 return element
 end
 function UTILS.IsLoadingDoorOpen(unit_name)
-local ret_val=false
 local unit=Unit.getByName(unit_name)
 if unit~=nil then
 local type_name=unit:getTypeName()
-if type_name=="Mi-8MT"and unit:getDrawArgumentValue(38)==1 or unit:getDrawArgumentValue(86)==1 or unit:getDrawArgumentValue(250)<0 then
+BASE:T("TypeName = "..type_name)
+if type_name=="Mi-8MT"and(unit:getDrawArgumentValue(38)==1 or unit:getDrawArgumentValue(86)==1 or unit:getDrawArgumentValue(250)<0)then
 BASE:T(unit_name.." Cargo doors are open or cargo door not present")
-ret_val=true
+return true
 end
-if type_name=="Mi-24P"and unit:getDrawArgumentValue(38)==1 or unit:getDrawArgumentValue(86)==1 then
+if type_name=="Mi-24P"and(unit:getDrawArgumentValue(38)==1 or unit:getDrawArgumentValue(86)==1)then
 BASE:T(unit_name.." a side door is open")
-ret_val=true
+return true
 end
-if type_name=="UH-1H"and unit:getDrawArgumentValue(43)==1 or unit:getDrawArgumentValue(44)==1 then
+if type_name=="UH-1H"and(unit:getDrawArgumentValue(43)==1 or unit:getDrawArgumentValue(44)==1)then
 BASE:T(unit_name.." a side door is open ")
-ret_val=true
+return true
 end
-if string.find(type_name,"SA342")and unit:getDrawArgumentValue(34)==1 or unit:getDrawArgumentValue(38)==1 then
-BASE:T(unit_name.." front door(s) are open")
-ret_val=true
+if string.find(type_name,"SA342")and(unit:getDrawArgumentValue(34)==1)then
+BASE:T(unit_name.." front door(s) are open or doors removed")
+return true
 end
-if string.find(type_name,"Hercules")and unit:getDrawArgumentValue(1215)==1 and unit:getDrawArgumentValue(1216)==1 then
+if string.find(type_name,"Hercules")and(unit:getDrawArgumentValue(1215)==1 and unit:getDrawArgumentValue(1216)==1)then
 BASE:T(unit_name.." rear doors are open")
-ret_val=true
+return true
 end
 if string.find(type_name,"Hercules")and(unit:getDrawArgumentValue(1220)==1 or unit:getDrawArgumentValue(1221)==1)then
 BASE:T(unit_name.." para doors are open")
-ret_val=true
+return true
 end
-if string.find(type_name,"Hercules")and unit:getDrawArgumentValue(1217)==1 then
+if string.find(type_name,"Hercules")and(unit:getDrawArgumentValue(1217)==1)then
 BASE:T(unit_name.." side door is open")
-ret_val=true
+return true
 end
 if string.find(type_name,"Bell-47")then
 BASE:T(unit_name.." door is open")
-ret_val=true
+return true
 end
-if string.find(type_name,"UH-60L")and(unit:getDrawArgumentValue(401)==1)or(unit:getDrawArgumentValue(402)==1)then
+if string.find(type_name,"UH-60L")and(unit:getDrawArgumentValue(401)==1 or unit:getDrawArgumentValue(402)==1)then
 BASE:T(unit_name.." cargo door is open")
-ret_val=true
+return true
 end
-if string.find(type_name,"UH-60L")and unit:getDrawArgumentValue(38)==1 or unit:getDrawArgumentValue(400)==1 then
+if string.find(type_name,"UH-60L")and(unit:getDrawArgumentValue(38)==1 or unit:getDrawArgumentValue(400)==1)then
 BASE:T(unit_name.." front door(s) are open")
-ret_val=true
+return true
 end
 if type_name=="AH-64D_BLK_II"then
 BASE:T(unit_name.." front door(s) are open")
-ret_val=true
+return true
 end
-if ret_val==false then
-BASE:T(unit_name.." all doors are closed")
-end
-return ret_val
+return false
 end
 return nil
 end
@@ -5428,11 +5428,12 @@ self.name=Positionable:GetName()
 self:I(string.format("New BEACON %s",tostring(self.name)))
 return self
 end
-self:E({"The passed POSITIONABLE is invalid, no BEACON created",Positionable})
+self:E({"The passed positionable is invalid, no BEACON created",Positionable})
 return nil
 end
 function BEACON:ActivateTACAN(Channel,Mode,Message,Bearing,Duration)
 self:T({channel=Channel,mode=Mode,callsign=Message,bearing=Bearing,duration=Duration})
+Mode=Mode or"Y"
 local Frequency=UTILS.TACANToFrequency(Channel,Mode)
 if not Frequency then
 self:E({"The passed TACAN channel is invalid, the BEACON is not emitting"})
@@ -5443,8 +5444,10 @@ local System=BEACON.System.TACAN
 local AA=self.Positionable:IsAir()
 if AA then
 System=5
-if Mode~="Y"then
-self:E({"WARNING: The POSITIONABLE you want to attach the AA TACAN Beacon is an aircraft: Mode should Y! The BEACON is not emitting.",self.Positionable})
+if Mode=="X"then
+System=BEACON.System.TACAN_TANKER_X
+else
+System=BEACON.System.TACAN_TANKER_Y
 end
 end
 local UnitID=self.Positionable:GetID()
@@ -5469,7 +5472,7 @@ function BEACON:AATACAN(TACANChannel,Message,Bearing,BeaconDuration)
 self:F({TACANChannel,Message,Bearing,BeaconDuration})
 local IsValid=true
 if not self.Positionable:IsAir()then
-self:E({"The POSITIONABLE you want to attach the AA TACAN Beacon is not an aircraft! The BEACON is not emitting",self.Positionable})
+self:E({"The POSITIONABLE you want to attach the AA Tacan Beacon is not an aircraft ! The BEACON is not emitting",self.Positionable})
 IsValid=false
 end
 local Frequency=self:_TACANToFrequency(TACANChannel,"Y")
@@ -5479,23 +5482,27 @@ IsValid=false
 end
 local System
 if Bearing then
-System=5
+System=BEACON.System.TACAN_TANKER_Y
 else
-System=14
+System=BEACON.System.TACAN_AA_MODE_Y
 end
 if IsValid then
 self:T2({"AA TACAN BEACON started !"})
 self.Positionable:SetCommand({
 id="ActivateBeacon",
 params={
-type=4,
+type=BEACON.Type.TACAN,
 system=System,
 callsign=Message,
+AA=true,
 frequency=Frequency,
-},
+bearing=Bearing,
+modeChannel="Y",
+}
 })
 if BeaconDuration then
-SCHEDULER:New(nil,function()
+SCHEDULER:New(nil,
+function()
 self:StopAATACAN()
 end,{},BeaconDuration)
 end
@@ -5505,11 +5512,12 @@ end
 function BEACON:StopAATACAN()
 self:F()
 if not self.Positionable then
-self:E({"Start the beacon first before stopping it!"})
+self:E({"Start the beacon first before stoping it !"})
 else
 self.Positionable:SetCommand({
 id='DeactivateBeacon',
-params={},
+params={
+}
 })
 end
 end
@@ -5525,7 +5533,7 @@ IsValid=true
 end
 end
 if not IsValid then
-self:E({"File name invalid. Maybe something wrong with the extension? ",FileName})
+self:E({"File name invalid. Maybe something wrong with the extension ? ",FileName})
 end
 if type(Frequency)~="number"and IsValid then
 self:E({"Frequency invalid. ",Frequency})
@@ -5545,7 +5553,8 @@ if IsValid then
 self:T2({"Activating Beacon on ",Frequency,Modulation})
 trigger.action.radioTransmission(FileName,self.Positionable:GetPositionVec3(),Modulation,true,Frequency,Power,tostring(self.ID))
 if BeaconDuration then
-SCHEDULER:New(nil,function()
+SCHEDULER:New(nil,
+function()
 self:StopRadioBeacon()
 end,{},BeaconDuration)
 end
@@ -9107,10 +9116,6 @@ return self.AIRBASES[AirbaseName]
 end
 function DATABASE:DeleteAirbase(AirbaseName)
 self.AIRBASES[AirbaseName]=nil
-end
-function DATABASE:FindAirbase(AirbaseName)
-local AirbaseFound=self.AIRBASES[AirbaseName]
-return AirbaseFound
 end
 do
 function DATABASE:FindZone(ZoneName)
@@ -14418,7 +14423,7 @@ local Distance=FromCoordinate:Get2DDistance(self)
 local Altitude=self:GetAltitudeText()
 return"BRA, "..self:GetBRAText(AngleRadians,Distance,Settings,Language)
 end
-function COORDINATE:ToStringBRAANATO(FromCoordinate,Bogey,Spades,SSML)
+function COORDINATE:ToStringBRAANATO(FromCoordinate,Bogey,Spades,SSML,Angels,Zeros)
 local BRAANATO="Merged."
 local currentCoord=FromCoordinate
 local DirectionVec3=FromCoordinate:GetDirectionVec3(self)
@@ -14428,13 +14433,32 @@ local rangeMetres=self:Get2DDistance(currentCoord)
 local rangeNM=UTILS.Round(UTILS.MetersToNM(rangeMetres),0)
 local aspect=self:ToStringAspect(currentCoord)
 local alt=UTILS.Round(UTILS.MetersToFeet(self.y)/1000,0)
+local alttext=string.format("%d thousand",alt)
+if Angels then
+alttext=string.format("Angels %d",alt)
+end
+if alt<1 then
+alttext="very low"
+end
 local track=UTILS.BearingToCardinal(bearing)or"North"
 if rangeNM>3 then
 if SSML then
+if Zeros then
+bearing=string.format("%03d",bearing)
+local AngleDegText=string.gsub(bearing,"%d","%1 ")
+AngleDegText=string.gsub(AngleDegText," $","")
+AngleDegText=string.gsub(AngleDegText,"0","zero")
 if aspect==""then
-BRAANATO=string.format("brah <say-as interpret-as='characters'>%03d</say-as>, %d miles, Angels %d, Track %s",bearing,rangeNM,alt,track)
+BRAANATO=string.format("brah %s, %d miles, %s, Track %s",AngleDegText,rangeNM,alttext,track)
 else
-BRAANATO=string.format("brah <say-as interpret-as='characters'>%03d</say-as>, %d miles, Angels %d, %s, Track %s",bearing,rangeNM,alt,aspect,track)
+BRAANATO=string.format("brah %s, %d miles, %s, %s, Track %s",AngleDegText,rangeNM,alttext,aspect,track)
+end
+else
+if aspect==""then
+BRAANATO=string.format("brah <say-as interpret-as='characters'>%03d</say-as>, %d miles, %s, Track %s",bearing,rangeNM,alttext,track)
+else
+BRAANATO=string.format("brah <say-as interpret-as='characters'>%03d</say-as>, %d miles, %s, %s, Track %s",bearing,rangeNM,alttext,aspect,track)
+end
 end
 if Bogey and Spades then
 BRAANATO=BRAANATO..", Bogey, Spades."
@@ -14447,9 +14471,9 @@ BRAANATO=BRAANATO.."."
 end
 else
 if aspect==""then
-BRAANATO=string.format("BRA %03d, %d miles, Angels %d, Track %s",bearing,rangeNM,alt,track)
+BRAANATO=string.format("BRA %03d, %d miles, %s, Track %s",bearing,rangeNM,alttext,track)
 else
-BRAANATO=string.format("BRAA %03d, %d miles, Angels %d, %s, Track %s",bearing,rangeNM,alt,aspect,track)
+BRAANATO=string.format("BRAA %03d, %d miles, %s, %s, Track %s",bearing,rangeNM,alttext,aspect,track)
 end
 if Bogey and Spades then
 BRAANATO=BRAANATO..", Bogey, Spades."
@@ -20858,12 +20882,15 @@ end
 function GROUP:GetDCSUnit(UnitNumber)
 local DCSGroup=self:GetDCSObject()
 if DCSGroup then
+if DCSGroup.getUnit and DCSGroup:getUnit(UnitNumber)then
+return DCSGroup:getUnit(UnitNumber)
+else
 local UnitFound=nil
 local units=DCSGroup:getUnits()or{}
 for _,_unit in pairs(units)do
-local UnitFound=UNIT:Find(_unit)
-if UnitFound then
-return UnitFound
+if _unit and _unit:isExist()then
+return _unit
+end
 end
 end
 end
@@ -23255,6 +23282,16 @@ AIRBASE.MarianaIslands={
 ["Saipan_Intl"]="Saipan Intl",
 ["Tinian_Intl"]="Tinian Intl",
 ["Olf_Orote"]="Olf Orote",
+}
+AIRBASE.SouthAtlantic={
+["Port_Stanley"]="Port Stanley",
+["Mount_Pleasant"]="Mount Pleasant",
+["San_Carlos_FOB"]="San Carlos FOB",
+["Rio_Grande"]="Rio Grande",
+["Rio_Gallegos"]="Rio Gallegos",
+["Ushuaia"]="Ushuaia",
+["Ushuaia_Helo_Port"]="Ushuaia Helo Port",
+["Punta_Arenas"]="Punta Arenas",
 }
 AIRBASE.TerminalType={
 Runway=16,
@@ -36832,7 +36869,7 @@ local _text=string.format("%s, hits on target %s: %d",self:_myname(_unitName),_r
 if shots and accur then
 _text=_text..string.format("\nTotal rounds fired %d. Accuracy %.1f %%.",shots,accur)
 end
-_text=_text..string.format("\n%s",_result.text)
+_text=_text..string.format("\n%s",resulttext)
 self:_DisplayMessageToGroup(_unit,_text)
 local result={}
 result.player=_playername
@@ -41410,9 +41447,12 @@ for i=0,2 do
 local airports=coalition.getAirbases(i)
 for _,airbase in pairs(airports)do
 local name=airbase:getName()
-local q=AIRBASE:FindByName(name):GetCoordinate()
+local a=AIRBASE:FindByName(name)
+if a then
+local q=a:GetCoordinate()
 local d=q:Get2DDistance(pos)
 table.insert(self.group[GID].player[UID].airports,{distance=d,name=name})
+end
 end
 end
 local function compare(a,b)
@@ -51527,7 +51567,7 @@ return self:GetHeading(true)
 end
 function AIRBOSS:GetWind(alt,magnetic,coord)
 local cv=coord or self:GetCoordinate()
-local Wdir,Wspeed=cv:GetWind(alt or 50)
+local Wdir,Wspeed=cv:GetWind(alt or 15)
 if magnetic then
 Wdir=Wdir-self.magvar
 if Wdir<0 then
@@ -56672,6 +56712,9 @@ self:Transmission(ATIS.Sound.TimeLocal,0.2)
 end
 alltext=alltext..";\n"..subtitle
 end
+if self.useSRS then
+WINDFROM=string.gsub(WINDFROM,".","%1 ")
+end
 if self.metric then
 subtitle=string.format("Wind from %s at %s m/s",WINDFROM,WINDSPEED)
 else
@@ -57077,7 +57120,7 @@ end
 alltext=alltext..";\n"..subtitle
 end
 if self.tacan then
-subtitle=string.format("TACAN channel %dX",self.tacan)
+subtitle=string.format("TACAN channel %dX Ray",self.tacan)
 if not self.useSRS then
 self:Transmission(ATIS.Sound.TACANChannel,1.0,subtitle)
 self.radioqueue:Number2Transmission(tostring(self.tacan),nil,0.2)
@@ -60322,7 +60365,6 @@ CTLD_HERCULES.Types={
 ["ART GVOZDIKA [34720lb]"]={['name']="SAU Gvozdika",['container']=false},
 ["APC MTLB Air [26400lb]"]={['name']="MTLB",['container']=true},
 ["APC MTLB Skid [26290lb]"]={['name']="MTLB",['container']=false},
-["Generic Crate [20000lb]"]={['name']="Hercules_Container_Parachute",['container']=true}
 }
 function CTLD_HERCULES:New(Coalition,Alias,CtldObject)
 local self=BASE:Inherit(self,FSM:New())
@@ -60696,7 +60738,7 @@ CSAR.AircraftType["Mi-24V"]=8
 CSAR.AircraftType["Bell-47"]=2
 CSAR.AircraftType["UH-60L"]=10
 CSAR.AircraftType["AH-64D_BLK_II"]=2
-CSAR.version="1.0.4e"
+CSAR.version="1.0.6"
 function CSAR:New(Coalition,Template,Alias)
 local self=BASE:Inherit(self,FSM:New())
 if Coalition and type(Coalition)=="string"then
@@ -60734,6 +60776,7 @@ self:AddTransition("Stopped","Start","Running")
 self:AddTransition("*","Status","*")
 self:AddTransition("*","PilotDown","*")
 self:AddTransition("*","Approach","*")
+self:AddTransition("*","Landed","*")
 self:AddTransition("*","Boarded","*")
 self:AddTransition("*","Returning","*")
 self:AddTransition("*","Rescued","*")
@@ -60800,6 +60843,10 @@ self.SRSPath="E:\\Progra~1\\DCS-SimpleRadio-Standalone\\"
 self.SRSchannel=300
 self.SRSModulation=radio.modulation.AM
 self.SRSport=5002
+self.SRSCulture="en-GB"
+self.SRSVoice=nil
+self.SRSGPathToCredentials=nil
+self.SRSVolume=1
 return self
 end
 function CSAR:_CreateDownedPilotTrack(Group,Groupname,Side,OriginalUnit,Description,Typename,Frequency,Playername,Wetfeet)
@@ -61015,104 +61062,113 @@ self:T(self.lid.." _EventHandler")
 self:T({Event=EventData.id})
 local _event=EventData
 if self.enableForAI==false and _event.IniPlayerName==nil then
-return
+return self
 end
 if _event==nil or _event.initiator==nil then
-return false
+return self
 elseif _event.id==EVENTS.Takeoff then
 self:T(self.lid.." Event unit - Takeoff")
 local _coalition=_event.IniCoalition
 if _coalition~=self.coalition then
-return
+return self
 end
 if _event.IniGroupName then
 self.takenOff[_event.IniUnitName]=true
 end
-return true
+return self
 elseif _event.id==EVENTS.PlayerEnterAircraft or _event.id==EVENTS.PlayerEnterUnit then
 self:T(self.lid.." Event unit - Player Enter")
 local _coalition=_event.IniCoalition
+self:T("Coalition = "..UTILS.GetCoalitionName(_coalition))
 if _coalition~=self.coalition then
-return
+return self
 end
 if _event.IniPlayerName then
 self.takenOff[_event.IniPlayerName]=nil
+end
+self:T("Taken Off: "..tostring(_event.IniUnit:InAir(true)))
+if _event.IniUnit:InAir(true)then
+self.takenOff[_event.IniPlayerName]=true
 end
 local _unit=_event.IniUnit
 local _group=_event.IniGroup
 if _unit:IsHelicopter()or _group:IsHelicopter()then
 self:_AddMedevacMenuItem()
 end
-return true
+return self
 elseif(_event.id==EVENTS.PilotDead and self.csarOncrash==false)then
 self:T(self.lid.." Event unit - Pilot Dead")
 local _unit=_event.IniUnit
 local _unitname=_event.IniUnitName
 local _group=_event.IniGroup
 if _unit==nil then
-return
+return self
 end
 local _coalition=_event.IniCoalition
 if _coalition~=self.coalition then
-return
+return self
 end
 if self.takenOff[_event.IniUnitName]==true or _group:IsAirborne()then
 if self:_DoubleEjection(_unitname)then
-return
+return self
 end
 else
 self:T(self.lid.." Pilot has not taken off, ignore")
 end
-return
+return self
 elseif _event.id==EVENTS.PilotDead or _event.id==EVENTS.Ejection then
 if _event.id==EVENTS.PilotDead and self.csarOncrash==false then
-return
+return self
 end
 self:T(self.lid.." Event unit - Pilot Ejected")
 local _unit=_event.IniUnit
 local _unitname=_event.IniUnitName
 local _group=_event.IniGroup
+self:T({_unit.UnitName,_unitname,_group.GroupName})
 if _unit==nil then
-return
+self:T("Unit NIL!")
+return self
 end
-local _coalition=_unit:GetCoalition()
+local _coalition=_group:GetCoalition()
 if _coalition~=self.coalition then
-return
+self:T("Wrong coalition! Coalition = "..UTILS.GetCoalitionName(_coalition))
+return self
 end
+self:T("Airborne: "..tostring(_group:IsAirborne()))
+self:T("Taken Off: "..tostring(self.takenOff[_event.IniUnitName]))
 if not self.takenOff[_event.IniUnitName]and not _group:IsAirborne()then
 self:T(self.lid.." Pilot has not taken off, ignore")
-return
 end
 if self:_DoubleEjection(_unitname)then
-return
+self:T("Double Ejection!")
+return self
 end
 if self.limitmaxdownedpilots and self:_ReachedPilotLimit()then
-return
+self:T("Maxed Downed Pilot!")
+return self
 end
 local wetfeet=false
-local surface=_unit:GetCoordinate():GetSurfaceType()
+local initdcscoord=nil
+local initcoord=nil
+if _event.id==EVENTS.Ejection then
+initdcscoord=_event.TgtDCSUnit:getPoint()
+initcoord=COORDINATE:NewFromVec3(initdcscoord)
+self:T({initdcscoord})
+else
+initdcscoord=_event.IniDCSUnit:getPoint()
+initcoord=COORDINATE:NewFromVec3(initdcscoord)
+self:T({initdcscoord})
+end
+local surface=initcoord:GetSurfaceType()
 if surface==land.SurfaceType.WATER then
+self:T("Wet feet!")
 wetfeet=true
 end
 if self.csarUsePara==false or(self.csarUsePara and wetfeet)then
 local _freq=self:_GenerateADFFrequency()
-self:_AddCsar(_coalition,_unit:GetCountry(),_unit:GetCoordinate(),_unit:GetTypeName(),_unit:GetName(),_event.IniPlayerName,_freq,false,"none")
-return true
+self:_AddCsar(_coalition,_unit:GetCountry(),initcoord,_unit:GetTypeName(),_unit:GetName(),_event.IniPlayerName,_freq,false,"none")
+return self
 end
-elseif(_event.id==EVENTS.LandingAfterEjection and self.csarUsePara==true)then
-self:I({EVENT=_event})
-local _LandingPos=COORDINATE:NewFromVec3(_event.initiator:getPosition().p)
-local _unitname="Aircraft"
-local _typename="Ejected Pilot"
-local _country=_event.initiator:getCountry()
-local _coalition=coalition.getCountryCoalition(_country)
-if _coalition==self.coalition then
-local _freq=self:_GenerateADFFrequency()
-self:I({coalition=_coalition,country=_country,coord=_LandingPos,name=_unitname,player=_event.IniPlayerName,freq=_freq})
-self:_AddCsar(_coalition,_country,_LandingPos,nil,_unitname,_event.IniPlayerName,_freq,false,"none")
-Unit.destroy(_event.initiator)
-end
-return true
 elseif _event.id==EVENTS.Land then
 self:T(self.lid.." Landing")
 if _event.IniUnitName then
@@ -61122,28 +61178,45 @@ if self.allowFARPRescue then
 local _unit=_event.IniUnit
 if _unit==nil then
 self:T(self.lid.." Unit nil on landing")
-return
+return self
 end
-local _coalition=_event.IniCoalition
+local _coalition=_event.IniGroup:GetCoalition()
 if _coalition~=self.coalition then
-return
+self:T(self.lid.." Wrong coalition")
+return self
 end
 self.takenOff[_event.IniUnitName]=nil
 local _place=_event.Place
 if _place==nil then
 self:T(self.lid.." Landing Place Nil")
-return
+return self
 end
 if self.inTransitGroups[_event.IniUnitName]==nil then
-return
+return self
 end
 if _place:GetCoalition()==self.coalition or _place:GetCoalition()==coalition.side.NEUTRAL then
+self:__Landed(2,_event.IniUnitName,_place)
 self:_ScheduledSARFlight(_event.IniUnitName,_event.IniGroupName,true)
 else
 self:T(string.format("Airfield %d, Unit %d",_place:GetCoalition(),_unit:GetCoalition()))
 end
 end
-return true
+return self
+end
+if(_event.id==EVENTS.LandingAfterEjection and self.csarUsePara==true)then
+self:T("LANDING_AFTER_EJECTION")
+local _LandingPos=COORDINATE:NewFromVec3(_event.initiator:getPosition().p)
+local _unitname="Aircraft"
+local _typename="Ejected Pilot"
+local _country=_event.initiator:getCountry()
+local _coalition=coalition.getCountryCoalition(_country)
+self:T("Country = ".._country.." Coalition = ".._coalition)
+if _coalition==self.coalition then
+local _freq=self:_GenerateADFFrequency()
+self:I({coalition=_coalition,country=_country,coord=_LandingPos,name=_unitname,player=_event.IniPlayerName,freq=_freq})
+self:_AddCsar(_coalition,_country,_LandingPos,nil,_unitname,_event.IniPlayerName,_freq,false,"none")
+Unit.destroy(_event.initiator)
+end
 end
 return self
 end
@@ -61210,7 +61283,7 @@ if _heliUnit==nil then
 self.heliVisibleMessage[_lookupKeyHeli]=nil
 self.heliCloseMessage[_lookupKeyHeli]=nil
 self.landedStatus[_lookupKeyHeli]=nil
-self:T("...helinunit nil!")
+self:T("...heliunit nil!")
 return
 end
 local _heliCoord=_heliUnit:GetCoordinate()
@@ -61278,8 +61351,8 @@ if _maxUnits==nil then
 _maxUnits=self.max_units
 end
 if _unitsInHelicopter+1>_maxUnits then
-self:_DisplayMessageToSAR(_heliUnit,string.format("%s, %s. We\'re already crammed with %d guys! Sorry!",_pilotName,_heliName,_unitsInHelicopter,_unitsInHelicopter),self.messageTime)
-return true
+self:_DisplayMessageToSAR(_heliUnit,string.format("%s, %s. We\'re already crammed with %d guys! Sorry!",_pilotName,_heliName,_unitsInHelicopter,_unitsInHelicopter),self.messageTime,false,false,true)
+return self
 end
 local found,downedgrouptable=self:_CheckNameInDownedPilots(_woundedGroupName)
 local grouptable=downedgrouptable
@@ -61294,8 +61367,8 @@ player=grouptable.player,
 _woundedGroup:Destroy(false)
 self:_RemoveNameFromDownedPilots(_woundedGroupName,true)
 self:_DisplayMessageToSAR(_heliUnit,string.format("%s: %s I\'m in! Get to the MASH ASAP! ",_heliName,_pilotName),self.messageTime,true,true)
-self:__Boarded(5,_heliName,_woundedGroupName)
-return true
+self:__Boarded(5,_heliName,_woundedGroupName,grouptable.desc)
+return self
 end
 function CSAR:_OrderGroupToMoveToPoint(_leader,_destination)
 self:T(self.lid.." _OrderGroupToMoveToPoint")
@@ -61332,6 +61405,7 @@ local _time=self.landedStatus[_lookupKeyHeli]
 if _time==nil then
 self.landedStatus[_lookupKeyHeli]=math.floor((_distance-self.loadDistance)/3.6)
 _time=self.landedStatus[_lookupKeyHeli]
+_woundedGroup:OptionAlarmStateGreen()
 self:_OrderGroupToMoveToPoint(_woundedGroup,_heliUnit:GetCoordinate())
 self:_DisplayMessageToSAR(_heliUnit,"Wait till ".._pilotName.." gets in. \nETA ".._time.." more seconds.",self.messageTime,false)
 else
@@ -61339,24 +61413,24 @@ _time=self.landedStatus[_lookupKeyHeli]-10
 self.landedStatus[_lookupKeyHeli]=_time
 end
 if _distance<self.loadDistance+5 or _distance<=13 then
-if self.pilotmustopendoors and not self:_IsLoadingDoorOpen(_heliName)then
-self:_DisplayMessageToSAR(_heliUnit,"Open the door to let me in!",self.messageTime,true)
-return true
+if self.pilotmustopendoors and(self:_IsLoadingDoorOpen(_heliName)==false)then
+self:_DisplayMessageToSAR(_heliUnit,"Open the door to let me in!",self.messageTime,true,true)
+return false
 else
 self.landedStatus[_lookupKeyHeli]=nil
 self:_PickupUnit(_heliUnit,_pilotName,_woundedGroup,_woundedGroupName)
-return false
+return true
 end
 end
 end
 else
 if(_distance<self.loadDistance)then
-if self.pilotmustopendoors and not self:_IsLoadingDoorOpen(_heliName)then
-self:_DisplayMessageToSAR(_heliUnit,"Open the door to let me in!",self.messageTime,true)
-return true
+if self.pilotmustopendoors and(self:_IsLoadingDoorOpen(_heliName)==false)then
+self:_DisplayMessageToSAR(_heliUnit,"Open the door to let me in!",self.messageTime,true,true)
+return false
 else
 self:_PickupUnit(_heliUnit,_pilotName,_woundedGroup,_woundedGroupName)
-return false
+return true
 end
 end
 end
@@ -61383,18 +61457,19 @@ end
 if _time>0 then
 self:_DisplayMessageToSAR(_heliUnit,"Hovering above ".._pilotName..". \n\nHold hover for ".._time.." seconds to winch them up. \n\nIf the countdown stops you\'re too far away!",self.messageTime,true)
 else
-if self.pilotmustopendoors and not self:_IsLoadingDoorOpen(_heliName)then
-self:_DisplayMessageToSAR(_heliUnit,"Open the door to let me in!",self.messageTime,true)
-return true
+if self.pilotmustopendoors and(self:_IsLoadingDoorOpen(_heliName)==false)then
+self:_DisplayMessageToSAR(_heliUnit,"Open the door to let me in!",self.messageTime,true,true)
+return false
 else
 self.hoverStatus[_lookupKeyHeli]=nil
 self:_PickupUnit(_heliUnit,_pilotName,_woundedGroup,_woundedGroupName)
-return false
+return true
 end
 end
 _reset=false
 else
 self:_DisplayMessageToSAR(_heliUnit,"Too high to winch ".._pilotName.." \nReduce height and hover for 10 seconds!",self.messageTime,true,true)
+return false
 end
 end
 end
@@ -61427,7 +61502,7 @@ return
 end
 if(_dist<self.FARPRescueDistance or isairport)and _heliUnit:InAir()==false then
 if self.pilotmustopendoors and self:_IsLoadingDoorOpen(heliname)==false then
-self:_DisplayMessageToSAR(_heliUnit,"Open the door to let me out!",self.messageTime,true)
+self:_DisplayMessageToSAR(_heliUnit,"Open the door to let me out!",self.messageTime,true,true)
 else
 self:_RescuePilots(_heliUnit)
 return
@@ -61474,6 +61549,14 @@ local modulation=self.SRSModulation
 local channel=self.SRSchannel
 local msrs=MSRS:New(path,channel,modulation)
 msrs:SetPort(self.SRSport)
+msrs:SetLabel("CSAR")
+msrs:SetCulture(self.SRSCulture)
+msrs:SetCoalition(self.coalition)
+msrs:SetVoice(self.SRSVoice)
+if self.SRSGPathToCredentials then
+msrs:SetGoogle(self.SRSGPathToCredentials)
+end
+msrs:SetVolume(self.SRSVolume)
 msrs:PlaySoundText(srstext,2)
 end
 return self
@@ -61852,7 +61935,7 @@ end
 end
 function CSAR:onafterStart(From,Event,To)
 self:T({From,Event,To})
-self:I(self.lid.."Started.")
+self:I(self.lid.."Started ("..self.version..")")
 self:HandleEvent(EVENTS.Takeoff,self._EventHandler)
 self:HandleEvent(EVENTS.Land,self._EventHandler)
 self:HandleEvent(EVENTS.Ejection,self._EventHandler)
@@ -61975,6 +62058,10 @@ return self
 end
 function CSAR:onbeforePilotDown(From,Event,To,Group,Frequency,Leadername,CoordinatesText)
 self:T({From,Event,To,Group,Frequency,Leadername,CoordinatesText})
+return self
+end
+function CSAR:onbeforeLanded(From,Event,To,HeliName,Airbase)
+self:T({From,Event,To,HeliName,Airbase})
 return self
 end
 AI_BALANCER={
