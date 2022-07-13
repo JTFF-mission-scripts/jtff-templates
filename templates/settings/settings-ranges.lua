@@ -15,11 +15,13 @@ RangeConfig = {
                 groupsToSpawn = {"Humvee JTAC Akamas-1", "Compound Akamas", "Compound soldat", "Manpad Compound",
                                  "Compound vehicule", "AAA Compound", "Compound vehicule civil", "BTR Compound"},
                 holdFire = true,
+                redAlert = true
             },
             {
                 name = "Insurgent PickUp",
                 groupsToSpawn = {"Akamas Insurgent PickUp Blue", "Akamas Insurgent PickUp Desert", "Akamas Insurgent PickUp Green"},
                 holdFire = true,
+                redAlert = false
             }
         }
     }
