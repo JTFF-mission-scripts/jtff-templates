@@ -438,7 +438,31 @@ samTypesDB = {
 		},
 
 		['harm_detection_chance'] = 60
-	},	
+	},
+    ['FPS-117'] = {
+        ['type'] = 'ewr',
+        ['searchRadar'] = {
+          ['FPS-117'] = {
+            ['name'] = {
+              ['NATO'] = 'Seek Igloo',
+            },
+          },
+        },
+
+        ['harm_detection_chance'] = 60
+    },
+    ['FPS-117 Dome'] = {
+        ['type'] = 'ewr',
+        ['searchRadar'] = {
+          ['FPS-117 Dome'] = {
+            ['name'] = {
+              ['NATO'] = 'Seek Igloo',
+            },
+          },
+        },
+
+        ['harm_detection_chance'] = 60
+    },
 }
 end
 do
