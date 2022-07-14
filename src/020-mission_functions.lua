@@ -702,6 +702,7 @@ function SpawnRanges(param)
     local holdFire = subRangeConfig.holdFire
     local engageAirWeapons = subRangeConfig.engageAirWeapons
     local activateAI = subRangeConfig.AI
+    local redAlert = subRangeConfig.redAlert
 
     debug_msg(string.format("SpawnRanges : Range %s - Targets %s", rangeName, subRangeName))
     for i = 1, #groupsToSpawn do
@@ -725,6 +726,15 @@ function SpawnRanges(param)
             end
             if (activateAI == true or activateAI == false) then
                 groupSpawning:SetAIOnOff(activateAI)
+            end
+            if (redAlert == true or redAlert == false) then
+                if (redAlert == true) then
+                    groupSpawning:OptionAlarmStateRed()
+                else
+                    groupSpawning:OptionAlarmStateGreen()   
+                end 
+            else
+                groupSpawning:OptionAlarmStateAuto()
             end
             if (string.find(groupNameToSpawn, "SAM") ~= nil) then
                 sead:UpdateSet(groupNameToSpawn)
