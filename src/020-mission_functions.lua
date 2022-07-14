@@ -243,8 +243,13 @@ function taskTankerEscort(param)
 end
 
 function spawnRecoveryTankerEscort(escortSpawnObject,customconfig)
-    return escortSpawnObject
-            :SpawnAtAirbase(AIRBASE:FindByName(customconfig.baseUnit),SPAWN.Takeoff.Cold, customconfig.altitude)
+    if (customconfig.airspawn) then
+        return escortSpawnObject
+                :SpawnFromCoordinate(UNIT:FindByName(customconfig.baseUnit):GetCoordinate():SetAltitude(UTILS.FeetToMeters(customconfig.altitude)))
+    else
+        return escortSpawnObject
+                :SpawnAtAirbase(AIRBASE:FindByName(customconfig.baseUnit),SPAWN.Takeoff.Cold, customconfig.altitude)
+    end
 end
 
 function EnterRecovery(objAirboss, Case)
@@ -840,9 +845,9 @@ function deactivateSkynet(param)
     skynetIADSObject:deactivate()
 
     parentMenu:RemoveSubMenus()
-    local CommandIADSDetroy = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Delete", parentMenu,
+    local CommandIADSDetroy = MENU_MISSION_COMMAND:New("Delete", parentMenu,
         deleteIADSUnits, { iadsConfig, skynetIADSObject, parentMenu })
-    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Activate Skynet",
+    local CommandIADSActivate = MENU_MISSION_COMMAND:New("Activate Skynet",
             parentMenu, activateSkynet, { iadsConfig, skynetIADSObject, parentMenu })
     MESSAGE:NewType(string.format("Skynet of %s is desactivated", iadsConfig.name), MESSAGE.Type.Information):ToBlue()
 end
@@ -1004,17 +1009,17 @@ function activateSkynet(param)
     skynetIADSObject:setupSAMSitesAndThenActivate()
 
     parentMenu:RemoveSubMenus()
-    local CommandIADSDetroy = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Delete", parentMenu,
+    local CommandIADSDetroy = MENU_MISSION_COMMAND:New("Delete", parentMenu,
         deleteIADSUnits, { iadsConfig, skynetIADSObject, parentMenu })
-    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Show IADS Status",
+    local CommandIADSActivate = MENU_MISSION_COMMAND:New("Show IADS Status",
             parentMenu, skynetUpdateDisplay, {skynetIADSObject, 'IADSStatus', true})
-    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Hide IADS Status",
+    local CommandIADSActivate = MENU_MISSION_COMMAND:New("Hide IADS Status",
             parentMenu, skynetUpdateDisplay, {skynetIADSObject, 'IADSStatus', false})
-    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Show contacts",
+    local CommandIADSActivate = MENU_MISSION_COMMAND:New("Show contacts",
             parentMenu, skynetUpdateDisplay, {skynetIADSObject, 'contacts', true})
-    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Hide contacts",
+    local CommandIADSActivate = MENU_MISSION_COMMAND:New("Hide contacts",
             parentMenu, skynetUpdateDisplay, {skynetIADSObject, 'contacts', false})
-    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Disable Skynet",
+    local CommandIADSActivate = MENU_MISSION_COMMAND:New("Disable Skynet",
             parentMenu, deactivateSkynet, { iadsConfig, skynetIADSObject, parentMenu })
     MESSAGE:NewType(string.format("Skynet of %s activate in 60 secondes", iadsConfig.name), MESSAGE.Type.Information):ToCoalition(iadsConfig.benefit_coalition)
 end
@@ -1089,9 +1094,9 @@ function SpawnIADS(param)
 
     debug_msg(string.format("Spawn IADS : %s DONE", iadsName))
     parentMenu:RemoveSubMenus()
-    local CommandIADSDetroy = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Delete", parentMenu,
+    local CommandIADSDetroy = MENU_MISSION_COMMAND:New("Delete", parentMenu,
         deleteIADSUnits, { iadsConfig, skynetIADSObject, parentMenu })
-    local CommandIADSActivate = MENU_COALITION_COMMAND:New(iadsConfig.benefit_coalition, "Skynet Activation",
+    local CommandIADSActivate = MENU_MISSION_COMMAND:New("Skynet Activation",
             parentMenu, activateSkynet, { iadsConfig, skynetIADSObject, parentMenu })
     MESSAGE:NewType(string.format("IADS Units %s in place", iadsName), MESSAGE.Type.Information):ToBlue()
 end
@@ -1127,7 +1132,7 @@ function AddFacFunction(radioCommandSubRange, facRangeConfig, facSubRangeConfig)
 end
 
 function AddIADSFunction(parentMenu, iadsconfig, skynetIADSObject)
-    local RadioCommandAdd = MENU_COALITION_COMMAND:New(iadsconfig.benefit_coalition, "Spawn", parentMenu,
+    local RadioCommandAdd = MENU_MISSION_COMMAND:New("Spawn", parentMenu,
         SpawnIADS, { parentMenu, iadsconfig, skynetIADSObject})
 end
 
