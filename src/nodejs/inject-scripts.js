@@ -404,7 +404,7 @@ prompt.get(prompt_properties, async function (prompt_err, prompt_result) {
             missionObject['trigrules'],
             mapResourceObject,
             'Air To Air',
-            ['170-cap_zone_training.lua', '173-fox_zone_training.lua', '176-random_air_traffic.lua'],
+            ['170-cap_zone_training.lua', '172-cap_zone_war.lua', '173-fox_zone_training.lua', '176-random_air_traffic.lua'],
             27,
             '0xff0000ff'
         );
