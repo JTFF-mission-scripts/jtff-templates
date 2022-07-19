@@ -43,6 +43,10 @@ and you're good to go
 
 All the mission you will generate will be delivered in the **./build** folder
 
+## Credits
+If you use our scripts for your missions, well, THANK YOU for your trust but **please be kind and give JTFF a little credit in your mission briefing to reward us on our work**
+If you notice any bug in our scripts or if you want to improve the scripts, please consider joining the contributor team, I would be more than happy to have extra help.
+
 # Scripts provided
 
 ## cleanup
